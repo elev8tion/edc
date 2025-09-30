@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+import 'app_routes.dart';
+
+class NavigationService {
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  static NavigatorState? get navigator => navigatorKey.currentState;
+
+  static BuildContext? get context => navigator?.context;
+
+  /// Navigate to a route and remove all previous routes
+  static Future<T?> pushAndRemoveUntil<T extends Object?>(
+    String routeName, {
+    Object? arguments,
+  }) {
+    return navigator!.pushNamedAndRemoveUntil(
+      routeName,
+      (route) => false,
+      arguments: arguments,
+    );
+  }
+
+  /// Navigate to a route
+  static Future<T?> pushNamed<T extends Object?>(
+    String routeName, {
+    Object? arguments,
+  }) {
+    return navigator!.pushNamed(routeName, arguments: arguments);
+  }
+
+  /// Replace current route
+  static Future<T?> pushReplacementNamed<T extends Object?>(
+    String routeName, {
+    Object? arguments,
+  }) {
+    return navigator!.pushReplacementNamed(routeName, arguments: arguments);
+  }
+
+  /// Go back
+  static void pop<T extends Object?>([T? result]) {
+    return navigator!.pop(result);
+  }
+
+  /// Check if can go back
+  static bool canPop() {
+    return navigator!.canPop();
+  }
+
+  /// Navigate to home and clear stack
+  static Future<void> goToHome() {
+    return pushAndRemoveUntil(AppRoutes.home);
+  }
+
+  /// Navigate to auth and clear stack
+  static Future<void> goToAuth() {
+    return pushAndRemoveUntil(AppRoutes.auth);
+  }
+
+  /// Navigate to splash
+  static Future<void> goToSplash() {
+    return pushAndRemoveUntil(AppRoutes.splash);
+  }
+
+  /// Show a dialog
+  static Future<T?> showAppDialog<T>({
+    required Widget dialog,
+    bool barrierDismissible = true,
+  }) {
+    return showDialog<T>(
+      context: context!,
+      barrierDismissible: barrierDismissible,
+      builder: (_) => dialog,
+    );
+  }
+
+  /// Show bottom sheet
+  static Future<T?> showBottomSheet<T>({
+    required Widget content,
+    bool isScrollControlled = false,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context!,
+      isScrollControlled: isScrollControlled,
+      backgroundColor: Colors.transparent,
+      builder: (_) => content,
+    );
+  }
+}
+
+/// Route guard mixin for checking authentication
+mixin RouteGuard {
+  bool canAccess(String route, {bool isAuthenticated = false}) {
+    if (AppRoutes.isAuthRequired(route) && !isAuthenticated) {
+      NavigationService.goToAuth();
+      return false;
+    }
+    return true;
+  }
+}

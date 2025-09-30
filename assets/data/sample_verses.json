@@ -1,0 +1,124 @@
+{
+  "verses": [
+    {
+      "id": 1,
+      "book": "Jeremiah",
+      "chapter": 29,
+      "verse": 11,
+      "text": "For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.",
+      "translation": "ESV",
+      "themes": ["hope", "future", "guidance", "trust"]
+    },
+    {
+      "id": 2,
+      "book": "Philippians",
+      "chapter": 4,
+      "verse": 13,
+      "text": "I can do all things through him who strengthens me.",
+      "translation": "ESV",
+      "themes": ["strength", "perseverance", "faith", "encouragement"]
+    },
+    {
+      "id": 3,
+      "book": "Isaiah",
+      "chapter": 41,
+      "verse": 10,
+      "text": "Fear not, for I am with you; be not dismayed, for I am your God; I will strengthen you, I will help you, I will uphold you with my righteous right hand.",
+      "translation": "ESV",
+      "themes": ["comfort", "fear", "strength", "presence"]
+    },
+    {
+      "id": 4,
+      "book": "Psalm",
+      "chapter": 23,
+      "verse": 1,
+      "text": "The Lord is my shepherd; I shall not want.",
+      "translation": "ESV",
+      "themes": ["comfort", "provision", "trust", "peace"]
+    },
+    {
+      "id": 5,
+      "book": "Romans",
+      "chapter": 8,
+      "verse": 28,
+      "text": "And we know that for those who love God all things work together for good, for those who are called according to his purpose.",
+      "translation": "ESV",
+      "themes": ["hope", "purpose", "trust", "guidance"]
+    },
+    {
+      "id": 6,
+      "book": "Proverbs",
+      "chapter": 3,
+      "verse": 5,
+      "text": "Trust in the Lord with all your heart, and do not lean on your own understanding.",
+      "translation": "ESV",
+      "themes": ["trust", "wisdom", "guidance", "surrender"]
+    },
+    {
+      "id": 7,
+      "book": "Matthew",
+      "chapter": 11,
+      "verse": 28,
+      "text": "Come to me, all who labor and are heavy laden, and I will give you rest.",
+      "translation": "ESV",
+      "themes": ["rest", "comfort", "burden", "invitation"]
+    },
+    {
+      "id": 8,
+      "book": "2 Corinthians",
+      "chapter": 12,
+      "verse": 9,
+      "text": "But he said to me, 'My grace is sufficient for you, for my power is made perfect in weakness.' Therefore I will boast all the more gladly of my weaknesses, so that the power of Christ may rest upon me.",
+      "translation": "ESV",
+      "themes": ["grace", "weakness", "strength", "sufficiency"]
+    },
+    {
+      "id": 9,
+      "book": "Joshua",
+      "chapter": 1,
+      "verse": 9,
+      "text": "Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the Lord your God is with you wherever you go.",
+      "translation": "ESV",
+      "themes": ["courage", "strength", "presence", "fear"]
+    },
+    {
+      "id": 10,
+      "book": "1 Peter",
+      "chapter": 5,
+      "verse": 7,
+      "text": "Casting all your anxieties on him, because he cares for you.",
+      "translation": "ESV",
+      "themes": ["anxiety", "care", "worry", "trust"]
+    }
+  ],
+  "themes": {
+    "comfort": {
+      "description": "Verses for times of sadness, grief, or distress",
+      "color": "#87CEEB"
+    },
+    "strength": {
+      "description": "Verses for when you need courage and perseverance",
+      "color": "#FF6B6B"
+    },
+    "guidance": {
+      "description": "Verses for decision-making and direction",
+      "color": "#4ECDC4"
+    },
+    "hope": {
+      "description": "Verses for encouragement and future faith",
+      "color": "#45B7D1"
+    },
+    "trust": {
+      "description": "Verses about relying on God's faithfulness",
+      "color": "#96CEB4"
+    },
+    "peace": {
+      "description": "Verses for anxiety and restlessness",
+      "color": "#FECA57"
+    },
+    "gratitude": {
+      "description": "Verses for thanksgiving and appreciation",
+      "color": "#FF9FF3"
+    }
+  }
+}
