@@ -4,12 +4,13 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'migrations/v1_initial_schema.dart';
+import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
 import 'migrations/v2_populate_verses.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 3;
+  static const int _databaseVersion = 4;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -43,6 +44,7 @@ class DatabaseHelper {
     await V1InitialSchema.up(db);
 
     if (version >= 2) {
+      await V15AddVerseColumns.migrate(db);
       await V2AddIndexes.up(db);
     }
 
@@ -54,6 +56,7 @@ class DatabaseHelper {
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2 && newVersion >= 2) {
+      await V15AddVerseColumns.migrate(db);
       await V2AddIndexes.up(db);
     }
 

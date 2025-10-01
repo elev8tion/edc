@@ -74,19 +74,13 @@ class MessageBubble extends StatelessWidget {
       height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: message.isUser
-            ? LinearGradient(
-                colors: [
-                  AppTheme.primaryColor,
-                  AppTheme.primaryColor.withValues(alpha: 0.8),
-                ],
-              )
-            : LinearGradient(
-                colors: [
-                  Colors.deepPurple.withValues(alpha: 0.8),
-                  Colors.deepPurple.withValues(alpha: 0.6),
-                ],
-              ),
+        border: Border.all(
+          color: AppTheme.goldColor.withValues(alpha: 0.6),
+          width: 1.5,
+        ),
+        color: message.isUser
+            ? AppTheme.primaryColor.withValues(alpha: 0.3)
+            : Colors.deepPurple.withValues(alpha: 0.3),
       ),
       child: Icon(
         message.isUser ? Icons.person : Icons.auto_awesome,
@@ -367,12 +361,11 @@ class _TypingIndicatorState extends State<TypingIndicator>
             height: 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  Colors.deepPurple.withValues(alpha: 0.8),
-                  Colors.deepPurple.withValues(alpha: 0.6),
-                ],
+              border: Border.all(
+                color: AppTheme.goldColor.withValues(alpha: 0.6),
+                width: 1.5,
               ),
+              color: Colors.deepPurple.withValues(alpha: 0.3),
             ),
             child: const Icon(
               Icons.auto_awesome,

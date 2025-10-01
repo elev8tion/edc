@@ -5,6 +5,7 @@ class AppTheme {
   static const Color primaryColor = Color(0xFF6366F1); // Modern indigo
   static const Color accentColor = Color(0xFF8B5CF6); // Beautiful purple
   static const Color secondaryColor = Color(0xFF64748B); // Slate gray
+  static const Color goldColor = Color(0xFFD4AF37); // Gold/amber from logo
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -28,9 +29,10 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 8,
+        shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
@@ -59,10 +61,13 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       hintStyle: TextStyle(color: Colors.grey.shade500),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
-      elevation: 6,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
     ),
   );
 
@@ -91,9 +96,10 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 8,
+        shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(28),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
@@ -123,10 +129,13 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       hintStyle: TextStyle(color: Colors.grey.shade400),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
-      elevation: 6,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
     ),
   );
 
@@ -183,28 +192,88 @@ class AppTheme {
     ),
   ];
 
-  // Text styles
+  // Text styles optimized for glass components
   static const TextStyle headingStyle = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
-    color: primaryColor,
+    color: Colors.white,
+    shadows: [
+      Shadow(
+        offset: Offset(0, 1),
+        blurRadius: 3.0,
+        color: Color.fromARGB(100, 0, 0, 0),
+      ),
+    ],
   );
 
   static const TextStyle subheadingStyle = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
-    color: secondaryColor,
+    color: Colors.white,
+    shadows: [
+      Shadow(
+        offset: Offset(0, 1),
+        blurRadius: 2.0,
+        color: Color.fromARGB(80, 0, 0, 0),
+      ),
+    ],
   );
 
   static const TextStyle bodyStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     height: 1.5,
+    color: Colors.white,
   );
 
   static const TextStyle captionStyle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Colors.grey,
+    color: Color(0xFFB0B0B0),
+  );
+
+  // Icon themes for glass visibility
+  static const IconThemeData glassIconTheme = IconThemeData(
+    color: Colors.white,
+    size: 24,
+  );
+
+  static const IconThemeData accentIconTheme = IconThemeData(
+    color: primaryColor,
+    size: 24,
+  );
+
+  // Glass button styles
+  static ButtonStyle glassButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: Colors.white.withValues(alpha: 0.1),
+    foregroundColor: Colors.white,
+    elevation: 0,
+    side: BorderSide(
+      color: Colors.white.withValues(alpha: 0.2),
+      width: 1,
+    ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(28),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    textStyle: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    ),
+  );
+
+  static ButtonStyle primaryGlassButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: primaryColor.withValues(alpha: 0.8),
+    foregroundColor: Colors.white,
+    elevation: 8,
+    shadowColor: primaryColor.withValues(alpha: 0.4),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(28),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    textStyle: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    ),
   );
 }

@@ -51,7 +51,7 @@ class PopulateVersesMigration {
         'themes': themesJson,
         'category': verse['category'] ?? 'general',
         'created_at': DateTime.now().millisecondsSinceEpoch,
-      });
+      }, conflictAlgorithm: ConflictAlgorithm.ignore);
     }
 
     await batch.commit(noResult: true);

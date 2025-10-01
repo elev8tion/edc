@@ -65,7 +65,10 @@ class GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
-  final Gradient? gradient;
+  final double blurStrength;
+  final List<Color>? gradientColors;
+  final List<double>? gradientStops;
+  final Border? border;
 
   const GlassContainer({
     super.key,
@@ -75,45 +78,53 @@ class GlassContainer extends StatelessWidget {
     this.margin,
     this.padding = const EdgeInsets.all(20),
     this.borderRadius = 24,
-    this.gradient,
+    this.blurStrength = 4.0,
+    this.gradientColors,
+    this.gradientStops,
+    this.border,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final defaultGradientColors = [
+      Colors.white.withOpacity(0.15),
+      Colors.white.withOpacity(0.05),
+    ];
 
     return Container(
       width: width,
       height: height,
       margin: margin,
-      padding: padding,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        gradient: gradient ?? LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark ? [
-            Colors.white.withValues(alpha: 0.1),
-            Colors.white.withValues(alpha: 0.05),
-          ] : [
-            Colors.white.withValues(alpha: 0.2),
-            Colors.white.withValues(alpha: 0.1),
-          ],
+        gradient: LinearGradient(
+          colors: gradientColors ?? defaultGradientColors,
+          stops: gradientStops ?? const [0.0, 1.0],
+          begin: const AlignmentDirectional(0.98, -1.0),
+          end: const AlignmentDirectional(-0.98, 1.0),
         ),
-        border: Border.all(
-          color: isDark ? Colors.white12 : Colors.white30,
-          width: 1.5,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: border ?? Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 20,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: child,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blurStrength, sigmaY: blurStrength),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

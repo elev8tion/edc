@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../features/chat/screens/chat_screen.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
 import '../components/feature_card.dart';
+import '../components/glass_button.dart';
+import '../components/gradient_background.dart';
 import '../core/navigation/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,20 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF8FAFF), Color(0xFFEEF4FF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+      body: Stack(
+        children: [
+          const GradientBackground(),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 _buildHeader(),
                 const SizedBox(height: 24),
                 _buildStatsRow(),
@@ -66,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+        ],
       ),
     );
   }
@@ -104,12 +104,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppTheme.goldColor.withValues(alpha: 0.6),
+                  width: 1.5,
+                ),
+                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+              ),
               child: Icon(
                 Icons.person,
-                color: AppTheme.primaryColor,
+                color: Colors.white,
                 size: 20,
               ),
             ).animate().fadeIn(duration: 600.ms, delay: 400.ms).scale(begin: const Offset(0.8, 0.8)),
@@ -123,29 +131,110 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Expanded(
-          child: StatsCard(
-            value: "7",
-            label: "Day Streak",
-            icon: Icons.local_fire_department,
-            color: Colors.orange,
+          child: ClearGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "7",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    Icon(
+                      Icons.local_fire_department,
+                      size: 20,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Day Streak",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
           ).animate().fadeIn(duration: 600.ms, delay: 600.ms).slideY(begin: 0.3),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: StatsCard(
-            value: "42",
-            label: "Prayers",
-            icon: Icons.favorite,
-            color: Colors.red,
+          child: ClearGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "42",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.red,
+                      ),
+                    ),
+                    Icon(
+                      Icons.favorite,
+                      size: 20,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Prayers",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
           ).animate().fadeIn(duration: 600.ms, delay: 700.ms).slideY(begin: 0.3),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: StatsCard(
-            value: "156",
-            label: "Verses Read",
-            icon: Icons.menu_book,
-            color: AppTheme.primaryColor,
+          child: ClearGlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "156",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                    Icon(
+                      Icons.menu_book,
+                      size: 20,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Verses Read",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
           ).animate().fadeIn(duration: 600.ms, delay: 800.ms).slideY(begin: 0.3),
         ),
       ],
@@ -158,30 +247,84 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             Expanded(
-              child: FeatureCard(
-                icon: Icons.chat_bubble_outline,
-                title: "AI Guidance",
-                subtitle: "Get biblical wisdom for any situation you're facing",
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              child: FrostedGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.chat),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.chat_bubble_outline,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "AI Guidance",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Get biblical wisdom for any situation you're facing",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 900.ms).slideX(begin: -0.3),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: FeatureCard(
-                icon: Icons.book_outlined,
-                title: "Daily Verse",
-                subtitle: "Start your day with God's word and encouragement",
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF8B5CF6), Color(0xFFA855F7)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              child: FrostedGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.book_outlined,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Daily Verse",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Start your day with God's word and encouragement",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1000.ms).slideX(begin: 0.3),
             ),
           ],
@@ -190,30 +333,84 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             Expanded(
-              child: FeatureCard(
-                icon: Icons.favorite_outline,
-                title: "Prayer Journal",
-                subtitle: "Track your prayers and see God's faithfulness",
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6366F1), Color(0xFF3B82F6)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              child: FrostedGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.prayerJournal),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.favorite_outline,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Prayer Journal",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Track your prayers and see God's faithfulness",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1100.ms).slideX(begin: -0.3),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: FeatureCard(
-                icon: Icons.library_books_outlined,
-                title: "Verse Library",
-                subtitle: "Explore thousands of verses by topic and theme",
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              child: FrostedGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.library_books_outlined,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "Verse Library",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Explore thousands of verses by topic and theme",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1200.ms).slideX(begin: 0.3),
             ),
           ],
@@ -240,32 +437,136 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              QuickActionCard(
-                icon: Icons.search,
-                title: "Find Verse",
+              ClearGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
-                color: AppTheme.primaryColor,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      child: Icon(
+                        Icons.search,
+                        size: 20,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Flexible(
+                      child: Text(
+                        "Find Verse",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1400.ms).scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(width: 12),
-              QuickActionCard(
-                icon: Icons.add,
-                title: "Add Prayer",
+              ClearGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.prayerJournal),
-                color: Colors.green,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      child: Icon(
+                        Icons.add,
+                        size: 20,
+                        color: Colors.green,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Flexible(
+                      child: Text(
+                        "Add Prayer",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1500.ms).scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(width: 12),
-              QuickActionCard(
-                icon: Icons.share,
-                title: "Share Verse",
+              ClearGlassCard(
                 onTap: () {},
-                color: Colors.blue,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      child: Icon(
+                        Icons.share,
+                        size: 20,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Flexible(
+                      child: Text(
+                        "Share Verse",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1600.ms).scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(width: 12),
-              QuickActionCard(
-                icon: Icons.settings,
-                title: "Settings",
+              ClearGlassCard(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
-                color: Colors.grey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClearGlassCard(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      child: Icon(
+                        Icons.settings,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Flexible(
+                      child: Text(
+                        "Settings",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ).animate().fadeIn(duration: 600.ms, delay: 1700.ms).scale(begin: const Offset(0.8, 0.8)),
             ],
           ),
@@ -275,29 +576,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDailyVerse() {
-    return Container(
-      width: double.infinity,
+    return FrostedGlassCard(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: AppTheme.elevatedShadow,
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
+              ClearGlassCard(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                borderRadius: 8,
                 child: const Icon(
                   Icons.auto_awesome,
                   color: Colors.white,
@@ -341,43 +629,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStartChatButton() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppTheme.elevatedShadow,
-      ),
-      child: ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.psychology_outlined,
-              color: Colors.white,
-              size: 24,
-            ),
-            SizedBox(width: 12),
-            Text(
-              'Start Spiritual Conversation',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return GlassButton(
+      text: 'Start Spiritual Conversation',
+      onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
     ).animate().fadeIn(duration: 600.ms, delay: 1900.ms).slideY(begin: 0.5);
   }
 }

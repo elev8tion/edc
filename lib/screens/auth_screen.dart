@@ -4,6 +4,8 @@ import '../features/auth/services/auth_service.dart';
 import '../features/auth/widgets/auth_form.dart';
 import '../theme/app_theme.dart';
 import '../components/glass_card.dart';
+import '../components/gradient_background.dart';
+import '../components/animations/blur_fade.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 
@@ -16,33 +18,19 @@ class AuthScreen extends ConsumerStatefulWidget {
 
 class _AuthScreenState extends ConsumerState<AuthScreen>
     with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
+  bool _showContent = false;
 
   @override
   void initState() {
     super.initState();
-
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-
-    _fadeController.forward();
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
+    // Show content with slight delay for smooth appearance
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _showContent = true;
+        });
+      }
+    });
   }
 
   @override
@@ -70,50 +58,48 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     });
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.darkGradient,
-        ),
-        child: SafeArea(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
+      body: Stack(
+        children: [
+          const GradientBackground(),
+          SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
 
-                  // Logo and welcome text
-                  GlassCard(
-                    borderRadius: 32,
+                  // Large logo section (no glass container)
+                  BlurFade(
+                    delay: const Duration(milliseconds: 100),
+                    isVisible: _showContent,
                     child: Column(
                       children: [
                         Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          width: 200,
+                          height: 200,
+                          padding: const EdgeInsets.all(8),
                           child: Image.asset(
-                            'assets/images/logo.png',
-                            fit: BoxFit.contain,
+                            'assets/images/logo_large.png',
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         const Text(
                           'Welcome Back',
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Sign in to continue your spiritual journey',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 16,
+                            color: Colors.white.withValues(alpha: 0.8),
+                            height: 1.4,
+                            fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -121,51 +107,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
 
                   // Auth form
-                  const AuthForm(),
-
-                  const SizedBox(height: 30),
-
-                  // Guest option
-                  GlassCard(
-                    borderRadius: 16,
-                    child: Column(
-                      children: [
-                        Text(
-                          'Not ready to create an account?',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8),
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              await ref.read(authServiceProvider.notifier).continueAsGuest();
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.5)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            child: Text(
-                              'Continue as Guest',
-                              style: TextStyle(
-                                color: AppTheme.primaryColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  BlurFade(
+                    delay: const Duration(milliseconds: 300),
+                    isVisible: _showContent,
+                    child: const AuthForm(),
                   ),
 
                   const SizedBox(height: 20),
@@ -174,8 +122,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                   Text(
                     'Your spiritual conversations remain completely private on your device',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: Colors.black,
                       fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -183,7 +132,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth_service.dart';
 import '../../../theme/app_theme.dart';
-import '../../../components/glass_card.dart';
+import '../../../components/frosted_glass.dart';
+import '../../../components/glass_button.dart';
 
 class AuthForm extends ConsumerStatefulWidget {
   const AuthForm({super.key});
@@ -87,7 +88,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
+    return FrostedGlass(
       child: Form(
         key: _formKey,
         child: Column(
@@ -101,16 +102,16 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                     onPressed: () => setState(() => _isSignUp = false),
                     style: TextButton.styleFrom(
                       backgroundColor: !_isSignUp
-                          ? AppTheme.primaryColor.withValues(alpha: 0.2)
+                          ? AppTheme.goldColor.withValues(alpha: 0.15)
                           : Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(28),
                       ),
                     ),
                     child: Text(
                       'Sign In',
                       style: TextStyle(
-                        color: !_isSignUp ? AppTheme.primaryColor : Colors.white.withValues(alpha: 0.7),
+                        color: !_isSignUp ? AppTheme.goldColor : Colors.white.withValues(alpha: 0.7),
                         fontWeight: !_isSignUp ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
@@ -122,16 +123,16 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                     onPressed: () => setState(() => _isSignUp = true),
                     style: TextButton.styleFrom(
                       backgroundColor: _isSignUp
-                          ? AppTheme.primaryColor.withValues(alpha: 0.2)
+                          ? AppTheme.goldColor.withValues(alpha: 0.15)
                           : Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(28),
                       ),
                     ),
                     child: Text(
                       'Sign Up',
                       style: TextStyle(
-                        color: _isSignUp ? AppTheme.primaryColor : Colors.white.withValues(alpha: 0.7),
+                        color: _isSignUp ? AppTheme.goldColor : Colors.white.withValues(alpha: 0.7),
                         fontWeight: _isSignUp ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
@@ -149,16 +150,16 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 decoration: InputDecoration(
                   labelText: 'Full Name',
                   labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                  prefixIcon: Icon(Icons.person_outline, color: AppTheme.primaryColor),
+                  prefixIcon: Icon(Icons.person_outline, color: AppTheme.goldColor),
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(28),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                    borderRadius: BorderRadius.circular(28),
+                    borderSide: BorderSide(color: AppTheme.goldColor, width: 2),
                   ),
                 ),
                 style: const TextStyle(color: Colors.white),
@@ -174,15 +175,15 @@ class _AuthFormState extends ConsumerState<AuthForm> {
               decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryColor),
+                prefixIcon: Icon(Icons.email_outlined, color: AppTheme.goldColor),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(28),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(28),
                   borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
@@ -200,11 +201,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                prefixIcon: Icon(Icons.lock_outline, color: AppTheme.primaryColor),
+                prefixIcon: Icon(Icons.lock_outline, color: AppTheme.goldColor),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.goldColor,
                   ),
                   onPressed: () {
                     setState(() => _isPasswordVisible = !_isPasswordVisible);
@@ -213,11 +214,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(28),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(28),
                   borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
@@ -231,33 +232,10 @@ class _AuthFormState extends ConsumerState<AuthForm> {
             const SizedBox(height: 24),
 
             // Submit button
-            ElevatedButton(
-              onPressed: _isLoading ? null : _submitForm,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 4,
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      _isSignUp ? 'Create Account' : 'Sign In',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+            GlassButton(
+              text: _isSignUp ? 'Create Account' : 'Sign In',
+              onPressed: _submitForm,
+              isLoading: _isLoading,
             ),
 
             const SizedBox(height: 16),
@@ -305,7 +283,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.5)),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(28),
                                 ),
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                               ),
