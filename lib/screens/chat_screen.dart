@@ -397,6 +397,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     fontSize: 15,
                   ),
                   border: InputBorder.none,
+                  filled: true,
+                  fillColor: Colors.transparent,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 15,
