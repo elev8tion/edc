@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'theme/app_theme.dart';
 import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
+import 'core/providers/app_providers.dart';
+import 'core/error/error_handler.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/auth_screen.dart';
@@ -13,10 +16,15 @@ import 'screens/settings_screen.dart';
 import 'screens/prayer_journal_screen.dart';
 import 'screens/verse_library_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/devotional_screen.dart';
+import 'screens/reading_plan_screen.dart';
 import 'services/local_ai_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize timezone data
+  tz.initializeTimeZones();
 
   // Set status bar style
   SystemChrome.setSystemUIOverlayStyle(
@@ -31,6 +39,13 @@ void main() async {
   AIServiceFactory.initialize().catchError((e) {
     debugPrint('AI Service initialization failed: $e');
   });
+
+  // Set up global error handling
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    final error = ErrorHandler.handle(details.exception);
+    ErrorHandler.logError(error, stackTrace: details.stack);
+  };
 
   runApp(const ProviderScope(child: EverydayChristianApp()));
 }
@@ -131,6 +146,12 @@ class EverydayChristianApp extends StatelessWidget {
         break;
       case AppRoutes.profile:
         page = const ProfileScreen();
+        break;
+      case AppRoutes.devotional:
+        page = const DevotionalScreen();
+        break;
+      case AppRoutes.readingPlan:
+        page = const ReadingPlanScreen();
         break;
       default:
         page = const SplashScreen();

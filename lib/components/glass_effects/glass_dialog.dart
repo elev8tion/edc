@@ -1,9 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../core/theme/app_theme.dart';
-import '../glass_card.dart';
+import '../../theme/app_theme.dart';
 
 /// Shows a glass morphism style dialog
 Future<T?> showGlassDialog<T>({
@@ -66,7 +64,7 @@ class GlassDialogButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = color ?? (isPrimary ? AppTheme.primaryColor : AppTheme.alternateColor);
+    final buttonColor = color ?? (isPrimary ? AppTheme.primaryColor : AppTheme.secondaryColor);
 
     return GestureDetector(
       onTap: onTap,
@@ -76,7 +74,7 @@ class GlassDialogButton extends StatelessWidget {
           gradient: LinearGradient(
             colors: [
               buttonColor,
-              AppTheme.frostShadow,
+              buttonColor.withValues(alpha: 0.8),
               buttonColor,
             ],
             stops: const [0, 0.6, 1],
@@ -85,13 +83,13 @@ class GlassDialogButton extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: AppTheme.primaryBackground,
+            color: Colors.white.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
               blurRadius: 5,
-              color: AppTheme.frostShadow,
+              color: Colors.black.withValues(alpha: 0.3),
               offset: const Offset(1, 2),
             ),
           ],
@@ -99,7 +97,7 @@ class GlassDialogButton extends StatelessWidget {
         child: Text(
           text,
           style: GoogleFonts.plusJakartaSans(
-            color: AppTheme.blackText,
+            color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),

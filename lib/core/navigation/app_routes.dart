@@ -8,6 +8,8 @@ class AppRoutes {
   static const String prayerJournal = '/prayer-journal';
   static const String verseLibrary = '/verse-library';
   static const String profile = '/profile';
+  static const String devotional = '/devotional';
+  static const String readingPlan = '/reading-plan';
 
   static const List<String> authRequiredRoutes = [
     home,
@@ -16,6 +18,8 @@ class AppRoutes {
     prayerJournal,
     verseLibrary,
     profile,
+    devotional,
+    readingPlan,
   ];
 
   static const List<String> publicRoutes = [
