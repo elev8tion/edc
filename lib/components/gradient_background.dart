@@ -22,28 +22,20 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(
-          sigmaX: blurSigmaX ?? 60.0,
-          sigmaY: blurSigmaY ?? 100.0,
-        ),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: colors ?? const [
-                Color(0xFF1A1A2E), // Dark navy from our theme
-                AppTheme.primaryColor, // Our indigo
-                AppTheme.accentColor, // Our purple
-                Color(0xFF0F3460), // Deep dark blue from our theme
-              ],
-              stops: stops ?? const [0, 0.3, 0.7, 1],
-              begin: begin ?? const Alignment(-1, 0.5),
-              end: end ?? const Alignment(1, -0.5),
-            ),
-          ),
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: colors ?? const [
+            Color(0xFF1A1A2E), // Dark navy from our theme
+            AppTheme.primaryColor, // Our indigo
+            AppTheme.accentColor, // Our purple
+            Color(0xFF0F3460), // Deep dark blue from our theme
+          ],
+          stops: stops ?? const [0, 0.3, 0.7, 1],
+          begin: begin ?? const Alignment(-1, 0.5),
+          end: end ?? const Alignment(1, -0.5),
         ),
       ),
     );
