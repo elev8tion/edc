@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
-import '../theme/app_theme.dart';
-import '../components/glass_card.dart';
 import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
 import '../components/glass_button.dart';
@@ -52,23 +50,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    // Logo section
-                    GlassContainer(
+                    // Logo section - just liquid glass and logo
+                    StaticLiquidGlassLens(
+                      backgroundKey: _backgroundKey,
                       width: 200,
                       height: 200,
-                      borderRadius: 32,
-                      padding: const EdgeInsets.all(8),
-                      child: StaticLiquidGlassLens(
-                        backgroundKey: _backgroundKey,
-                        width: 184,  // 200 - (8*2) for padding
-                        height: 184,
-                        effectSize: 3.0,
-                        dispersionStrength: 0.3,
-                        blurIntensity: 0.05,
-                        child: Image.asset(
-                          'assets/images/logo_large.png',
-                          fit: BoxFit.cover,
-                        ),
+                      effectSize: 3.0,
+                      dispersionStrength: 0.3,
+                      blurIntensity: 0.05,
+                      child: Image.asset(
+                        'assets/images/logo_large.png',
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
                     ),
 
