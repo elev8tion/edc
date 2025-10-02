@@ -8,7 +8,6 @@ import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
 import '../components/category_badge.dart';
-import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,34 +43,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RepaintBoundary(
-        key: _backgroundKey,
-        child: Stack(
-          children: [
-            const GradientBackground(),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildStatsRow(),
-                  const SizedBox(height: 24),
-                  _buildMainFeatures(),
-                  const SizedBox(height: 24),
-                  _buildQuickActions(),
-                  const SizedBox(height: 24),
-                  _buildDailyVerse(),
-                  const SizedBox(height: 24),
-                  _buildStartChatButton(),
-                ],
-              ),
+      body: Stack(
+        children: [
+          RepaintBoundary(
+            key: _backgroundKey,
+            child: const GradientBackground(),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                _buildHeader(),
+                const SizedBox(height: 24),
+                _buildStatsRow(),
+                const SizedBox(height: 24),
+                _buildMainFeatures(),
+                const SizedBox(height: 24),
+                _buildQuickActions(),
+                const SizedBox(height: 24),
+                _buildDailyVerse(),
+                const SizedBox(height: 24),
+                _buildStartChatButton(),
+              ],
             ),
           ),
-          ],
         ),
+        ],
       ),
     );
   }
