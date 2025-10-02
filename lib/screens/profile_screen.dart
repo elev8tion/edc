@@ -4,6 +4,7 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/category_badge.dart';
+import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/app_routes.dart';
 
@@ -647,17 +648,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: GlassButton(
+                      text: 'Cancel',
+                      height: 48,
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: GlassButton(
+                      text: 'Save',
+                      height: 48,
                       onPressed: () {
                         // In production, save to user service/provider
                         Navigator.pop(context);
@@ -672,14 +673,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Save'),
                     ),
                   ),
                 ],
@@ -727,30 +720,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
+                    child: GlassButton(
+                      text: 'Cancel',
+                      height: 48,
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
+                    child: GlassButton(
+                      text: 'Sign Out',
+                      height: 48,
                       onPressed: () {
                         // In production, handle sign out logic
                         Navigator.pop(context);
                         Navigator.pop(context); // Go back to home
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Sign Out'),
                     ),
                   ),
                 ],

@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             value: "156",
             label: "Verses Read",
             icon: Icons.menu_book,
-            color: AppTheme.primaryColor,
+            color: AppTheme.goldColor,
             delay: 800,
           ),
           const SizedBox(width: 16),
@@ -467,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildQuickActionCard(
                 label: "Bible Library",
                 icon: Icons.search,
-                color: AppTheme.primaryColor,
+                color: AppTheme.goldColor,
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
                 delay: 1400,
               ),

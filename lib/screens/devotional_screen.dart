@@ -223,7 +223,7 @@ Lord, thank You for creating me with purpose. Help me to discover and embrace th
                       devotional.subtitle,
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

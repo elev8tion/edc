@@ -323,7 +323,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                       _currentPlan!.category,
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -406,7 +406,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
             '${(progress * 100).toInt()}% complete',
             style: TextStyle(
               fontSize: 12,
-              color: AppTheme.primaryColor.withValues(alpha: 0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -531,7 +531,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                         plan.category,
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -613,29 +613,10 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
 
             const SizedBox(height: 16),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => _handlePlanAction(plan),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: plan.isStarted
-                      ? Colors.transparent
-                      : AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  side: plan.isStarted
-                      ? BorderSide(color: Colors.white.withValues(alpha: 0.3))
-                      : null,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  plan.isStarted ? 'Continue Reading' : 'Start Plan',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            GlassButton(
+              text: plan.isStarted ? 'Continue Reading' : 'Start Plan',
+              height: 48,
+              onPressed: () => _handlePlanAction(plan),
             ),
           ],
         ),

@@ -462,14 +462,14 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                 Icon(
                   Icons.book,
                   size: 16,
-                  color: AppTheme.primaryColor.withValues(alpha: 0.8),
+                  color: AppTheme.goldColor.withValues(alpha: 0.8),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   verse.reference,
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

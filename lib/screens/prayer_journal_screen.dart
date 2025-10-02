@@ -537,31 +537,23 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                   Row(
                     children: [
                       Expanded(
-                        child: TextButton(
+                        child: GlassButton(
+                          text: 'Cancel',
+                          height: 48,
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(color: Colors.white),
-                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: ElevatedButton(
+                        child: GlassButton(
+                          text: 'Add Prayer',
+                          height: 48,
                           onPressed: () {
                             if (title.isNotEmpty && description.isNotEmpty) {
                               _addPrayer(title, description, selectedCategory);
                               Navigator.pop(context);
                             }
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text('Add Prayer'),
                         ),
                       ),
                     ],
@@ -642,17 +634,17 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                 Row(
                   children: [
                     Expanded(
-                      child: TextButton(
+                      child: GlassButton(
+                        text: 'Cancel',
+                        height: 48,
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
+                      child: GlassButton(
+                        text: 'Mark Answered',
+                        height: 48,
                         onPressed: () {
                           if (answerDescription.isNotEmpty) {
                             setState(() {
@@ -665,14 +657,6 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                             Navigator.pop(context);
                           }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text('Mark Answered'),
                       ),
                     ),
                   ],
