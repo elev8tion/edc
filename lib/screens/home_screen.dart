@@ -8,6 +8,7 @@ import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
 import '../components/category_badge.dart';
+import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late String greeting;
   late String userName;
+  final GlobalKey _backgroundKey = GlobalKey();
 
   @override
   void initState() {
@@ -42,31 +44,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const GradientBackground(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                _buildHeader(),
-                const SizedBox(height: 24),
-                _buildStatsRow(),
-                const SizedBox(height: 24),
-                _buildMainFeatures(),
-                const SizedBox(height: 24),
-                _buildQuickActions(),
-                const SizedBox(height: 24),
-                _buildDailyVerse(),
-                const SizedBox(height: 24),
-                _buildStartChatButton(),
-              ],
+      body: RepaintBoundary(
+        key: _backgroundKey,
+        child: Stack(
+          children: [
+            const GradientBackground(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  _buildHeader(),
+                  const SizedBox(height: 24),
+                  _buildStatsRow(),
+                  const SizedBox(height: 24),
+                  _buildMainFeatures(),
+                  const SizedBox(height: 24),
+                  _buildQuickActions(),
+                  const SizedBox(height: 24),
+                  _buildDailyVerse(),
+                  const SizedBox(height: 24),
+                  _buildStartChatButton(),
+                ],
+              ),
             ),
           ),
+          ],
         ),
-        ],
       ),
     );
   }
@@ -673,21 +678,27 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontStyle: FontStyle.italic,
-                    height: 1.6,
-                    fontWeight: FontWeight.w500,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                      ),
-                    ],
+                StaticLiquidGlassLens(
+                  backgroundKey: _backgroundKey,
+                  effectSize: 4.0,
+                  dispersionStrength: 0.5,
+                  blurIntensity: 0.1,
+                  child: Text(
+                    '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontStyle: FontStyle.italic,
+                      height: 1.6,
+                      fontWeight: FontWeight.w500,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          offset: const Offset(0, 1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
