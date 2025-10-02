@@ -678,27 +678,21 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StaticLiquidGlassLens(
-                  backgroundKey: _backgroundKey,
-                  effectSize: 4.0,
-                  dispersionStrength: 0.5,
-                  blurIntensity: 0.1,
-                  child: Text(
-                    '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontStyle: FontStyle.italic,
-                      height: 1.6,
-                      fontWeight: FontWeight.w500,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          offset: const Offset(0, 1),
-                          blurRadius: 2,
-                        ),
-                      ],
-                    ),
+                Text(
+                  '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontStyle: FontStyle.italic,
+                    height: 1.6,
+                    fontWeight: FontWeight.w500,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        offset: const Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),

@@ -6,6 +6,7 @@ import '../components/glass_card.dart';
 import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
 import '../components/glass_button.dart';
+import '../components/glass/static_liquid_glass_lens.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,6 +17,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _showFeatures = false;
+  final GlobalKey _backgroundKey = GlobalKey();
 
   @override
   void initState() {
@@ -39,10 +41,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const GradientBackground(),
-          SafeArea(
+      body: RepaintBoundary(
+        key: _backgroundKey,
+        child: Stack(
+          children: [
+            const GradientBackground(),
+            SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -58,9 +62,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     AppTheme.goldColor.withOpacity(0.4),
                     AppTheme.goldColor.withOpacity(0.2),
                   ],
-                  child: Image.asset(
-                    'assets/images/logo_large.png',
-                    fit: BoxFit.cover,
+                  child: StaticLiquidGlassLens(
+                    backgroundKey: _backgroundKey,
+                    width: 184,  // 200 - (8*2) for padding
+                    height: 184,
+                    effectSize: 3.0,
+                    dispersionStrength: 0.3,
+                    blurIntensity: 0.05,
+                    child: Image.asset(
+                      'assets/images/logo_large.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
 
@@ -143,8 +155,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
           ),
+          ],
         ),
-        ],
       ),
     );
   }
