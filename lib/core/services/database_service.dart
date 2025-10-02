@@ -52,14 +52,40 @@ class DatabaseService {
       )
     ''');
 
-    // Bible Verses table
+    // Bible Verses table - Full Bible storage
     await db.execute('''
       CREATE TABLE bible_verses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        version TEXT NOT NULL,
+        book TEXT NOT NULL,
+        chapter INTEGER NOT NULL,
+        verse INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        language TEXT NOT NULL
+      )
+    ''');
+
+    // Create indexes for fast Bible searches
+    await db.execute('''
+      CREATE INDEX idx_bible_version ON bible_verses(version)
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_bible_book_chapter ON bible_verses(book, chapter)
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_bible_search ON bible_verses(book, chapter, verse)
+    ''');
+
+    // Favorite Verses table (separate from main Bible)
+    await db.execute('''
+      CREATE TABLE favorite_verses (
         id TEXT PRIMARY KEY,
         text TEXT NOT NULL,
         reference TEXT NOT NULL,
         category TEXT NOT NULL,
-        is_favorite INTEGER NOT NULL DEFAULT 0
+        date_added INTEGER NOT NULL
       )
     ''');
 
@@ -112,27 +138,26 @@ class DatabaseService {
   }
 
   Future<void> _insertInitialData(Database db) async {
-    // Insert sample Bible verses
-    final verses = [
+    // Insert sample favorite verses
+    final favorites = [
       {
         'id': '1',
         'text': 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
         'reference': 'Jeremiah 29:11',
         'category': 'Hope',
-        'is_favorite': 1,
+        'date_added': DateTime.now().millisecondsSinceEpoch,
       },
       {
         'id': '2',
         'text': 'Trust in the Lord with all your heart, and do not lean on your own understanding.',
         'reference': 'Proverbs 3:5',
         'category': 'Faith',
-        'is_favorite': 0,
+        'date_added': DateTime.now().millisecondsSinceEpoch,
       },
-      // Add more verses...
     ];
 
-    for (final verse in verses) {
-      await db.insert('bible_verses', verse);
+    for (final verse in favorites) {
+      await db.insert('favorite_verses', verse);
     }
 
     // Insert sample devotionals
