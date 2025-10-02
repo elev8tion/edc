@@ -20,6 +20,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _offlineMode = false;
   String _selectedBibleVersion = 'ESV';
   String _selectedLanguage = 'English';
+  double _fontSize = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +157,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Language',
                 'Select app language',
                 _selectedLanguage,
-                ['English', 'Spanish', 'French', 'German', 'Portuguese'],
+                ['English', 'Spanish'],
                 (value) => setState(() => _selectedLanguage = value!),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _buildSettingsSection(
+            'Display',
+            Icons.text_fields,
+            [
+              _buildSliderTile(
+                'Text Size',
+                'Adjust reading text size for better readability',
+                _fontSize,
+                12.0,
+                24.0,
+                (value) => setState(() => _fontSize = value),
               ),
             ],
           ),
