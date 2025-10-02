@@ -1,54 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
+import '../core/models/prayer_request.dart';
+import '../core/providers/prayer_providers.dart';
 
-class PrayerJournalScreen extends StatefulWidget {
+class PrayerJournalScreen extends ConsumerStatefulWidget {
   const PrayerJournalScreen({super.key});
 
   @override
-  State<PrayerJournalScreen> createState() => _PrayerJournalScreenState();
+  ConsumerState<PrayerJournalScreen> createState() => _PrayerJournalScreenState();
 }
 
-class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerProviderStateMixin {
+class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with TickerProviderStateMixin {
   late TabController _tabController;
-  final TextEditingController _prayerController = TextEditingController();
-
-  final List<PrayerRequest> _activePrayers = [
-    PrayerRequest(
-      id: '1',
-      title: 'Healing for Mom',
-      description: 'Praying for my mother\'s recovery from surgery',
-      category: PrayerCategory.health,
-      dateCreated: DateTime.now().subtract(const Duration(days: 3)),
-      isAnswered: false,
-    ),
-    PrayerRequest(
-      id: '2',
-      title: 'Job Interview',
-      description: 'Praying for wisdom and favor in upcoming job interview',
-      category: PrayerCategory.work,
-      dateCreated: DateTime.now().subtract(const Duration(days: 1)),
-      isAnswered: false,
-    ),
-  ];
-
-  final List<PrayerRequest> _answeredPrayers = [
-    PrayerRequest(
-      id: '3',
-      title: 'Safe Travel',
-      description: 'Praying for safe travels on family vacation',
-      category: PrayerCategory.protection,
-      dateCreated: DateTime.now().subtract(const Duration(days: 10)),
-      isAnswered: true,
-      dateAnswered: DateTime.now().subtract(const Duration(days: 2)),
-      answerDescription: 'Had a wonderful and safe trip with the family!',
-    ),
-  ];
 
   @override
   void initState() {
@@ -59,7 +29,6 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
   @override
   void dispose() {
     _tabController.dispose();
-    _prayerController.dispose();
     super.dispose();
   }
 
@@ -98,671 +67,503 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: ClearGlassCard(
-              padding: const EdgeInsets.all(12),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 20,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primaryColor.withOpacity(0.2),
+                  AppTheme.secondaryColor.withOpacity(0.2),
+                ],
               ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: AppTheme.primaryColor,
+              size: 28,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Prayer Journal',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Track your prayer journey',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2, end: 0);
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white60,
+        tabs: const [
+          Tab(text: 'Active'),
+          Tab(text: 'Answered'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivePrayers() {
+    final activePrayersAsync = ref.watch(activePrayersProvider);
+
+    return activePrayersAsync.when(
+      data: (prayers) {
+        if (prayers.isEmpty) {
+          return Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Prayer Journal',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
-                const SizedBox(height: 4),
+                Icon(
+                  Icons.auto_awesome,
+                  size: 64,
+                  color: Colors.white.withOpacity(0.3),
+                ),
+                const SizedBox(height: 16),
                 Text(
-                  'Bring your requests to God',
+                  'No active prayers yet',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Tap + to add your first prayer',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withOpacity(0.4),
                   ),
-                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+                ),
               ],
             ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: prayers.length,
+          itemBuilder: (context, index) {
+            final prayer = prayers[index];
+            return _buildPrayerCard(prayer, isAnswered: false)
+                .animate(delay: (index * 100).ms)
+                .fadeIn(duration: 400.ms)
+                .slideY(begin: 0.2, end: 0);
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text(
+          'Error loading prayers',
+          style: TextStyle(color: Colors.white.withOpacity(0.6)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnsweredPrayers() {
+    final answeredPrayersAsync = ref.watch(answeredPrayersProvider);
+
+    return answeredPrayersAsync.when(
+      data: (prayers) {
+        if (prayers.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 64,
+                  color: Colors.white.withOpacity(0.3),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No answered prayers yet',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: prayers.length,
+          itemBuilder: (context, index) {
+            final prayer = prayers[index];
+            return _buildPrayerCard(prayer, isAnswered: true)
+                .animate(delay: (index * 100).ms)
+                .fadeIn(duration: 400.ms)
+                .slideY(begin: 0.2, end: 0);
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text(
+          'Error loading answered prayers',
+          style: TextStyle(color: Colors.white.withOpacity(0.6)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPrayerCard(PrayerRequest prayer, {required bool isAnswered}) {
+    return ClearGlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  prayer.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              CategoryBadge(category: prayer.category.displayName),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            prayer.description,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.8),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today,
+                size: 14,
+                color: Colors.white.withOpacity(0.6),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                _formatDate(prayer.dateCreated),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.6),
+                ),
+              ),
+              if (isAnswered && prayer.dateAnswered != null) ...[
+                const SizedBox(width: 16),
+                Icon(
+                  Icons.check_circle,
+                  size: 14,
+                  color: Colors.green.withOpacity(0.8),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  _formatDate(prayer.dateAnswered!),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green.withOpacity(0.8),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              if (!isAnswered)
+                IconButton(
+                  icon: const Icon(Icons.check, color: Colors.green),
+                  onPressed: () => _showMarkAnsweredDialog(prayer),
+                ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deletePrayer(prayer.id),
+              ),
+            ],
+          ),
+          if (isAnswered && prayer.answerDescription != null) ...[
+            const Divider(color: Colors.white24),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.auto_awesome,
+                  size: 16,
+                  color: Colors.amber.withOpacity(0.8),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Answer:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              prayer.answerDescription!,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else {
+      return '${date.month}/${date.day}/${date.year}';
+    }
+  }
+
+  void _showAddPrayerDialog() {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    PrayerCategory selectedCategory = PrayerCategory.general;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1F3A),
+          title: const Text(
+            'New Prayer Request',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<PrayerCategory>(
+                  value: selectedCategory,
+                  dropdownColor: const Color(0xFF1A1F3A),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Category',
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                  items: PrayerCategory.values
+                      .map((category) => DropdownMenuItem(
+                            value: category,
+                            child: Text(category.displayName),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => selectedCategory = value);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white.withOpacity(0.6)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (titleController.text.isNotEmpty && descriptionController.text.isNotEmpty) {
+                  final actions = ref.read(prayerActionsProvider);
+                  await actions.addPrayer(
+                    titleController.text,
+                    descriptionController.text,
+                    selectedCategory,
+                  );
+                  if (context.mounted) Navigator.pop(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+              ),
+              child: const Text('Add Prayer'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMarkAnsweredDialog(PrayerRequest prayer) {
+    final answerController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1F3A),
+        title: const Text(
+          'Mark Prayer as Answered',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: TextField(
+          controller: answerController,
+          style: const TextStyle(color: Colors.white),
+          maxLines: 3,
+          decoration: InputDecoration(
+            labelText: 'How was this prayer answered?',
+            labelStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.primaryColor),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white.withOpacity(0.6)),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (answerController.text.isNotEmpty) {
+                final actions = ref.read(prayerActionsProvider);
+                await actions.markAnswered(prayer.id, answerController.text);
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: const Text('Mark Answered'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTabBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: FrostedGlassCard(
-        padding: const EdgeInsets.all(4),
-        child: TabBar(
-          controller: _tabController,
-          indicator: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppTheme.primaryColor,
-              width: 1,
-            ),
-          ),
-          indicatorSize: TabBarIndicatorSize.tab,
-          dividerColor: Colors.transparent,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-          tabs: [
-            Tab(text: 'Active (${_activePrayers.length})'),
-            Tab(text: 'Answered (${_answeredPrayers.length})'),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms);
-  }
-
-  Widget _buildActivePrayers() {
-    if (_activePrayers.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.favorite_outline,
-        title: 'No Active Prayers',
-        subtitle: 'Start your prayer journey by adding your first prayer request',
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _activePrayers.length,
-      itemBuilder: (context, index) {
-        final prayer = _activePrayers[index];
-        return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
-      },
-    );
-  }
-
-  Widget _buildAnsweredPrayers() {
-    if (_answeredPrayers.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.check_circle_outline,
-        title: 'No Answered Prayers Yet',
-        subtitle: 'When God answers your prayers, mark them as answered to see them here',
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _answeredPrayers.length,
-      itemBuilder: (context, index) {
-        final prayer = _answeredPrayers[index];
-        return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
-      },
-    );
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClearGlassCard(
-              padding: const EdgeInsets.all(24),
-              child: Icon(
-                icon,
-                size: 48,
-                color: Colors.white.withValues(alpha: 0.6),
-              ),
-            ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.8, 0.8)),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-            const SizedBox(height: 12),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.8),
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrayerCard(PrayerRequest prayer, int index) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: FrostedGlassCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CategoryBadge(
-                  text: _getCategoryName(prayer.category),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  fontSize: 11,
-                ),
-                const Spacer(),
-                if (prayer.isAnswered)
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.check_circle,
-                      size: 16,
-                      color: Colors.green,
-                    ),
-                  )
-                else
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'mark_answered') {
-                        _markPrayerAnswered(prayer);
-                      } else if (value == 'delete') {
-                        _deletePrayer(prayer);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'mark_answered',
-                        child: Row(
-                          children: [
-                            Icon(Icons.check, size: 18),
-                            SizedBox(width: 8),
-                            Text('Mark as Answered'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 18, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                      ),
-                    ],
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      child: const Icon(
-                        Icons.more_vert,
-                        size: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              prayer.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              prayer.description,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.9),
-                height: 1.4,
-              ),
-            ),
-            if (prayer.isAnswered && prayer.answerDescription != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Colors.green.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'How God Answered:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.green,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      prayer.answerDescription!,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.9),
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  Icons.schedule,
-                  size: 14,
-                  color: Colors.white.withValues(alpha: 0.6),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  _formatDate(prayer.dateCreated),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
-                ),
-                if (prayer.isAnswered && prayer.dateAnswered != null) ...[
-                  const SizedBox(width: 16),
-                  Icon(
-                    Icons.check_circle,
-                    size: 14,
-                    color: Colors.green.withValues(alpha: 0.8),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Answered ${_formatDate(prayer.dateAnswered!)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAddPrayerDialog() {
-    PrayerCategory selectedCategory = PrayerCategory.general;
-    String title = '';
-    String description = '';
-
-    showDialog(
+  Future<void> _deletePrayer(String id) async {
+    final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Dialog(
-          backgroundColor: Colors.transparent,
-          child: FrostedGlassCard(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Add Prayer Request',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    'Title',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    onChanged: (value) => title = value,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'What are you praying for?',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-                      filled: true,
-                      fillColor: Colors.white.withValues(alpha: 0.1),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Category',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: DropdownButton<PrayerCategory>(
-                      value: selectedCategory,
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      dropdownColor: AppTheme.primaryColor,
-                      style: const TextStyle(color: Colors.white),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value!;
-                        });
-                      },
-                      items: PrayerCategory.values.map((category) {
-                        return DropdownMenuItem(
-                          value: category,
-                          child: Text(_getCategoryName(category)),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Description',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    onChanged: (value) => description = value,
-                    maxLines: 3,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Share more details about your prayer request...',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-                      filled: true,
-                      fillColor: Colors.white.withValues(alpha: 0.1),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GlassButton(
-                          text: 'Cancel',
-                          height: 48,
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: GlassButton(
-                          text: 'Add Prayer',
-                          height: 48,
-                          onPressed: () {
-                            if (title.isNotEmpty && description.isNotEmpty) {
-                              _addPrayer(title, description, selectedCategory);
-                              Navigator.pop(context);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1F3A),
+        title: const Text(
+          'Delete Prayer',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Are you sure you want to delete this prayer?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white.withOpacity(0.6)),
             ),
           ),
-        ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
-  }
 
-  void _addPrayer(String title, String description, PrayerCategory category) {
-    final newPrayer = PrayerRequest(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
-      description: description,
-      category: category,
-      dateCreated: DateTime.now(),
-      isAnswered: false,
-    );
-
-    setState(() {
-      _activePrayers.insert(0, newPrayer);
-    });
-  }
-
-  void _markPrayerAnswered(PrayerRequest prayer) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String answerDescription = '';
-
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: FrostedGlassCard(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Mark as Answered',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                const Text(
-                  'How did God answer this prayer?',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  onChanged: (value) => answerDescription = value,
-                  maxLines: 3,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'Share how God answered your prayer...',
-                    hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-                    filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.1),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GlassButton(
-                        text: 'Cancel',
-                        height: 48,
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GlassButton(
-                        text: 'Mark Answered',
-                        height: 48,
-                        onPressed: () {
-                          if (answerDescription.isNotEmpty) {
-                            setState(() {
-                              prayer.isAnswered = true;
-                              prayer.dateAnswered = DateTime.now();
-                              prayer.answerDescription = answerDescription;
-                              _activePrayers.remove(prayer);
-                              _answeredPrayers.insert(0, prayer);
-                            });
-                            Navigator.pop(context);
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _deletePrayer(PrayerRequest prayer) {
-    setState(() {
-      _activePrayers.remove(prayer);
-    });
-  }
-
-  Color _getCategoryColor(PrayerCategory category) {
-    switch (category) {
-      case PrayerCategory.health:
-        return Colors.red;
-      case PrayerCategory.family:
-        return Colors.pink;
-      case PrayerCategory.work:
-        return Colors.blue;
-      case PrayerCategory.protection:
-        return Colors.orange;
-      case PrayerCategory.guidance:
-        return Colors.purple;
-      case PrayerCategory.gratitude:
-        return Colors.green;
-      case PrayerCategory.general:
-      default:
-        return Colors.grey;
+    if (confirm == true) {
+      final actions = ref.read(prayerActionsProvider);
+      await actions.deletePrayer(id);
     }
   }
-
-  String _getCategoryName(PrayerCategory category) {
-    switch (category) {
-      case PrayerCategory.health:
-        return 'Health';
-      case PrayerCategory.family:
-        return 'Family';
-      case PrayerCategory.work:
-        return 'Work/Career';
-      case PrayerCategory.protection:
-        return 'Protection';
-      case PrayerCategory.guidance:
-        return 'Guidance';
-      case PrayerCategory.gratitude:
-        return 'Gratitude';
-      case PrayerCategory.general:
-      default:
-        return 'General';
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date).inDays;
-
-    if (difference == 0) {
-      return 'Today';
-    } else if (difference == 1) {
-      return 'Yesterday';
-    } else if (difference < 7) {
-      return '$difference days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
-  }
-}
-
-class PrayerRequest {
-  final String id;
-  final String title;
-  final String description;
-  final PrayerCategory category;
-  final DateTime dateCreated;
-  bool isAnswered;
-  DateTime? dateAnswered;
-  String? answerDescription;
-
-  PrayerRequest({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.dateCreated,
-    required this.isAnswered,
-    this.dateAnswered,
-    this.answerDescription,
-  });
-}
-
-enum PrayerCategory {
-  general,
-  health,
-  family,
-  work,
-  protection,
-  guidance,
-  gratitude,
 }
