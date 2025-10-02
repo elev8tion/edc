@@ -8,6 +8,7 @@ import '../services/verse_service.dart';
 import '../services/devotional_service.dart';
 import '../services/reading_plan_service.dart';
 import '../services/bible_loader_service.dart';
+import '../services/devotional_content_loader.dart';
 
 // Core Services
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
@@ -48,6 +49,11 @@ final bibleLoaderServiceProvider = Provider<BibleLoaderService>((ref) {
   return BibleLoaderService(database);
 });
 
+final devotionalContentLoaderProvider = Provider<DevotionalContentLoader>((ref) {
+  final database = ref.watch(databaseServiceProvider);
+  return DevotionalContentLoader(database);
+});
+
 // State Providers
 final connectivityStateProvider = StreamProvider<bool>((ref) {
   final service = ref.watch(connectivityServiceProvider);
@@ -58,6 +64,7 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   final database = ref.read(databaseServiceProvider);
   final notifications = ref.read(notificationServiceProvider);
   final bibleLoader = ref.read(bibleLoaderServiceProvider);
+  final devotionalLoader = ref.read(devotionalContentLoaderProvider);
 
   await database.initialize();
   await notifications.initialize();
@@ -71,6 +78,9 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   } else {
     print('✅ Bible already loaded');
   }
+
+  // Load devotional content on first launch
+  await devotionalLoader.loadDevotionals();
 });
 
 // Theme Mode Provider
