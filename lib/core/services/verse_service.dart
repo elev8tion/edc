@@ -14,18 +14,14 @@ class VerseService {
 
   Future<List<BibleVerse>> getFavoriteVerses() async {
     final db = await _database.database;
-    final maps = await db.query(
-      'bible_verses',
-      where: 'is_favorite = ?',
-      whereArgs: [1],
-    );
+    final maps = await db.query('favorite_verses');
     return maps.map((map) => _verseFromMap(map)).toList();
   }
 
   Future<List<BibleVerse>> getVersesByCategory(VerseCategory category) async {
     final db = await _database.database;
     final maps = await db.query(
-      'bible_verses',
+      'favorite_verses',
       where: 'category = ?',
       whereArgs: [category.name],
     );
@@ -63,16 +59,100 @@ class VerseService {
 
   Future<BibleVerse?> getVerseOfTheDay() async {
     final db = await _database.database;
+    // Get random verse from actual Bible
     final maps = await db.query(
       'bible_verses',
+      where: 'version = ?',
+      whereArgs: ['KJV'],
       orderBy: 'RANDOM()',
       limit: 1,
     );
 
     if (maps.isNotEmpty) {
-      return _verseFromMap(maps.first);
+      final verse = maps.first;
+      return BibleVerse(
+        id: verse['id'].toString(),
+        text: verse['text'] as String,
+        reference: '${verse['book']} ${verse['chapter']}:${verse['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      );
     }
     return null;
+  }
+
+  /// Get a specific verse by reference (e.g., "John 3:16")
+  Future<BibleVerse?> getVerseByReference({
+    required String book,
+    required int chapter,
+    required int verse,
+    String version = 'KJV',
+  }) async {
+    final db = await _database.database;
+    final maps = await db.query(
+      'bible_verses',
+      where: 'version = ? AND book = ? AND chapter = ? AND verse = ?',
+      whereArgs: [version, book, chapter, verse],
+      limit: 1,
+    );
+
+    if (maps.isNotEmpty) {
+      final result = maps.first;
+      return BibleVerse(
+        id: result['id'].toString(),
+        text: result['text'] as String,
+        reference: '$book $chapter:$verse',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      );
+    }
+    return null;
+  }
+
+  /// Search Bible verses by text content
+  Future<List<BibleVerse>> searchBibleText(String query, {String version = 'KJV'}) async {
+    final db = await _database.database;
+    final maps = await db.query(
+      'bible_verses',
+      where: 'version = ? AND text LIKE ?',
+      whereArgs: [version, '%$query%'],
+      limit: 50,
+    );
+
+    return maps.map((map) {
+      return BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      );
+    }).toList();
+  }
+
+  /// Get all verses from a chapter
+  Future<List<BibleVerse>> getChapter({
+    required String book,
+    required int chapter,
+    String version = 'KJV',
+  }) async {
+    final db = await _database.database;
+    final maps = await db.query(
+      'bible_verses',
+      where: 'version = ? AND book = ? AND chapter = ?',
+      whereArgs: [version, book, chapter],
+      orderBy: 'verse ASC',
+    );
+
+    return maps.map((map) {
+      return BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '$book $chapter:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      );
+    }).toList();
   }
 
   Future<List<BibleVerse>> getVersesByIds(List<String> ids) async {
