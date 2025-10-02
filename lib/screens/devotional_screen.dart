@@ -284,9 +284,9 @@ Lord, thank You for creating me with purpose. Help me to discover and embrace th
                 const SizedBox(height: 12),
                 Text(
                   devotional.verseReference,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: AppTheme.primaryColor.withValues(alpha: 0.9),
+                    color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
