@@ -86,16 +86,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.primaryColor,
+                      color: Colors.white,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
                   const SizedBox(height: 4),
                   Text(
                     'How can I encourage you today?',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
-                      color: AppTheme.secondaryColor.withValues(alpha: 0.8),
+                      color: Colors.black,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,

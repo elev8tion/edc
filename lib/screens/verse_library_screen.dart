@@ -3,7 +3,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
 import '../components/glass_button.dart';
+import '../components/category_badge.dart';
+import '../components/base_bottom_sheet.dart';
 import '../theme/app_theme.dart';
 
 class VerseLibraryScreen extends StatefulWidget {
@@ -196,7 +199,8 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
   Widget _buildSearchBar() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: FrostedGlassCard(
+      child: GlassCard(
+        borderRadius: 24,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: TextField(
           controller: _searchController,
@@ -206,11 +210,20 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
             });
             _filterVerses();
           },
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
           decoration: InputDecoration(
             hintText: 'Search verses or references...',
-            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+            hintStyle: TextStyle(
+              color: Colors.white.withValues(alpha: 0.5),
+              fontSize: 16,
+            ),
+            filled: true,
+            fillColor: Colors.transparent,
             border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12),
             prefixIcon: Icon(
               Icons.search,
               color: Colors.white.withValues(alpha: 0.8),
@@ -257,27 +270,9 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                 });
                 _filterVerses();
               },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppTheme.primaryColor.withValues(alpha: 0.8)
-                      : Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected
-                        ? AppTheme.primaryColor
-                        : Colors.white.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
+              child: CategoryBadge(
+                text: category,
+                isSelected: isSelected,
               ),
             ),
           ).animate().fadeIn(duration: 600.ms, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
@@ -416,23 +411,10 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(verse.category).withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _getCategoryColor(verse.category).withValues(alpha: 0.6),
-                    ),
-                  ),
-                  child: Text(
-                    verse.category,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: _getCategoryColor(verse.category),
-                    ),
-                  ),
+                CategoryBadge(
+                  text: verse.category,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  fontSize: 12,
                 ),
                 const Spacer(),
                 Row(
@@ -500,36 +482,14 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
   }
 
   void _showShareOptions(BibleVerse verse) {
-    showModalBottomSheet(
+    showCustomBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withValues(alpha: 0.95),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+      title: 'Share Verse',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const Text(
-              'Share Verse',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.copy, color: Colors.white),
               title: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),

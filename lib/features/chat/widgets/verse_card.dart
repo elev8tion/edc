@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
+import '../../../components/category_badge.dart';
 
 /// Beautiful card widget for displaying Bible verses
 class VerseCard extends StatelessWidget {
@@ -119,24 +120,10 @@ class VerseCard extends StatelessWidget {
     return Wrap(
       spacing: 6,
       runSpacing: 4,
-      children: verse.themes.take(4).map((theme) => Container(
+      children: verse.themes.take(4).map((theme) => CategoryBadge(
+        text: theme,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.2),
-            width: 0.5,
-          ),
-        ),
-        child: Text(
-          theme,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.white.withValues(alpha: 0.8),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        fontSize: 11,
       )).toList(),
     );
   }
@@ -353,20 +340,10 @@ class CompactVerseCard extends StatelessWidget {
             const SizedBox(height: 6),
 
             if (verse.themes.isNotEmpty)
-              Container(
+              CategoryBadge(
+                text: verse.primaryTheme,
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  verse.primaryTheme,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: AppTheme.primaryColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                fontSize: 9,
               ),
           ],
         ),
