@@ -4,6 +4,7 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
+import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 
 class PrayerJournalScreen extends StatefulWidget {
@@ -265,23 +266,10 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(prayer.category).withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: _getCategoryColor(prayer.category).withValues(alpha: 0.6),
-                    ),
-                  ),
-                  child: Text(
-                    _getCategoryName(prayer.category),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: _getCategoryColor(prayer.category),
-                    ),
-                  ),
+                CategoryBadge(
+                  text: _getCategoryName(prayer.category),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  fontSize: 11,
                 ),
                 const Spacer(),
                 if (prayer.isAnswered)

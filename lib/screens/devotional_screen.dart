@@ -4,6 +4,7 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
+import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 
 class DevotionalScreen extends StatefulWidget {
@@ -229,20 +230,10 @@ Lord, thank You for creating me with purpose. Help me to discover and embrace th
                   ],
                 ),
               ),
-              Container(
+              CategoryBadge(
+                text: devotional.readingTime,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  devotional.readingTime,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                fontSize: 12,
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
+import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 
 class ReadingPlanScreen extends StatefulWidget {
@@ -329,23 +330,10 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                   ],
                 ),
               ),
-              Container(
+              CategoryBadge(
+                text: _currentPlan!.difficulty,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getDifficultyColor(_currentPlan!.difficulty).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: _getDifficultyColor(_currentPlan!.difficulty).withValues(alpha: 0.5),
-                  ),
-                ),
-                child: Text(
-                  _currentPlan!.difficulty,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _getDifficultyColor(_currentPlan!.difficulty),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                fontSize: 12,
               ),
             ],
           ),
