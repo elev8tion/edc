@@ -47,114 +47,111 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             const GradientBackground(),
             SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                const SizedBox(height: 40),
-                // Logo section
-                GlassContainer(
-                  width: 200,
-                  height: 200,
-                  borderRadius: 32,
-                  padding: const EdgeInsets.all(8),
-                  gradientColors: [
-                    AppTheme.goldColor.withOpacity(0.4),
-                    AppTheme.goldColor.withOpacity(0.2),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    // Logo section
+                    GlassContainer(
+                      width: 200,
+                      height: 200,
+                      borderRadius: 32,
+                      padding: const EdgeInsets.all(8),
+                      child: StaticLiquidGlassLens(
+                        backgroundKey: _backgroundKey,
+                        width: 184,  // 200 - (8*2) for padding
+                        height: 184,
+                        effectSize: 3.0,
+                        dispersionStrength: 0.3,
+                        blurIntensity: 0.05,
+                        child: Image.asset(
+                          'assets/images/logo_large.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Your faith-guided companion for life\'s moments',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // Features preview
+                    BlurFade(
+                      delay: const Duration(milliseconds: 100),
+                      isVisible: _showFeatures,
+                      child: _buildFeatureItem(
+                        icon: Icons.chat_bubble_outline,
+                        title: 'AI Biblical Guidance',
+                        description: 'Get personalized Bible verses and wisdom for any situation',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    BlurFade(
+                      delay: const Duration(milliseconds: 300),
+                      isVisible: _showFeatures,
+                      child: _buildFeatureItem(
+                        icon: Icons.auto_stories,
+                        title: 'Daily Verses',
+                        description: 'Receive encouraging Scripture at 9:30 AM or your preferred time',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    BlurFade(
+                      delay: const Duration(milliseconds: 500),
+                      isVisible: _showFeatures,
+                      child: _buildFeatureItem(
+                        icon: Icons.lock_outline,
+                        title: 'Complete Privacy',
+                        description: 'All your spiritual conversations stay on your device',
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // Get started button
+                    GlassButton(
+                      text: 'Begin Your Journey',
+                      onPressed: () {
+                        _triggerFeatureAnimations();
+                        // Navigate after a short delay to let animations play
+                        Future.delayed(const Duration(milliseconds: 1200), () {
+                          NavigationService.pushNamed(AppRoutes.auth);
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Skip option
+                    TextButton(
+                      onPressed: () => NavigationService.pushNamed(AppRoutes.home),
+                      child: const Text(
+                        'Continue as Guest',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
                   ],
-                  child: StaticLiquidGlassLens(
-                    backgroundKey: _backgroundKey,
-                    width: 184,  // 200 - (8*2) for padding
-                    height: 184,
-                    effectSize: 3.0,
-                    dispersionStrength: 0.3,
-                    blurIntensity: 0.05,
-                    child: Image.asset(
-                      'assets/images/logo_large.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
                 ),
-
-                const SizedBox(height: 24),
-
-                Text(
-                  'Your faith-guided companion for life\'s moments',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    height: 1.4,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // Features preview
-                BlurFade(
-                  delay: const Duration(milliseconds: 100),
-                  isVisible: _showFeatures,
-                  child: _buildFeatureItem(
-                    icon: Icons.chat_bubble_outline,
-                    title: 'AI Biblical Guidance',
-                    description: 'Get personalized Bible verses and wisdom for any situation',
-                  ),
-                ),
-                const SizedBox(height: 20),
-                BlurFade(
-                  delay: const Duration(milliseconds: 300),
-                  isVisible: _showFeatures,
-                  child: _buildFeatureItem(
-                    icon: Icons.auto_stories,
-                    title: 'Daily Verses',
-                    description: 'Receive encouraging Scripture at 9:30 AM or your preferred time',
-                  ),
-                ),
-                const SizedBox(height: 20),
-                BlurFade(
-                  delay: const Duration(milliseconds: 500),
-                  isVisible: _showFeatures,
-                  child: _buildFeatureItem(
-                    icon: Icons.lock_outline,
-                    title: 'Complete Privacy',
-                    description: 'All your spiritual conversations stay on your device',
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // Get started button
-                GlassButton(
-                  text: 'Begin Your Journey',
-                  onPressed: () {
-                    _triggerFeatureAnimations();
-                    // Navigate after a short delay to let animations play
-                    Future.delayed(const Duration(milliseconds: 1200), () {
-                      NavigationService.pushNamed(AppRoutes.auth);
-                    });
-                  },
-                ),
-
-                const SizedBox(height: 20),
-
-                // Skip option
-                TextButton(
-                  onPressed: () => NavigationService.pushNamed(AppRoutes.home),
-                  child: const Text(
-                    'Continue as Guest',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
           ],
         ),
       ),

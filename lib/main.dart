@@ -77,7 +77,7 @@ class EverydayChristianApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: kDevelopmentMode ? AppRoutes.home : AppRoutes.splash,
+      initialRoute: kDevelopmentMode ? AppRoutes.onboarding : AppRoutes.splash,
       onGenerateRoute: _generateRoute,
       builder: (context, child) {
         return MediaQuery(
