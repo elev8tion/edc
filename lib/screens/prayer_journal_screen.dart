@@ -418,7 +418,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                   ),
                 ),
               ),
-              CategoryBadge(category: prayer.category.displayName),
+              CategoryBadge(text: prayer.category.displayName),
             ],
           ),
           const SizedBox(height: 8),
