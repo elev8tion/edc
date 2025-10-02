@@ -148,8 +148,10 @@ class _StaticLiquidGlassLensState extends State<StaticLiquidGlassLens> {
     // Use LayoutBuilder to get actual dimensions if not provided
     return LayoutBuilder(
       builder: (context, constraints) {
-        final widgetWidth = widget.width ?? constraints.maxWidth;
-        final widgetHeight = widget.height ?? constraints.maxHeight;
+        final widgetWidth = widget.width ??
+            (constraints.maxWidth.isFinite ? constraints.maxWidth : 300.0);
+        final widgetHeight = widget.height ??
+            (constraints.maxHeight.isFinite ? constraints.maxHeight : 150.0);
 
         // If shader is loaded and we have a captured background, render the effect
         if (shader.isLoaded && capturedBackground != null) {
@@ -159,23 +161,15 @@ class _StaticLiquidGlassLensState extends State<StaticLiquidGlassLens> {
             backgroundImage: capturedBackground,
           );
 
-          return SizedBox(
-            width: widgetWidth,
-            height: widgetHeight,
-            child: CustomPaint(
-              size: Size(widgetWidth, widgetHeight),
-              painter: ShaderPainter(shader.shader),
-              child: widget.child,
-            ),
+          return CustomPaint(
+            size: Size(widgetWidth, widgetHeight),
+            painter: ShaderPainter(shader.shader),
+            child: widget.child,
           );
         }
 
         // Fallback: just show the child without effect
-        return SizedBox(
-          width: widgetWidth,
-          height: widgetHeight,
-          child: widget.child,
-        );
+        return widget.child;
       },
     );
   }
