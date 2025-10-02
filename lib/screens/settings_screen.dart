@@ -17,11 +17,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _dailyNotifications = true;
   bool _prayerReminders = true;
   bool _verseOfTheDay = true;
-  bool _darkMode = false;
   bool _offlineMode = false;
   String _selectedBibleVersion = 'ESV';
   String _selectedLanguage = 'English';
-  double _fontSize = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -139,27 +137,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Daily Bible verse notifications',
                 _verseOfTheDay,
                 (value) => setState(() => _verseOfTheDay = value),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _buildSettingsSection(
-            'Appearance',
-            Icons.palette,
-            [
-              _buildSwitchTile(
-                'Dark Mode',
-                'Switch to dark theme',
-                _darkMode,
-                (value) => setState(() => _darkMode = value),
-              ),
-              _buildSliderTile(
-                'Font Size',
-                'Adjust text size for better readability',
-                _fontSize,
-                12.0,
-                24.0,
-                (value) => setState(() => _fontSize = value),
               ),
             ],
           ),
