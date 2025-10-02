@@ -3,15 +3,39 @@
 
 ## 🎯 MVP Scope Definition
 
-### ✅ COMPLETED REMOVALS (Scope Reduction)
-- [x] **Advanced Theming** - Removed dark mode toggle and font size controls from Settings (commit: 9011a07)
-  - App now uses system theme preference only
-  - Simplified Settings screen UI
+### ✅ COMPLETED ADDITIONS (User Requirements)
+- [x] **Dual Language Support** - Added English & Spanish language selector (commit: d9986e9)
+  - Language dropdown in Bible Settings now shows English/Spanish only
+  - Ready for i18n implementation
+
+- [x] **Text Size Control** - Added Display section with text size slider (commit: d9986e9)
+  - Adjustable from 12pt to 24pt
+  - Improves readability and accessibility
 
 ### ✅ FEATURES TO KEEP (User Confirmed Required)
 - [ ] **Dual Language Support** - English & Spanish
 - [ ] **Advanced Analytics Dashboard** - User insights and metrics
 - [ ] **Social Features** - Community, friends, sharing
+
+### 🏠 LOCAL-FIRST ARCHITECTURE (User Confirmed)
+
+**Phase 1: 100% Local (MVP - $0 cost)**
+- ✅ Local SQLite database
+- ✅ Local authentication (device-only, biometric/PIN)
+- ✅ Local AI processing (no cloud AI)
+- ✅ Embedded Bible content (ESV English, RVR1960 Spanish)
+  - Using free Bible JSON/SQLite from unfoldingWord or Bible API
+  - No API costs, fully offline
+- ✅ Basic sharing via OS (copy/paste, share sheet)
+- ✅ All user data stays on device
+- ❌ No Firebase/Supabase for MVP
+- ❌ No cloud sync for MVP
+
+**Phase 2: Optional Social Backend (Future)**
+- Supabase free tier when ready for social features
+- Community, friends, prayer sharing (optional)
+- Keep personal data local, only share what user chooses
+- User considering alternative workarounds
 
 ### ❌ FEATURES TO REMOVE (Not MVP)
 - [ ] Audio devotionals
