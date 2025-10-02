@@ -69,6 +69,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/data/
+    - assets/bible/
 
   shaders:
     - shaders/liquid_glass_lens.frag
