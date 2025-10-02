@@ -150,14 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                                           return Container(
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(24),
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                colors: [
-                                                  AppTheme.primaryColor,
-                                                  AppTheme.accentColor,
-                                                ],
-                                              ),
+                                              color: AppTheme.goldColor,
                                             ),
                                             child: const Icon(
                                               Icons.auto_stories,

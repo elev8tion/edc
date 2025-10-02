@@ -77,7 +77,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         Container(
                           width: 200,
                           height: 200,
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.goldColor.withOpacity(0.4),
+                                AppTheme.goldColor.withOpacity(0.2),
+                              ],
+                            ),
+                          ),
                           child: Image.asset(
                             'assets/images/logo_large.png',
                             fit: BoxFit.cover,

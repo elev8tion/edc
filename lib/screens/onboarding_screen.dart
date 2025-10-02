@@ -54,6 +54,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 200,
                   borderRadius: 32,
                   padding: const EdgeInsets.all(8),
+                  gradientColors: [
+                    AppTheme.goldColor.withOpacity(0.4),
+                    AppTheme.goldColor.withOpacity(0.2),
+                  ],
                   child: Image.asset(
                     'assets/images/logo_large.png',
                     fit: BoxFit.cover,
