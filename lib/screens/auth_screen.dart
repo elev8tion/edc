@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../components/glass_card.dart';
 import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
+import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 
@@ -19,6 +20,7 @@ class AuthScreen extends ConsumerStatefulWidget {
 class _AuthScreenState extends ConsumerState<AuthScreen>
     with TickerProviderStateMixin {
   bool _showContent = false;
+  final GlobalKey _backgroundKey = GlobalKey();
 
   @override
   void initState() {
@@ -60,7 +62,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     return Scaffold(
       body: Stack(
         children: [
-          const GradientBackground(),
+          RepaintBoundary(
+            key: _backgroundKey,
+            child: const GradientBackground(),
+          ),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -68,28 +73,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                 children: [
                   const SizedBox(height: 20),
 
-                  // Large logo section (no glass container)
+                  // Liquid glass logo section
                   BlurFade(
                     delay: const Duration(milliseconds: 100),
                     isVisible: _showContent,
                     child: Column(
                       children: [
-                        Container(
+                        StaticLiquidGlassLens(
+                          backgroundKey: _backgroundKey,
                           width: 200,
                           height: 200,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(32),
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.goldColor.withOpacity(0.4),
-                                AppTheme.goldColor.withOpacity(0.2),
-                              ],
-                            ),
-                          ),
+                          effectSize: 3.0,
+                          dispersionStrength: 0.3,
+                          blurIntensity: 0.05,
                           child: Image.asset(
-                            'assets/images/logo_large.png',
-                            fit: BoxFit.cover,
+                            'assets/images/logo_transparent.png',
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 16),

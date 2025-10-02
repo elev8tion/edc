@@ -117,6 +117,12 @@ class _StaticLiquidGlassLensState extends State<StaticLiquidGlassLens> {
 
       if (regionToCapture.isEmpty) return;
 
+      // Check if debugLayer is available
+      if (boundary.debugLayer == null) {
+        debugPrint('StaticLiquidGlassLens: debugLayer not ready yet');
+        return;
+      }
+
       // Capture the image
       final pixelRatio = MediaQuery.of(context).devicePixelRatio;
       final offsetLayer = boundary.debugLayer! as OffsetLayer;

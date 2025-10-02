@@ -39,13 +39,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RepaintBoundary(
-        key: _backgroundKey,
-        child: Stack(
-          children: [
-            const GradientBackground(),
-            SafeArea(
-              child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          RepaintBoundary(
+            key: _backgroundKey,
+            child: const GradientBackground(),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
@@ -59,10 +60,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       dispersionStrength: 0.3,
                       blurIntensity: 0.05,
                       child: Image.asset(
-                        'assets/images/logo_large.png',
+                        'assets/images/logo_transparent.png',
                         width: 200,
                         height: 200,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                       ),
                     ),
 
@@ -144,10 +145,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 40),
                   ],
                 ),
-              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
