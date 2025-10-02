@@ -7,6 +7,7 @@ import '../components/clear_glass_card.dart';
 import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
+import '../components/category_badge.dart';
 import '../core/navigation/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -708,21 +709,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.goldColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppTheme.goldColor.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                    const CategoryBadge(
+                      text: 'Comfort',
                     ),
                   ],
                 ),

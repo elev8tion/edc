@@ -538,23 +538,8 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _getDifficultyColor(plan.difficulty).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _getDifficultyColor(plan.difficulty).withValues(alpha: 0.5),
-                    ),
-                  ),
-                  child: Text(
-                    plan.difficulty,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _getDifficultyColor(plan.difficulty),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                CategoryBadge(
+                  text: plan.difficulty,
                 ),
               ],
             ),
