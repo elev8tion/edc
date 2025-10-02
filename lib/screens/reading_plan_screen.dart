@@ -1,112 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
+import '../core/providers/app_providers.dart';
+import '../core/models/reading_plan.dart';
 
-class ReadingPlanScreen extends StatefulWidget {
+class ReadingPlanScreen extends ConsumerStatefulWidget {
   const ReadingPlanScreen({super.key});
 
   @override
-  State<ReadingPlanScreen> createState() => _ReadingPlanScreenState();
+  ConsumerState<ReadingPlanScreen> createState() => _ReadingPlanScreenState();
 }
 
-class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProviderStateMixin {
+class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
-  ReadingPlan? _currentPlan;
-
-  final List<ReadingPlan> _availablePlans = [
-    ReadingPlan(
-      id: '1',
-      title: 'Bible in a Year',
-      description: 'Read the entire Bible in 365 days with daily readings',
-      duration: '365 days',
-      category: 'Complete Bible',
-      difficulty: 'Intermediate',
-      estimatedTimePerDay: '15-20 minutes',
-      totalReadings: 365,
-      completedReadings: 45,
-      isStarted: true,
-    ),
-    ReadingPlan(
-      id: '2',
-      title: 'New Testament in 90 Days',
-      description: 'Journey through the New Testament in just 3 months',
-      duration: '90 days',
-      category: 'New Testament',
-      difficulty: 'Beginner',
-      estimatedTimePerDay: '10-15 minutes',
-      totalReadings: 90,
-      completedReadings: 0,
-      isStarted: false,
-    ),
-    ReadingPlan(
-      id: '3',
-      title: 'Psalms & Proverbs',
-      description: 'Daily wisdom from Psalms and Proverbs',
-      duration: '31 days',
-      category: 'Wisdom Literature',
-      difficulty: 'Beginner',
-      estimatedTimePerDay: '5-10 minutes',
-      totalReadings: 31,
-      completedReadings: 0,
-      isStarted: false,
-    ),
-    ReadingPlan(
-      id: '4',
-      title: 'Gospels Deep Dive',
-      description: 'In-depth study of Matthew, Mark, Luke, and John',
-      duration: '120 days',
-      category: 'Gospels',
-      difficulty: 'Advanced',
-      estimatedTimePerDay: '20-25 minutes',
-      totalReadings: 120,
-      completedReadings: 0,
-      isStarted: false,
-    ),
-  ];
-
-  final List<DailyReading> _todaysReadings = [
-    DailyReading(
-      id: '1',
-      title: 'Genesis 1-3',
-      description: 'The Beginning of All Things',
-      book: 'Genesis',
-      chapters: '1-3',
-      estimatedTime: '8 minutes',
-      isCompleted: true,
-      date: DateTime.now(),
-    ),
-    DailyReading(
-      id: '2',
-      title: 'Matthew 1-2',
-      description: 'The Birth of Jesus',
-      book: 'Matthew',
-      chapters: '1-2',
-      estimatedTime: '6 minutes',
-      isCompleted: false,
-      date: DateTime.now(),
-    ),
-    DailyReading(
-      id: '3',
-      title: 'Psalm 1',
-      description: 'Blessed is the One',
-      book: 'Psalms',
-      chapters: '1',
-      estimatedTime: '2 minutes',
-      isCompleted: false,
-      date: DateTime.now(),
-    ),
-  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _currentPlan = _availablePlans.firstWhere((plan) => plan.isStarted);
   }
 
   @override
@@ -224,85 +142,124 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
   }
 
   Widget _buildTodayTab() {
-    if (_currentPlan == null) {
-      return _buildEmptyState(
-        icon: Icons.book_outlined,
-        title: 'No Active Reading Plan',
-        subtitle: 'Start a reading plan to see today\'s readings here',
-        action: () => _tabController.animateTo(2),
-        actionText: 'Explore Plans',
-      );
-    }
+    final currentPlanAsync = ref.watch(currentReadingPlanProvider);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCurrentPlanCard(),
-          const SizedBox(height: 24),
-          const Text(
-            'Today\'s Readings',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ).animate().fadeIn(duration: 600.ms, delay: 600.ms),
-          const SizedBox(height: 16),
-          ...List.generate(_todaysReadings.length, (index) {
-            final reading = _todaysReadings[index];
-            return _buildReadingCard(reading, index).animate()
-                .fadeIn(duration: 600.ms, delay: (700 + index * 100).ms)
-                .slideY(begin: 0.3);
-          }),
-        ],
-      ),
+    return currentPlanAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildErrorState(error.toString()),
+      data: (currentPlan) {
+        if (currentPlan == null) {
+          return _buildEmptyState(
+            icon: Icons.book_outlined,
+            title: 'No Active Reading Plan',
+            subtitle: 'Start a reading plan to see today\'s readings here',
+            action: () => _tabController.animateTo(2),
+            actionText: 'Explore Plans',
+          );
+        }
+
+        final todaysReadingsAsync =
+            ref.watch(todaysReadingsProvider(currentPlan.id));
+
+        return todaysReadingsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => _buildErrorState(error.toString()),
+          data: (todaysReadings) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCurrentPlanCard(currentPlan),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Today\'s Readings',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ).animate().fadeIn(duration: 600.ms, delay: 600.ms),
+                  const SizedBox(height: 16),
+                  if (todaysReadings.isEmpty)
+                    _buildEmptyReadingsMessage()
+                  else
+                    ...List.generate(todaysReadings.length, (index) {
+                      final reading = todaysReadings[index];
+                      return _buildReadingCard(reading, index)
+                          .animate()
+                          .fadeIn(duration: 600.ms, delay: (700 + index * 100).ms)
+                          .slideY(begin: 0.3);
+                    }),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
   Widget _buildMyPlansTab() {
-    final activePlans = _availablePlans.where((plan) => plan.isStarted).toList();
+    final activePlansAsync = ref.watch(activeReadingPlansProvider);
 
-    if (activePlans.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.library_books_outlined,
-        title: 'No Active Plans',
-        subtitle: 'Start a reading plan to track your progress',
-        action: () => _tabController.animateTo(2),
-        actionText: 'Explore Plans',
-      );
-    }
+    return activePlansAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildErrorState(error.toString()),
+      data: (activePlans) {
+        if (activePlans.isEmpty) {
+          return _buildEmptyState(
+            icon: Icons.library_books_outlined,
+            title: 'No Active Plans',
+            subtitle: 'Start a reading plan to track your progress',
+            action: () => _tabController.animateTo(2),
+            actionText: 'Explore Plans',
+          );
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: activePlans.length,
-      itemBuilder: (context, index) {
-        final plan = activePlans[index];
-        return _buildPlanCard(plan, index, isActive: true).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: activePlans.length,
+          itemBuilder: (context, index) {
+            final plan = activePlans[index];
+            return _buildPlanCard(plan, index, isActive: true)
+                .animate()
+                .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
     );
   }
 
   Widget _buildExplorePlansTab() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _availablePlans.length,
-      itemBuilder: (context, index) {
-        final plan = _availablePlans[index];
-        return _buildPlanCard(plan, index, isActive: false).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
+    final allPlansAsync = ref.watch(allReadingPlansProvider);
+
+    return allPlansAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => _buildErrorState(error.toString()),
+      data: (allPlans) {
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: allPlans.length,
+          itemBuilder: (context, index) {
+            final plan = allPlans[index];
+            return _buildPlanCard(plan, index, isActive: false)
+                .animate()
+                .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
     );
   }
 
-  Widget _buildCurrentPlanCard() {
-    if (_currentPlan == null) return const SizedBox();
+  Widget _buildCurrentPlanCard(ReadingPlan plan) {
+    final progressAsync = ref.watch(planProgressPercentageProvider(plan.id));
+    final currentDayAsync = ref.watch(planCurrentDayProvider(plan.id));
+    final streakAsync = ref.watch(planStreakProvider(plan.id));
 
-    final progress = _currentPlan!.completedReadings / _currentPlan!.totalReadings;
+    final progress = (plan.completedReadings / plan.totalReadings).clamp(0.0, 1.0);
 
     return FrostedGlassCard(
       child: Column(
@@ -315,7 +272,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _currentPlan!.title,
+                      plan.title,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -324,7 +281,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _currentPlan!.category,
+                      plan.category.displayName,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withValues(alpha: 0.9),
@@ -335,15 +292,13 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                 ),
               ),
               CategoryBadge(
-                text: _currentPlan!.difficulty,
+                text: plan.difficulty.displayName,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 fontSize: 12,
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           Row(
             children: [
               Icon(
@@ -353,31 +308,62 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
               ),
               const SizedBox(width: 6),
               Text(
-                _currentPlan!.estimatedTimePerDay,
+                plan.estimatedTimePerDay,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.white.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(width: 16),
-              Icon(
-                Icons.calendar_today,
-                size: 16,
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                _currentPlan!.duration,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white.withValues(alpha: 0.8),
+              currentDayAsync.when(
+                data: (day) => Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Day $day',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
                 ),
+                loading: () => const SizedBox(),
+                error: (_, __) => const SizedBox(),
+              ),
+              const Spacer(),
+              streakAsync.when(
+                data: (streak) => streak > 0
+                    ? Row(
+                        children: [
+                          Icon(
+                            Icons.local_fire_department,
+                            size: 16,
+                            color: Colors.orange.withValues(alpha: 0.9),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$streak day${streak > 1 ? 's' : ''}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.orange.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox(),
+                loading: () => const SizedBox(),
+                error: (_, __) => const SizedBox(),
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -390,7 +376,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                 ),
               ),
               Text(
-                '${_currentPlan!.completedReadings} / ${_currentPlan!.totalReadings}',
+                '${plan.completedReadings} / ${plan.totalReadings}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.white.withValues(alpha: 0.8),
@@ -406,13 +392,17 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
             borderRadius: BorderRadius.circular(4),
           ),
           const SizedBox(height: 8),
-          Text(
-            '${(progress * 100).toInt()}% complete',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.9),
-              fontWeight: FontWeight.w500,
+          progressAsync.when(
+            data: (percentage) => Text(
+              '${percentage.toStringAsFixed(1)}% complete',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white.withValues(alpha: 0.9),
+                fontWeight: FontWeight.w500,
+              ),
             ),
+            loading: () => const SizedBox(),
+            error: (_, __) => const SizedBox(),
           ),
         ],
       ),
@@ -487,22 +477,23 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                 ],
               ),
             ),
-            if (!reading.isCompleted)
-              GestureDetector(
-                onTap: () => _markReadingComplete(reading),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+            GestureDetector(
+              onTap: () => _toggleReadingComplete(reading),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: reading.isCompleted
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : AppTheme.primaryColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  reading.isCompleted ? Icons.check : Icons.circle_outlined,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -510,6 +501,10 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
   }
 
   Widget _buildPlanCard(ReadingPlan plan, int index, {required bool isActive}) {
+    final progressPercentageAsync = plan.isStarted
+        ? ref.watch(planProgressPercentageProvider(plan.id))
+        : null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: FrostedGlassCard(
@@ -532,7 +527,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        plan.category,
+                        plan.category.displayName,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withValues(alpha: 0.9),
@@ -543,13 +538,11 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                   ),
                 ),
                 CategoryBadge(
-                  text: plan.difficulty,
+                  text: plan.difficulty.displayName,
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             Text(
               plan.description,
               style: TextStyle(
@@ -558,9 +551,7 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                 height: 1.4,
               ),
             ),
-
             const SizedBox(height: 16),
-
             Row(
               children: [
                 _buildPlanStat(Icons.schedule, plan.estimatedTimePerDay),
@@ -568,7 +559,6 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
                 _buildPlanStat(Icons.calendar_today, plan.duration),
               ],
             ),
-
             if (plan.isStarted) ...[
               const SizedBox(height: 16),
               Row(
@@ -593,19 +583,60 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
-                value: plan.completedReadings / plan.totalReadings,
+                value: (plan.completedReadings / plan.totalReadings).clamp(0.0, 1.0),
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                 borderRadius: BorderRadius.circular(4),
               ),
+              if (progressPercentageAsync != null) ...[
+                const SizedBox(height: 8),
+                progressPercentageAsync.when(
+                  data: (percentage) => Text(
+                    '${percentage.toStringAsFixed(1)}% complete',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  loading: () => const SizedBox(),
+                  error: (_, __) => const SizedBox(),
+                ),
+              ],
             ],
-
             const SizedBox(height: 16),
-
-            GlassButton(
-              text: plan.isStarted ? 'Continue Reading' : 'Start Plan',
-              height: 48,
-              onPressed: () => _handlePlanAction(plan),
+            Row(
+              children: [
+                Expanded(
+                  child: GlassButton(
+                    text: plan.isStarted ? 'Continue Reading' : 'Start Plan',
+                    height: 48,
+                    onPressed: () => _handlePlanAction(plan),
+                  ),
+                ),
+                if (plan.isStarted) ...[
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () => _showResetConfirmation(plan),
+                    child: Container(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.restart_alt,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),
@@ -687,87 +718,222 @@ class _ReadingPlanScreenState extends State<ReadingPlanScreen> with TickerProvid
     );
   }
 
-  void _markReadingComplete(DailyReading reading) {
-    setState(() {
-      reading.isCompleted = true;
-      if (_currentPlan != null) {
-        _currentPlan!.completedReadings++;
-      }
-    });
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Oops! Something went wrong',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  void _handlePlanAction(ReadingPlan plan) {
+  Widget _buildEmptyReadingsMessage() {
+    return FrostedGlassCard(
+      child: Column(
+        children: [
+          Icon(
+            Icons.celebration,
+            size: 48,
+            color: Colors.white.withValues(alpha: 0.6),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'All caught up!',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'No readings scheduled for today',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _toggleReadingComplete(DailyReading reading) async {
+    final progressService = ref.read(readingPlanProgressServiceProvider);
+
+    try {
+      if (reading.isCompleted) {
+        await progressService.markDayIncomplete(reading.id);
+      } else {
+        await progressService.markDayComplete(reading.id);
+      }
+
+      // Refresh providers
+      ref.invalidate(currentReadingPlanProvider);
+      ref.invalidate(todaysReadingsProvider(reading.planId));
+      ref.invalidate(planProgressPercentageProvider(reading.planId));
+      ref.invalidate(planStreakProvider(reading.planId));
+      ref.invalidate(activeReadingPlansProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              reading.isCompleted
+                  ? 'Marked as incomplete'
+                  : 'Great job! Keep up the good work!',
+            ),
+            duration: const Duration(seconds: 2),
+            backgroundColor: reading.isCompleted
+                ? Colors.orange
+                : Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handlePlanAction(ReadingPlan plan) async {
     if (plan.isStarted) {
-      // Navigate to reading content or continue
+      // Navigate to today's tab
       _tabController.animateTo(0);
     } else {
       // Start the plan
-      setState(() {
-        plan.isStarted = true;
-        _currentPlan = plan;
-      });
-      _tabController.animateTo(0);
+      final planService = ref.read(readingPlanServiceProvider);
+      final progressService = ref.read(readingPlanProgressServiceProvider);
+
+      try {
+        await planService.startPlan(plan.id);
+
+        // Check if readings exist, if not create sample ones
+        final readings = await progressService.getTodaysReadings(plan.id);
+        if (readings.isEmpty) {
+          await progressService.createSampleReadings(
+            plan.id,
+            plan.totalReadings,
+          );
+        }
+
+        // Refresh providers
+        ref.invalidate(currentReadingPlanProvider);
+        ref.invalidate(activeReadingPlansProvider);
+        ref.invalidate(allReadingPlansProvider);
+
+        // Navigate to today's tab
+        _tabController.animateTo(0);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reading plan started! Let\'s begin your journey.'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error starting plan: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
-  Color _getDifficultyColor(String difficulty) {
-    switch (difficulty) {
-      case 'Beginner':
-        return Colors.green;
-      case 'Intermediate':
-        return Colors.orange;
-      case 'Advanced':
-        return Colors.red;
-      default:
-        return Colors.grey;
+  Future<void> _showResetConfirmation(ReadingPlan plan) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Reading Plan?'),
+        content: Text(
+          'Are you sure you want to reset "${plan.title}"? All progress will be lost.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final progressService = ref.read(readingPlanProgressServiceProvider);
+
+      try {
+        await progressService.resetPlan(plan.id);
+
+        // Refresh all providers
+        ref.invalidate(currentReadingPlanProvider);
+        ref.invalidate(activeReadingPlansProvider);
+        ref.invalidate(allReadingPlansProvider);
+        ref.invalidate(planProgressPercentageProvider(plan.id));
+        ref.invalidate(planStreakProvider(plan.id));
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reading plan has been reset'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error resetting plan: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
-}
-
-class ReadingPlan {
-  final String id;
-  final String title;
-  final String description;
-  final String duration;
-  final String category;
-  final String difficulty;
-  final String estimatedTimePerDay;
-  final int totalReadings;
-  int completedReadings;
-  bool isStarted;
-
-  ReadingPlan({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.duration,
-    required this.category,
-    required this.difficulty,
-    required this.estimatedTimePerDay,
-    required this.totalReadings,
-    required this.completedReadings,
-    required this.isStarted,
-  });
-}
-
-class DailyReading {
-  final String id;
-  final String title;
-  final String description;
-  final String book;
-  final String chapters;
-  final String estimatedTime;
-  bool isCompleted;
-  final DateTime date;
-
-  DailyReading({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.book,
-    required this.chapters,
-    required this.estimatedTime,
-    required this.isCompleted,
-    required this.date,
-  });
 }

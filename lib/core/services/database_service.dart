@@ -9,7 +9,7 @@ import '../models/reading_plan.dart';
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 3;
 
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -34,7 +34,30 @@ class DatabaseService {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database upgrades here
+    if (oldVersion < 2) {
+      // Add missing columns for reading plan progress
+      await db.execute('ALTER TABLE reading_plans ADD COLUMN start_date INTEGER');
+      await db.execute('ALTER TABLE daily_readings ADD COLUMN completed_date INTEGER');
+    }
+
+    if (oldVersion < 3) {
+      // Add completed_date column for devotional progress tracking
+      await db.execute('ALTER TABLE devotionals ADD COLUMN completed_date INTEGER');
+
+      // Add prayer streak activity table
+      await db.execute('''
+        CREATE TABLE prayer_streak_activity (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          activity_date INTEGER NOT NULL UNIQUE,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
+      // Create index for fast date lookups
+      await db.execute('''
+        CREATE INDEX idx_prayer_activity_date ON prayer_streak_activity(activity_date)
+      ''');
+    }
   }
 
   Future<void> _createTables(Database db) async {
@@ -100,7 +123,8 @@ class DatabaseService {
         verse_reference TEXT NOT NULL,
         date INTEGER NOT NULL,
         reading_time TEXT NOT NULL,
-        is_completed INTEGER NOT NULL DEFAULT 0
+        is_completed INTEGER NOT NULL DEFAULT 0,
+        completed_date INTEGER
       )
     ''');
 
@@ -116,7 +140,8 @@ class DatabaseService {
         estimated_time_per_day TEXT NOT NULL,
         total_readings INTEGER NOT NULL,
         completed_readings INTEGER NOT NULL DEFAULT 0,
-        is_started INTEGER NOT NULL DEFAULT 0
+        is_started INTEGER NOT NULL DEFAULT 0,
+        start_date INTEGER
       )
     ''');
 
@@ -132,8 +157,23 @@ class DatabaseService {
         estimated_time TEXT NOT NULL,
         date INTEGER NOT NULL,
         is_completed INTEGER NOT NULL DEFAULT 0,
+        completed_date INTEGER,
         FOREIGN KEY (plan_id) REFERENCES reading_plans (id)
       )
+    ''');
+
+    // Prayer Streak Activity table
+    await db.execute('''
+      CREATE TABLE prayer_streak_activity (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        activity_date INTEGER NOT NULL UNIQUE,
+        created_at INTEGER NOT NULL
+      )
+    ''');
+
+    // Create index for fast date lookups
+    await db.execute('''
+      CREATE INDEX idx_prayer_activity_date ON prayer_streak_activity(activity_date)
     ''');
   }
 
@@ -186,8 +226,8 @@ class DatabaseService {
         'title': 'Bible in a Year',
         'description': 'Read the entire Bible in 365 days with daily readings',
         'duration': '365 days',
-        'category': 'Complete Bible',
-        'difficulty': 'Intermediate',
+        'category': 'completeBible',
+        'difficulty': 'intermediate',
         'estimated_time_per_day': '15-20 minutes',
         'total_readings': 365,
         'completed_readings': 0,

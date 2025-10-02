@@ -4,12 +4,17 @@ import '../services/connectivity_service.dart';
 import '../services/database_service.dart';
 import '../services/notification_service.dart';
 import '../services/prayer_service.dart';
+import '../services/prayer_streak_service.dart';
 import '../services/verse_service.dart';
 import '../services/devotional_service.dart';
+import '../services/devotional_progress_service.dart';
 import '../services/reading_plan_service.dart';
+import '../services/reading_plan_progress_service.dart';
 import '../services/bible_loader_service.dart';
 import '../services/devotional_content_loader.dart';
 import '../services/preferences_service.dart';
+import '../models/devotional.dart';
+import '../models/reading_plan.dart';
 
 // Core Services
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
@@ -59,6 +64,21 @@ final devotionalContentLoaderProvider = Provider<DevotionalContentLoader>((ref) 
   return DevotionalContentLoader(database);
 });
 
+final devotionalProgressServiceProvider = Provider<DevotionalProgressService>((ref) {
+  final database = ref.watch(databaseServiceProvider);
+  return DevotionalProgressService(database);
+});
+
+final readingPlanProgressServiceProvider = Provider<ReadingPlanProgressService>((ref) {
+  final database = ref.watch(databaseServiceProvider);
+  return ReadingPlanProgressService(database);
+});
+
+final prayerStreakServiceProvider = Provider<PrayerStreakService>((ref) {
+  final database = ref.watch(databaseServiceProvider);
+  return PrayerStreakService(database);
+});
+
 // State Providers
 final connectivityStateProvider = StreamProvider<bool>((ref) {
   final service = ref.watch(connectivityServiceProvider);
@@ -86,6 +106,138 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
 
   // Load devotional content on first launch
   await devotionalLoader.loadDevotionals();
+});
+
+// Devotional Progress Providers
+
+/// Provider for getting all devotionals
+final allDevotionalsProvider = FutureProvider<List<Devotional>>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getAllDevotionals();
+});
+
+/// Provider for getting today's devotional
+final todaysDevotionalProvider = FutureProvider<Devotional?>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getTodaysDevotional();
+});
+
+/// Provider for getting completion status of a specific devotional
+final devotionalCompletionStatusProvider = FutureProvider.family<bool, String>((ref, devotionalId) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getCompletionStatus(devotionalId);
+});
+
+/// Provider for getting the current devotional streak
+final devotionalStreakProvider = FutureProvider<int>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getStreakCount();
+});
+
+/// Provider for getting total number of completed devotionals
+final totalDevotionalsCompletedProvider = FutureProvider<int>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getTotalCompleted();
+});
+
+/// Provider for getting completion percentage
+final devotionalCompletionPercentageProvider = FutureProvider<double>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getCompletionPercentage();
+});
+
+/// Provider for getting all completed devotionals
+final completedDevotionalsProvider = FutureProvider<List<Devotional>>((ref) async {
+  final progressService = ref.watch(devotionalProgressServiceProvider);
+  return await progressService.getCompletedDevotionals();
+});
+
+// Reading Plan Progress Providers
+
+/// Provider for getting all reading plans
+final allReadingPlansProvider = FutureProvider<List<ReadingPlan>>((ref) async {
+  final planService = ref.watch(readingPlanServiceProvider);
+  return await planService.getAllPlans();
+});
+
+/// Provider for getting active reading plans
+final activeReadingPlansProvider = FutureProvider<List<ReadingPlan>>((ref) async {
+  final planService = ref.watch(readingPlanServiceProvider);
+  return await planService.getActivePlans();
+});
+
+/// Provider for getting the current active plan
+final currentReadingPlanProvider = FutureProvider<ReadingPlan?>((ref) async {
+  final planService = ref.watch(readingPlanServiceProvider);
+  return await planService.getCurrentPlan();
+});
+
+/// Provider for getting progress percentage for a specific plan
+final planProgressPercentageProvider = FutureProvider.family<double, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getProgressPercentage(planId);
+});
+
+/// Provider for getting current day number in a plan
+final planCurrentDayProvider = FutureProvider.family<int, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getCurrentDay(planId);
+});
+
+/// Provider for getting today's readings for a plan
+final todaysReadingsProvider = FutureProvider.family<List<DailyReading>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getTodaysReadings(planId);
+});
+
+/// Provider for getting incomplete readings for a plan
+final incompleteReadingsProvider = FutureProvider.family<List<DailyReading>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getIncompleteReadings(planId);
+});
+
+/// Provider for getting completed readings for a plan
+final completedReadingsProvider = FutureProvider.family<List<DailyReading>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getCompletedReadings(planId);
+});
+
+/// Provider for getting reading streak for a plan
+final planStreakProvider = FutureProvider.family<int, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getStreak(planId);
+});
+
+// Prayer Streak Providers
+
+/// Provider for getting the current prayer streak
+final currentPrayerStreakProvider = FutureProvider<int>((ref) async {
+  final streakService = ref.watch(prayerStreakServiceProvider);
+  return await streakService.getCurrentStreak();
+});
+
+/// Provider for getting the longest prayer streak ever achieved
+final longestPrayerStreakProvider = FutureProvider<int>((ref) async {
+  final streakService = ref.watch(prayerStreakServiceProvider);
+  return await streakService.getLongestStreak();
+});
+
+/// Provider for checking if user has prayed today
+final prayedTodayProvider = FutureProvider<bool>((ref) async {
+  final streakService = ref.watch(prayerStreakServiceProvider);
+  return await streakService.hasPrayedToday();
+});
+
+/// Provider for getting total days prayed (not consecutive)
+final totalDaysPrayedProvider = FutureProvider<int>((ref) async {
+  final streakService = ref.watch(prayerStreakServiceProvider);
+  return await streakService.getTotalDaysPrayed();
+});
+
+/// Provider for getting all prayer activity dates
+final prayerActivityDatesProvider = FutureProvider<List<DateTime>>((ref) async {
+  final streakService = ref.watch(prayerStreakServiceProvider);
+  return await streakService.getAllActivityDates();
 });
 
 // Theme Mode Provider

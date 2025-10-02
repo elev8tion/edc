@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/prayer_request.dart';
-import '../state/app_state.dart';
 import '../error/error_handler.dart';
 import 'app_providers.dart';
 
@@ -43,6 +42,7 @@ final prayerStatsProvider = FutureProvider<PrayerStats>((ref) async {
 // Prayer Actions
 final prayerActionsProvider = Provider<PrayerActions>((ref) {
   final service = ref.read(prayerServiceProvider);
+  final streakService = ref.read(prayerStreakServiceProvider);
 
   return PrayerActions(
     addPrayer: (title, description, category) async {
@@ -52,8 +52,16 @@ final prayerActionsProvider = Provider<PrayerActions>((ref) {
           description: description,
           category: category,
         );
+        // Record prayer activity for streak tracking
+        await streakService.recordPrayerActivity();
+
+        // Invalidate providers to refresh UI
         ref.invalidate(activePrayersProvider);
         ref.invalidate(prayerStatsProvider);
+        ref.invalidate(currentPrayerStreakProvider);
+        ref.invalidate(longestPrayerStreakProvider);
+        ref.invalidate(prayedTodayProvider);
+        ref.invalidate(totalDaysPrayedProvider);
       } catch (error) {
         throw ErrorHandler.handle(error);
       }
@@ -61,9 +69,17 @@ final prayerActionsProvider = Provider<PrayerActions>((ref) {
     markAnswered: (id, answer) async {
       try {
         await service.markPrayerAnswered(id, answer);
+        // Record prayer activity for streak tracking
+        await streakService.recordPrayerActivity();
+
+        // Invalidate providers to refresh UI
         ref.invalidate(activePrayersProvider);
         ref.invalidate(answeredPrayersProvider);
         ref.invalidate(prayerStatsProvider);
+        ref.invalidate(currentPrayerStreakProvider);
+        ref.invalidate(longestPrayerStreakProvider);
+        ref.invalidate(prayedTodayProvider);
+        ref.invalidate(totalDaysPrayedProvider);
       } catch (error) {
         throw ErrorHandler.handle(error);
       }

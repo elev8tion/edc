@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../features/chat/screens/chat_screen.dart';
 import '../components/frosted_glass_card.dart';
@@ -9,15 +10,16 @@ import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
 import '../components/category_badge.dart';
 import '../core/navigation/app_routes.dart';
+import '../core/providers/app_providers.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   late String greeting;
   late String userName;
   final GlobalKey _backgroundKey = GlobalKey();
@@ -133,17 +135,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatsRow() {
+    final streakAsync = ref.watch(devotionalStreakProvider);
+    final totalCompletedAsync = ref.watch(totalDevotionalsCompletedProvider);
+
     return SizedBox(
       height: 120,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildStatCard(
-            value: "7",
-            label: "Day Streak",
-            icon: Icons.local_fire_department,
-            color: Colors.orange,
-            delay: 600,
+          streakAsync.when(
+            data: (streak) => _buildStatCard(
+              value: "$streak",
+              label: "Day Streak",
+              icon: Icons.local_fire_department,
+              color: Colors.orange,
+              delay: 600,
+            ),
+            loading: () => _buildStatCardLoading(
+              label: "Day Streak",
+              icon: Icons.local_fire_department,
+              color: Colors.orange,
+              delay: 600,
+            ),
+            error: (_, __) => _buildStatCard(
+              value: "0",
+              label: "Day Streak",
+              icon: Icons.local_fire_department,
+              color: Colors.orange,
+              delay: 600,
+            ),
           ),
           const SizedBox(width: 16),
           _buildStatCard(
@@ -162,12 +182,27 @@ class _HomeScreenState extends State<HomeScreen> {
             delay: 800,
           ),
           const SizedBox(width: 16),
-          _buildStatCard(
-            value: "23",
-            label: "Devotionals",
-            icon: Icons.auto_stories,
-            color: Colors.green,
-            delay: 900,
+          totalCompletedAsync.when(
+            data: (total) => _buildStatCard(
+              value: "$total",
+              label: "Devotionals",
+              icon: Icons.auto_stories,
+              color: Colors.green,
+              delay: 900,
+            ),
+            loading: () => _buildStatCardLoading(
+              label: "Devotionals",
+              icon: Icons.auto_stories,
+              color: Colors.green,
+              delay: 900,
+            ),
+            error: (_, __) => _buildStatCard(
+              value: "0",
+              label: "Devotionals",
+              icon: Icons.auto_stories,
+              color: Colors.green,
+              delay: 900,
+            ),
           ),
         ],
       ),
@@ -237,6 +272,90 @@ class _HomeScreenState extends State<HomeScreen> {
                   blurRadius: 4,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: Colors.white.withValues(alpha: 0.9),
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 600.ms, delay: delay.ms).slideY(begin: 0.3);
+  }
+
+  Widget _buildStatCardLoading({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required int delay,
+  }) {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 2),
