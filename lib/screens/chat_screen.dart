@@ -1,46 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../core/models/chat_message.dart';
 import '../core/providers/app_providers.dart';
+import '../hooks/animation_hooks.dart';
 
-class ChatScreen extends ConsumerStatefulWidget {
+class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
 
-  @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends ConsumerState<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
-  bool _isTyping = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _addWelcomeMessage();
+  ChatMessage _createWelcomeMessage() {
+    return ChatMessage(
+      id: '1',
+      content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+      isUser: false,
+      timestamp: DateTime.now(),
+    );
   }
 
-  void _addWelcomeMessage() {
-    setState(() {
-      _messages.add(
-        ChatMessage(
-          id: '1',
-          content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messageController = useTextEditingController();
+    final scrollController = useScrollController();
+    final messages = useState<List<ChatMessage>>([]);
+    final isTyping = useState(false);
+
+    // Initialize with welcome message
+    useEffect(() {
+      messages.value = [_createWelcomeMessage()];
+      return null;
+    }, []);
+
+    // Auto-scroll when messages change
+    useAutoScrollToBottom(scrollController, messages.value);
+
+    void scrollToBottom() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+
+    void sendMessage(String text) {
+      if (text.trim().isEmpty) return;
+
+      final userMessage = ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        content: text.trim(),
+        isUser: true,
+        timestamp: DateTime.now(),
+      );
+
+      messages.value = [...messages.value, userMessage];
+      isTyping.value = true;
+      messageController.clear();
+
+      scrollToBottom();
+
+      // Simulate AI response
+      Future.delayed(const Duration(seconds: 2), () {
+        final response = _getContextualResponse(text.trim().toLowerCase());
+        final aiMessage = ChatMessage(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          content: response,
           isUser: false,
           timestamp: DateTime.now(),
-        ),
-      );
-    });
-  }
+        );
 
-  @override
-  Widget build(BuildContext context) {
+        isTyping.value = false;
+        messages.value = [...messages.value, aiMessage];
+        scrollToBottom();
+      });
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -48,11 +89,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           SafeArea(
             child: Column(
               children: [
-                _buildAppBar(),
+                _buildAppBar(context),
                 Expanded(
-                  child: _buildMessagesList(),
+                  child: _buildMessagesList(scrollController, messages.value, isTyping.value),
                 ),
-                _buildMessageInput(),
+                _buildMessageInput(messageController, sendMessage),
               ],
             ),
           ),
@@ -61,7 +102,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -143,16 +184,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.3);
   }
 
-  Widget _buildMessagesList() {
+  Widget _buildMessagesList(ScrollController scrollController, List<ChatMessage> messages, bool isTyping) {
     return ListView.builder(
-      controller: _scrollController,
+      controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      itemCount: _messages.length + (_isTyping ? 1 : 0),
+      itemCount: messages.length + (isTyping ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == _messages.length && _isTyping) {
+        if (index == messages.length && isTyping) {
           return _buildTypingIndicator();
         }
-        return _buildMessageBubble(_messages[index], index);
+        return _buildMessageBubble(messages[index], index);
       },
     );
   }
@@ -364,7 +405,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(TextEditingController messageController, void Function(String) sendMessage) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -385,7 +426,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
               child: TextField(
-                controller: _messageController,
+                controller: messageController,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -406,7 +447,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
-                onSubmitted: _sendMessage,
+                onSubmitted: sendMessage,
               ),
             ),
           ),
@@ -433,7 +474,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ],
             ),
             child: IconButton(
-              onPressed: () => _sendMessage(_messageController.text),
+              onPressed: () => sendMessage(messageController.text),
               icon: const Icon(
                 Icons.send,
                 color: Colors.white,
@@ -444,49 +485,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ],
       ),
     ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(begin: 0.3);
-  }
-
-  void _sendMessage(String text) {
-    if (text.trim().isEmpty) return;
-
-    final userMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: text.trim(),
-      isUser: true,
-      timestamp: DateTime.now(),
-    );
-
-    setState(() {
-      _messages.add(userMessage);
-      _isTyping = true;
-      _messageController.clear();
-    });
-
-    _scrollToBottom();
-
-    // Simulate AI response
-    Future.delayed(const Duration(seconds: 2), () {
-      _generateAIResponse(text.trim());
-    });
-  }
-
-  void _generateAIResponse(String userMessage) {
-    // Simple response generation - in production this would use the actual AI service
-    String response = _getContextualResponse(userMessage.toLowerCase());
-
-    final aiMessage = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      content: response,
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
-
-    setState(() {
-      _isTyping = false;
-      _messages.add(aiMessage);
-    });
-
-    _scrollToBottom();
   }
 
   String _getContextualResponse(String message) {
@@ -505,28 +503,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
   String _formatTime(DateTime dateTime) {
     final hour = dateTime.hour.toString().padLeft(2, '0');
     final minute = dateTime.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
-  }
-
-  @override
-  void dispose() {
-    _messageController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 }

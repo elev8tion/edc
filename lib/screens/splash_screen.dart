@@ -1,79 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import '../theme/app_theme.dart';
 import '../components/glass_card.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
+import '../hooks/animation_hooks.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends HookWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late AnimationController _scaleController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.elasticOut,
-    ));
-
-    _startAnimations();
-    _navigateToNextScreen();
-  }
-
-  void _startAnimations() {
-    _fadeController.forward();
-    _scaleController.forward();
-  }
-
-  void _navigateToNextScreen() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        NavigationService.pushReplacementNamed(AppRoutes.onboarding);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    _scaleController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Use custom hook for combined fade and scale animations
+    final animations = useFadeAndScale(
+      fadeDuration: const Duration(milliseconds: 1500),
+      scaleDuration: const Duration(milliseconds: 2000),
+    );
+
+    // Create animations with curves
+    final fadeAnimation = useAnimation(
+      CurvedAnimation(
+        parent: animations.fade,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    final scaleAnimation = useAnimation(
+      CurvedAnimation(
+        parent: animations.scale,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    // Navigate to next screen after delay
+    useEffect(() {
+      Future.delayed(const Duration(seconds: 3), () {
+        NavigationService.pushReplacementNamed(AppRoutes.onboarding);
+      });
+      return null;
+    }, []);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -108,128 +74,123 @@ class _SplashScreenState extends State<SplashScreen>
 
               // Main content
               Center(
-                child: AnimatedBuilder(
-                  animation: Listenable.merge([_fadeAnimation, _scaleAnimation]),
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Logo container with glass effect
-                            GlassCard(
-                              borderRadius: 32,
-                              blurSigma: 20,
-                              borderColor: AppTheme.primaryColor.withOpacity(0.3),
-                              padding: const EdgeInsets.all(32),
-                              child: Column(
-                                children: [
-                                  // Logo image
-                                  Container(
-                                    width: 120,
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(24),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppTheme.primaryColor.withOpacity(0.3),
-                                          blurRadius: 20,
-                                          spreadRadius: 5,
-                                        ),
-                                      ],
+                child: FadeTransition(
+                  opacity: AlwaysStoppedAnimation(fadeAnimation),
+                  child: ScaleTransition(
+                    scale: AlwaysStoppedAnimation(scaleAnimation),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo container with glass effect
+                        GlassCard(
+                          borderRadius: 32,
+                          blurSigma: 20,
+                          borderColor: AppTheme.primaryColor.withOpacity(0.3),
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            children: [
+                              // Logo image
+                              Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
                                     ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(24),
-                                      child: Image.asset(
-                                        'assets/images/logo.png',
-                                        fit: BoxFit.contain,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          // Fallback if logo not found
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(24),
-                                              color: AppTheme.goldColor,
-                                            ),
-                                            child: const Icon(
-                                              Icons.auto_stories,
-                                              size: 60,
-                                              color: Colors.white,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  // App name
-                                  Text(
-                                    'EVERYDAY',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w300,
-                                      letterSpacing: 4,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                  ),
-                                  Text(
-                                    'CHRISTIAN',
-                                    style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 2,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 16),
-
-                                  // Tagline
-                                  Text(
-                                    'Faith-guided wisdom for life\'s moments',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white.withOpacity(0.7),
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 60),
-
-                            // Loading indicator
-                            SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppTheme.primaryColor,
+                                  ],
                                 ),
-                                strokeWidth: 3,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.asset(
+                                    'assets/images/logo.png',
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Fallback if logo not found
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(24),
+                                          color: AppTheme.goldColor,
+                                        ),
+                                        child: const Icon(
+                                          Icons.auto_stories,
+                                          size: 60,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
-                            ),
 
-                            const SizedBox(height: 24),
+                              const SizedBox(height: 24),
 
-                            // Loading text
-                            Text(
-                              'Preparing your spiritual journey...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white.withOpacity(0.8),
+                              // App name
+                              Text(
+                                'EVERYDAY',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w300,
+                                  letterSpacing: 4,
+                                  color: AppTheme.primaryColor,
+                                ),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'CHRISTIAN',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Tagline
+                              Text(
+                                'Faith-guided wisdom for life\'s moments',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+
+                        const SizedBox(height: 60),
+
+                        // Loading indicator
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppTheme.primaryColor,
+                            ),
+                            strokeWidth: 3,
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Loading text
+                        Text(
+                          'Preparing your spiritual journey...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
 
@@ -239,7 +200,7 @@ class _SplashScreenState extends State<SplashScreen>
                 left: 0,
                 right: 0,
                 child: FadeTransition(
-                  opacity: _fadeAnimation,
+                  opacity: AlwaysStoppedAnimation(fadeAnimation),
                   child: Column(
                     children: [
                       Text(
