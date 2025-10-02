@@ -291,8 +291,12 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
         child: TabBar(
           controller: _tabController,
           indicator: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.8),
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.primaryColor,
+              width: 1,
+            ),
           ),
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
