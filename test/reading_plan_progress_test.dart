@@ -29,6 +29,9 @@ void main() {
     final plans = await planService.getAllPlans();
     expect(plans, isNotEmpty, reason: 'Database should have default plans');
     testPlanId = plans.first.id;
+
+    // Ensure plan is clean for this test
+    await progressService.resetPlan(testPlanId);
   });
 
   tearDown() async {

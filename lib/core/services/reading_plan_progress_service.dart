@@ -80,16 +80,13 @@ class ReadingPlanProgressService {
     try {
       final db = await _database.database;
 
-      // Get plan details
-      final plans = await db.query(
-        'reading_plans',
-        where: 'id = ?',
-        whereArgs: [planId],
+      // Get total readings count from daily_readings table (actual readings created)
+      final totalResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ?',
+        [planId],
       );
 
-      if (plans.isEmpty) return 0.0;
-
-      final totalReadings = plans.first['total_readings'] as int;
+      final totalReadings = totalResult.first['count'] as int;
       if (totalReadings == 0) return 0.0;
 
       // Get completed readings count
@@ -131,18 +128,14 @@ class ReadingPlanProgressService {
     }
   }
 
-  /// Reset a plan (mark all readings as incomplete)
+  /// Reset a plan (delete all readings and reset progress)
   Future<void> resetPlan(String planId) async {
     try {
       final db = await _database.database;
 
-      // Mark all readings as incomplete
-      await db.update(
+      // Delete all daily readings for this plan
+      await db.delete(
         'daily_readings',
-        {
-          'is_completed': 0,
-          'completed_date': null,
-        },
         where: 'plan_id = ?',
         whereArgs: [planId],
       );
