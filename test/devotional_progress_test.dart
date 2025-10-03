@@ -15,8 +15,9 @@ void main() {
     late DevotionalContentLoader contentLoader;
 
     setUp(() async {
-      // Use in-memory database for testing
+      // Use in-memory database for testing with explicit factory
       databaseFactory = databaseFactoryFfi;
+
       databaseService = DatabaseService();
       progressService = DevotionalProgressService(databaseService);
       contentLoader = DevotionalContentLoader(databaseService);
@@ -27,8 +28,10 @@ void main() {
     });
 
     tearDown(() async {
-      // Close database after each test
-      await databaseService.close();
+      // Reset database (which also closes it)
+      await databaseService.resetDatabase();
+      // Small delay to ensure database is fully closed
+      await Future.delayed(const Duration(milliseconds: 100));
     });
 
     group('Devotional Retrieval', () {

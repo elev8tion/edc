@@ -24,10 +24,12 @@ void main() {
       await streakService.clearAllStreakData();
     });
 
-    tearDown(() async {
-      // Clean up database after each test
-      await databaseService.close();
-    });
+    tearDown() async {
+      // Reset database (which also closes it)
+      await databaseService.resetDatabase();
+      // Small delay to ensure database is fully closed
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     group('Record Prayer Activity', () {
       test('should record prayer activity for today', () async {

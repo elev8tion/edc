@@ -31,9 +31,12 @@ void main() {
     testPlanId = plans.first.id;
   });
 
-  tearDown(() async {
-    await databaseService.close();
-  });
+  tearDown() async {
+    // Reset database (which also closes it)
+    await databaseService.resetDatabase();
+    // Small delay to ensure database is fully closed
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
 
   group('ReadingPlanProgressService - Mark Day Complete/Incomplete', () {
     test('should mark a day as complete', () async {

@@ -200,24 +200,7 @@ class DatabaseService {
       await db.insert('favorite_verses', verse);
     }
 
-    // Insert sample devotionals
-    final devotionals = [
-      {
-        'id': '1',
-        'title': 'Walking in Faith',
-        'subtitle': 'Trust in God\'s Plan',
-        'content': 'Today, let\'s reflect on what it means to truly trust in the Lord...',
-        'verse': 'Trust in the Lord with all your heart and lean not on your own understanding.',
-        'verse_reference': 'Proverbs 3:5-6',
-        'date': DateTime.now().millisecondsSinceEpoch,
-        'reading_time': '5 min read',
-        'is_completed': 0,
-      },
-    ];
-
-    for (final devotional in devotionals) {
-      await db.insert('devotionals', devotional);
-    }
+    // Devotionals are loaded separately by DevotionalContentLoader
 
     // Insert sample reading plans
     final readingPlans = [
