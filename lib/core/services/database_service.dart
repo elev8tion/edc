@@ -251,4 +251,21 @@ class DatabaseService {
       _database = null;
     }
   }
+
+  /// Reset database - delete and recreate with latest schema
+  Future<void> resetDatabase() async {
+    final documentsDirectory = await getDatabasesPath();
+    final path = join(documentsDirectory, _databaseName);
+
+    // Close existing connection
+    await close();
+
+    // Delete database file
+    await deleteDatabase(path);
+
+    // Reinitialize with latest schema
+    await database;
+
+    print('✅ Database reset complete - all tables recreated with latest schema');
+  }
 }

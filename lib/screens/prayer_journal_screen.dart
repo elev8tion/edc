@@ -9,7 +9,6 @@ import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 import '../core/models/prayer_request.dart';
 import '../core/providers/prayer_providers.dart';
-import '../core/providers/app_providers.dart';
 
 class PrayerJournalScreen extends ConsumerStatefulWidget {
   const PrayerJournalScreen({super.key});
@@ -67,205 +66,51 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
   }
 
   Widget _buildHeader() {
-    final currentStreakAsync = ref.watch(currentPrayerStreakProvider);
-    final prayedTodayAsync = ref.watch(prayedTodayProvider);
-
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: Column(
+      child: Row(
         children: [
-          Row(
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primaryColor.withOpacity(0.2),
+                  AppTheme.secondaryColor.withOpacity(0.2),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: AppTheme.primaryColor,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor.withOpacity(0.2),
-                      AppTheme.secondaryColor.withOpacity(0.2),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.auto_awesome,
-                  color: AppTheme.primaryColor,
-                  size: 28,
+              Text(
+                'Prayer Journal',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Prayer Journal',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    currentStreakAsync.when(
-                      data: (streak) => Text(
-                        streak > 0
-                            ? '🔥 $streak day streak!'
-                            : 'Start your prayer streak today',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: streak > 0 ? Colors.orange : Colors.white70,
-                          fontWeight: streak > 0 ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                      loading: () => const Text(
-                        'Track your prayer journey',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      error: (_, __) => const Text(
-                        'Track your prayer journey',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
-                      ),
-                    ),
-                  ],
+              Text(
+                'Track your prayer journey',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
                 ),
-              ),
-              // Prayer status indicator
-              prayedTodayAsync.when(
-                data: (prayedToday) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: prayedToday
-                        ? Colors.green.withOpacity(0.2)
-                        : Colors.orange.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: prayedToday ? Colors.green : Colors.orange,
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        prayedToday ? Icons.check_circle : Icons.circle_outlined,
-                        color: prayedToday ? Colors.green : Colors.orange,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        prayedToday ? 'Today' : 'Not yet',
-                        style: TextStyle(
-                          color: prayedToday ? Colors.green : Colors.orange,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildStreakCard(),
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2, end: 0);
-  }
-
-  Widget _buildStreakCard() {
-    final currentStreakAsync = ref.watch(currentPrayerStreakProvider);
-    final longestStreakAsync = ref.watch(longestPrayerStreakProvider);
-    final totalDaysAsync = ref.watch(totalDaysPrayedProvider);
-
-    return ClearGlassCard(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStreakStat(
-            icon: Icons.local_fire_department,
-            label: 'Current',
-            value: currentStreakAsync,
-            color: Colors.orange,
-          ),
-          Container(
-            width: 1,
-            height: 40,
-            color: Colors.white24,
-          ),
-          _buildStreakStat(
-            icon: Icons.emoji_events,
-            label: 'Best',
-            value: longestStreakAsync,
-            color: Colors.amber,
-          ),
-          Container(
-            width: 1,
-            height: 40,
-            color: Colors.white24,
-          ),
-          _buildStreakStat(
-            icon: Icons.calendar_today,
-            label: 'Total Days',
-            value: totalDaysAsync,
-            color: Colors.blue,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStreakStat({
-    required IconData icon,
-    required String label,
-    required AsyncValue<int> value,
-    required Color color,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 4),
-        value.when(
-          data: (val) => Text(
-            val.toString(),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          loading: () => const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          error: (_, __) => const Text(
-            '-',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.white.withOpacity(0.6),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildTabBar() {

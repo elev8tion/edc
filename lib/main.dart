@@ -7,6 +7,7 @@ import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/providers/app_providers.dart';
 import 'core/error/error_handler.dart';
+import 'core/services/database_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/auth_screen.dart';
@@ -39,6 +40,19 @@ void main() async {
   AIServiceFactory.initialize().catchError((e) {
     debugPrint('AI Service initialization failed: $e');
   });
+
+  // 🔧 TEMPORARY: Reset database to fix schema migration issues
+  // This ensures all new tables (prayer_streak_activity, etc.) are created
+  // Remove this block after first successful launch
+  if (kDevelopmentMode) {
+    try {
+      final dbService = DatabaseService();
+      await dbService.resetDatabase();
+      debugPrint('✅ Database reset complete');
+    } catch (e) {
+      debugPrint('❌ Database reset failed: $e');
+    }
+  }
 
   // Set up global error handling
   FlutterError.onError = (FlutterErrorDetails details) {
