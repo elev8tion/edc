@@ -6,6 +6,7 @@ class AppTheme {
   static const Color accentColor = Color(0xFF8B5CF6); // Beautiful purple
   static const Color secondaryColor = Color(0xFF64748B); // Slate gray
   static const Color goldColor = Color(0xFFD4AF37); // Gold/amber from logo
+  static const Color toggleActiveColor = Color(0xFFFFA726); // Amber/orange for toggles
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -14,6 +15,21 @@ class AppTheme {
       brightness: Brightness.light,
     ),
     textTheme: GoogleFonts.interTextTheme(),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return primaryColor;
+        }
+        return Colors.white.withValues(alpha: 0.5);
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return toggleActiveColor.withValues(alpha: 0.5);
+        }
+        return Colors.grey.withValues(alpha: 0.3);
+      }),
+      trackOutlineColor: WidgetStateProperty.all(toggleActiveColor),
+    ),
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,
@@ -81,6 +97,21 @@ class AppTheme {
       ThemeData.dark().textTheme,
     ),
     scaffoldBackgroundColor: const Color(0xFF121212),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return primaryColor;
+        }
+        return Colors.white.withValues(alpha: 0.5);
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return toggleActiveColor.withValues(alpha: 0.5);
+        }
+        return Colors.grey.withValues(alpha: 0.3);
+      }),
+      trackOutlineColor: WidgetStateProperty.all(toggleActiveColor),
+    ),
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: true,

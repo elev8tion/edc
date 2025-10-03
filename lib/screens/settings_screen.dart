@@ -348,11 +348,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppTheme.goldColor,
-            activeTrackColor: AppTheme.primaryColor.withValues(alpha: 0.5),
+            activeColor: AppTheme.primaryColor,
+            activeTrackColor: AppTheme.toggleActiveColor.withValues(alpha: 0.5),
             inactiveThumbColor: Colors.white.withValues(alpha: 0.5),
-            inactiveTrackColor: AppTheme.primaryColor.withValues(alpha: 0.3),
-            trackOutlineColor: WidgetStateProperty.all(AppTheme.primaryColor),
+            inactiveTrackColor: Colors.grey.withValues(alpha: 0.3),
+            trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return AppTheme.toggleActiveColor;
+              }
+              return Colors.grey.withValues(alpha: 0.5);
+            }),
             trackOutlineWidth: WidgetStateProperty.all(2.0),
           ),
         ],
@@ -378,33 +383,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.7),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Text(
                 '${value.round()}px',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryColor,
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -412,10 +419,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 12),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: AppTheme.primaryColor,
+              activeTrackColor: Colors.white,
               inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
-              thumbColor: AppTheme.primaryColor,
-              overlayColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+              thumbColor: Colors.white,
+              overlayColor: Colors.white.withValues(alpha: 0.2),
             ),
             child: Slider(
               value: value,
@@ -517,12 +524,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     icon,
-                    color: AppTheme.primaryColor,
+                    color: Colors.white,
                     size: 20,
                   ),
                 ),
