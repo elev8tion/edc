@@ -9,17 +9,23 @@ void main() {
   late DatabaseHelper dbHelper;
 
   setUpAll(() async {
+    // Initialize Flutter bindings for asset loading (rootBundle) and platform channels
+    TestWidgetsFlutterBinding.ensureInitialized();
+
     // Initialize sqflite for testing
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+
+    // Use in-memory database for testing (no file system, no path_provider needed)
+    DatabaseHelper.setTestDatabasePath(inMemoryDatabasePath);
   });
 
   setUp(() async {
     dbHelper = DatabaseHelper.instance;
     verseService = VerseService();
 
-    // Clean start for each test
-    await dbHelper.deleteDatabase();
+    // Reset database for clean test start
+    DatabaseHelper.setTestDatabasePath(inMemoryDatabasePath);
   });
 
   tearDown(() async {

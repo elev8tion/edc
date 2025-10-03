@@ -18,6 +18,9 @@ void main() {
   });
 
   setUp(() async {
+    // Use in-memory database for testing
+    DatabaseService.setTestDatabasePath(inMemoryDatabasePath);
+
     databaseService = DatabaseService();
     progressService = ReadingPlanProgressService(databaseService);
     planService = ReadingPlanService(databaseService);

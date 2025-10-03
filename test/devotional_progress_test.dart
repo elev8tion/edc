@@ -17,6 +17,7 @@ void main() {
     setUp(() async {
       // Use in-memory database for testing with explicit factory
       databaseFactory = databaseFactoryFfi;
+      DatabaseService.setTestDatabasePath(inMemoryDatabasePath);
 
       databaseService = DatabaseService();
       progressService = DevotionalProgressService(databaseService);

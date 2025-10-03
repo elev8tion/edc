@@ -11,14 +11,31 @@ class DatabaseService {
   static const String _databaseName = 'everyday_christian.db';
   static const int _databaseVersion = 3;
 
+  /// Optional test database path (for in-memory testing)
+  static String? _testDatabasePath;
+
+  /// Set test database path for testing with in-memory DB
+  static void setTestDatabasePath(String? path) {
+    _testDatabasePath = path;
+    _database = null; // Reset database when changing path
+  }
+
   Future<Database> get database async {
     _database ??= await _initDatabase();
     return _database!;
   }
 
   Future<Database> _initDatabase() async {
-    final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory, _databaseName);
+    String path;
+
+    if (_testDatabasePath != null) {
+      // Use test path (e.g., inMemoryDatabasePath)
+      path = _testDatabasePath!;
+    } else {
+      // Use production path
+      final documentsDirectory = await getDatabasesPath();
+      path = join(documentsDirectory, _databaseName);
+    }
 
     return await openDatabase(
       path,
@@ -237,14 +254,19 @@ class DatabaseService {
 
   /// Reset database - delete and recreate with latest schema
   Future<void> resetDatabase() async {
-    final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory, _databaseName);
-
     // Close existing connection
     await close();
 
-    // Delete database file
-    await deleteDatabase(path);
+    if (_testDatabasePath != null) {
+      // For in-memory databases, just closing and nulling is enough
+      // The next access will create a fresh in-memory database
+      _database = null;
+    } else {
+      // For file-based databases, delete the file
+      final documentsDirectory = await getDatabasesPath();
+      final path = join(documentsDirectory, _databaseName);
+      await deleteDatabase(path);
+    }
 
     // Reinitialize with latest schema
     await database;

@@ -18,6 +18,15 @@ class DatabaseHelper {
 
   static Database? _database;
 
+  /// Optional test database path (for in-memory testing)
+  static String? _testDatabasePath;
+
+  /// Set test database path for testing with in-memory DB
+  static void setTestDatabasePath(String? path) {
+    _testDatabasePath = path;
+    _database = null; // Reset database when changing path
+  }
+
   /// Get database instance
   Future<Database> get database async {
     _database ??= await _initDatabase();
@@ -26,8 +35,16 @@ class DatabaseHelper {
 
   /// Initialize database
   Future<Database> _initDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, _databaseName);
+    String path;
+
+    if (_testDatabasePath != null) {
+      // Use test path (e.g., inMemoryDatabasePath)
+      path = _testDatabasePath!;
+    } else {
+      // Use production path
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      path = join(documentsDirectory.path, _databaseName);
+    }
 
     return await openDatabase(
       path,

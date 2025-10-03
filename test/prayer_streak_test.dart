@@ -14,6 +14,9 @@ void main() {
     late PrayerStreakService streakService;
 
     setUp(() async {
+      // Use in-memory database for testing
+      DatabaseService.setTestDatabasePath(inMemoryDatabasePath);
+
       // Create a new DatabaseService and initialize
       // Each test gets a fresh database instance
       databaseService = DatabaseService();
