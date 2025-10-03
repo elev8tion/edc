@@ -95,72 +95,75 @@ class DevotionalProgressService {
       return 0;
     }
 
-    // Calculate streak by checking consecutive completed devotionals
-    int streak = 0;
-    DateTime? lastCompletedDate;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
-    // Sort by completion date descending (most recent first)
+    // Sort by scheduled date descending (most recent first)
     final sortedDevotionals = List<Devotional>.from(completedDevotionals)
       ..sort((a, b) {
-        final dateA = a.completedDate ?? DateTime(1970);
-        final dateB = b.completedDate ?? DateTime(1970);
+        final dateA = a.date;
+        final dateB = b.date;
         return dateB.compareTo(dateA);
       });
 
-    // Check if the most recent completion was today or yesterday
-    if (sortedDevotionals.isNotEmpty) {
-      final mostRecentDate = sortedDevotionals.first.completedDate;
-      if (mostRecentDate != null) {
-        final mostRecentDay = DateTime(
-          mostRecentDate.year,
-          mostRecentDate.month,
-          mostRecentDate.day,
-        );
+    // Calculate streak by counting consecutive days
+    int streak = 0;
+    DateTime? lastScheduledDate;
 
-        final daysSinceLastCompletion = today.difference(mostRecentDay).inDays;
-
-        // If more than 1 day has passed, streak is broken
-        if (daysSinceLastCompletion > 1) {
-          return 0;
-        }
-      }
-    }
-
-    // Count consecutive days
     for (final devotional in sortedDevotionals) {
-      final completedDate = devotional.completedDate;
-      if (completedDate == null) continue;
+      final scheduledDate = devotional.date;
 
-      final completedDay = DateTime(
-        completedDate.year,
-        completedDate.month,
-        completedDate.day,
+      final scheduledDay = DateTime(
+        scheduledDate.year,
+        scheduledDate.month,
+        scheduledDate.day,
       );
 
-      if (lastCompletedDate == null) {
+      if (lastScheduledDate == null) {
         // First devotional in the list
-        lastCompletedDate = completedDay;
+        lastScheduledDate = scheduledDay;
         streak = 1;
       } else {
-        // Check if this devotional was completed the day before the last one
-        final expectedDate = lastCompletedDate.subtract(const Duration(days: 1));
+        // Check if this devotional's scheduled date was the day before the last one
+        final expectedDate = lastScheduledDate.subtract(const Duration(days: 1));
 
-        if (completedDay.year == expectedDate.year &&
-            completedDay.month == expectedDate.month &&
-            completedDay.day == expectedDate.day) {
+        if (scheduledDay.year == expectedDate.year &&
+            scheduledDay.month == expectedDate.month &&
+            scheduledDay.day == expectedDate.day) {
           // Consecutive day found
           streak++;
-          lastCompletedDate = completedDay;
-        } else if (completedDay.year == lastCompletedDate.year &&
-                   completedDay.month == lastCompletedDate.month &&
-                   completedDay.day == lastCompletedDate.day) {
+          lastScheduledDate = scheduledDay;
+        } else if (scheduledDay.year == lastScheduledDate.year &&
+                   scheduledDay.month == lastScheduledDate.month &&
+                   scheduledDay.day == lastScheduledDate.day) {
           // Same day, don't increment streak but continue
           continue;
         } else {
           // Gap found, break the streak counting
           break;
+        }
+      }
+    }
+
+    // Check if the streak is still "active"
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (sortedDevotionals.isNotEmpty) {
+      // Get the most recent devotional's scheduled date
+      final mostRecentDate = sortedDevotionals.first.date;
+      final mostRecentDay = DateTime(mostRecentDate.year, mostRecentDate.month, mostRecentDate.day);
+      final daysDiffFromMostRecent = today.difference(mostRecentDay).inDays;
+
+      // If the most recent completion was more than 1 day ago (in the past), streak is broken
+      if (daysDiffFromMostRecent > 1) {
+        return 0;
+      }
+
+      // For multi-day streaks, also check if the earliest day is recent enough
+      if (streak > 1 && lastScheduledDate != null) {
+        final daysSinceEarliestCompletion = today.difference(lastScheduledDate).inDays;
+
+        // If the earliest devotional in the streak was scheduled more than 1 day ago (in the past), streak is broken
+        if (daysSinceEarliestCompletion > 1) {
+          return 0;
         }
       }
     }
