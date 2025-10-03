@@ -215,7 +215,7 @@ class LocalAIService implements AIService {
   String _extractSituation(String userInput) {
     // Simple extraction - in production would use more sophisticated NLP
     if (userInput.length > 50) {
-      return userInput.substring(0, 47) + '...';
+      return '${userInput.substring(0, 47)}...';
     }
     return userInput;
   }

@@ -207,7 +207,7 @@ void main() {
         // Manually insert a devotional scheduled 2 days in the past
         final db = await databaseService.database;
         final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
-        final oldDevotionalId = 'test-old-devotional';
+        const oldDevotionalId = 'test-old-devotional';
 
         await db.insert('devotionals', {
           'id': oldDevotionalId,

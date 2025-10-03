@@ -89,7 +89,7 @@ class SplashScreen extends HookConsumerWidget {
                         GlassCard(
                           borderRadius: 32,
                           blurSigma: 20,
-                          borderColor: AppTheme.primaryColor.withOpacity(0.3),
+                          borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
                           padding: const EdgeInsets.all(32),
                           child: Column(
                             children: [
@@ -101,7 +101,7 @@ class SplashScreen extends HookConsumerWidget {
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -133,7 +133,7 @@ class SplashScreen extends HookConsumerWidget {
                               const SizedBox(height: 24),
 
                               // App name
-                              Text(
+                              const Text(
                                 'EVERYDAY',
                                 style: TextStyle(
                                   fontSize: 24,
@@ -142,7 +142,7 @@ class SplashScreen extends HookConsumerWidget {
                                   color: AppTheme.primaryColor,
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'CHRISTIAN',
                                 style: TextStyle(
                                   fontSize: 32,
@@ -159,7 +159,7 @@ class SplashScreen extends HookConsumerWidget {
                                 'Faith-guided wisdom for life\'s moments',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                   fontStyle: FontStyle.italic,
                                 ),
                                 textAlign: TextAlign.center,
@@ -171,7 +171,7 @@ class SplashScreen extends HookConsumerWidget {
                         const SizedBox(height: 60),
 
                         // Loading indicator
-                        SizedBox(
+                        const SizedBox(
                           width: 60,
                           height: 60,
                           child: CircularProgressIndicator(
@@ -189,7 +189,7 @@ class SplashScreen extends HookConsumerWidget {
                           'Preparing your spiritual journey...',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -211,7 +211,7 @@ class SplashScreen extends HookConsumerWidget {
                         'Version 1.0.0',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha: 0.5),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -219,7 +219,7 @@ class SplashScreen extends HookConsumerWidget {
                         'Built with ❤️ for faith',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha: 0.5),
                         ),
                       ),
                     ],

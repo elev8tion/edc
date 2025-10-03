@@ -4,7 +4,6 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
-import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../components/base_bottom_sheet.dart';
 import '../theme/app_theme.dart';
@@ -157,9 +156,9 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: ClearGlassCard(
-              padding: const EdgeInsets.all(12),
-              child: const Icon(
+            child: const ClearGlassCard(
+              padding: EdgeInsets.all(12),
+              child: Icon(
                 Icons.arrow_back_ios_new,
                 color: Colors.white,
                 size: 20,
@@ -523,31 +522,6 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
         ),
       ),
     );
-  }
-
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Faith':
-        return Colors.blue;
-      case 'Hope':
-        return Colors.green;
-      case 'Love':
-        return Colors.red;
-      case 'Peace':
-        return Colors.purple;
-      case 'Strength':
-        return Colors.orange;
-      case 'Comfort':
-        return Colors.cyan;
-      case 'Guidance':
-        return Colors.amber;
-      case 'Wisdom':
-        return Colors.indigo;
-      case 'Forgiveness':
-        return Colors.pink;
-      default:
-        return Colors.grey;
-    }
   }
 }
 
