@@ -147,22 +147,27 @@ class DevotionalProgressService {
     final today = DateTime(now.year, now.month, now.day);
 
     if (sortedDevotionals.isNotEmpty) {
-      // Get the most recent devotional's scheduled date
+      // Check both the most recent and earliest devotionals in the streak
       final mostRecentDate = sortedDevotionals.first.date;
       final mostRecentDay = DateTime(mostRecentDate.year, mostRecentDate.month, mostRecentDate.day);
+
+      // Days from today (positive = past, negative = future)
       final daysDiffFromMostRecent = today.difference(mostRecentDay).inDays;
 
-      // If the most recent completion was more than 1 day ago (in the past), streak is broken
+      // Reject if the most recent completed devotional's scheduled date is:
+      // - More than 1 day in the past (> 1): Streak is inactive/broken
+      //
+      // Allow completing future devotionals (people can be proactive)
       if (daysDiffFromMostRecent > 1) {
         return 0;
       }
 
-      // For multi-day streaks, also check if the earliest day is recent enough
-      if (streak > 1 && lastScheduledDate != null) {
-        final daysSinceEarliestCompletion = today.difference(lastScheduledDate).inDays;
+      // Also check the earliest devotional in the streak
+      if (lastScheduledDate != null) {
+        final daysSinceEarliest = today.difference(lastScheduledDate).inDays;
 
-        // If the earliest devotional in the streak was scheduled more than 1 day ago (in the past), streak is broken
-        if (daysSinceEarliestCompletion > 1) {
+        // The earliest devotional must not be too far in the past
+        if (daysSinceEarliest > 1) {
           return 0;
         }
       }

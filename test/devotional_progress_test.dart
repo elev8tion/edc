@@ -203,11 +203,27 @@ void main() {
       });
 
       test('should return 0 streak when last completion was more than 1 day ago', () async {
-        final devotionals = await progressService.getAllDevotionals();
+        // Manually insert a devotional scheduled 2 days in the past
+        final db = await databaseService.database;
+        final twoDaysAgo = DateTime.now().subtract(const Duration(days: 2));
+        final oldDevotionalId = 'test-old-devotional';
 
-        // Complete devotional that is 2+ days old (index 2 or higher)
-        await progressService.markAsComplete(devotionals[2].id);
+        await db.insert('devotionals', {
+          'id': oldDevotionalId,
+          'title': 'Old Devotional',
+          'subtitle': 'Test',
+          'content': 'Test content',
+          'verse': 'Test verse',
+          'verse_reference': 'Test 1:1',
+          'date': twoDaysAgo.millisecondsSinceEpoch,
+          'reading_time': '1 min',
+          'is_completed': 0,
+        });
 
+        // Complete the old devotional
+        await progressService.markAsComplete(oldDevotionalId);
+
+        // Streak should be 0 because the devotional was scheduled too long ago
         final streak = await progressService.getStreakCount();
         expect(streak, equals(0));
       });
