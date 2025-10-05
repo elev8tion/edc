@@ -87,15 +87,23 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
       padding: AppSpacing.screenPadding,
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => NavigationService.pop(),
-            child: ClearGlassCard(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: AppColors.primaryText,
-                size: 20,
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
               ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => NavigationService.pop(),
             ),
           ),
           const SizedBox(width: AppSpacing.lg),
