@@ -54,7 +54,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: AppSpacing.screenPadding,
+              padding: const EdgeInsets.only(top: AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -79,7 +79,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
+    return Padding(
+      padding: AppSpacing.horizontalXl,
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -132,6 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ],
+      ),
     );
   }
 
@@ -143,6 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       height: 120,
       child: ListView(
         scrollDirection: Axis.horizontal,
+        padding: AppSpacing.horizontalXl,
         children: [
           streakAsync.when(
             data: (streak) => _buildStatCard(
@@ -387,8 +391,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildMainFeatures() {
-    return Column(
-      children: [
+    return Padding(
+      padding: AppSpacing.horizontalXl,
+      child: Column(
+        children: [
         Row(
           children: [
             Expanded(
@@ -561,6 +567,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ],
+      ),
     );
   }
 
@@ -568,26 +575,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Actions',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.primaryText,
-            shadows: [
-              Shadow(
-                color: Colors.black26,
-                offset: Offset(0, 2),
-                blurRadius: 4,
-              ),
-            ],
-          ),
-        ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
+        Padding(
+          padding: AppSpacing.horizontalXl,
+          child: Text(
+            'Quick Actions',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primaryText,
+              shadows: [
+                Shadow(
+                  color: Colors.black26,
+                  offset: Offset(0, 2),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
+        ),
         const SizedBox(height: AppSpacing.lg),
         SizedBox(
           height: 120,
           child: ListView(
             scrollDirection: Axis.horizontal,
+            padding: AppSpacing.horizontalXl,
             children: [
               _buildQuickActionCard(
                 label: "Bible Library",
@@ -713,8 +724,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDailyVerse() {
-    return Container(
-      padding: AppSpacing.screenPaddingLarge,
+    return Padding(
+      padding: AppSpacing.horizontalXl,
+      child: Container(
+        padding: AppSpacing.screenPaddingLarge,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -842,6 +855,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ],
+      ),
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: 1800.ms).slideY(begin: 0.3);
   }
