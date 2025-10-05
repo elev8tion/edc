@@ -9,6 +9,7 @@ import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 import '../core/providers/app_providers.dart';
 import '../core/models/devotional.dart';
+import '../core/navigation/navigation_service.dart';
 
 class DevotionalScreen extends ConsumerStatefulWidget {
   const DevotionalScreen({super.key});
@@ -49,22 +50,22 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       final currentDevotional = devotionals[_currentDay];
 
                       return SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: AppSpacing.horizontalXl,
                         child: Column(
                           children: [
                             _buildDevotionalCard(currentDevotional),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: AppSpacing.xl),
                             _buildNavigationButtons(devotionals.length),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: AppSpacing.xl),
                             _buildProgressIndicator(devotionals),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: AppSpacing.xl),
                           ],
                         ),
                       );
                     },
                     loading: () => const Center(
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
                     error: (error, stack) => _buildErrorState(error),
@@ -83,21 +84,21 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
     AsyncValue<int> totalCompletedAsync,
   ) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => NavigationService.pop(),
             child: ClearGlassCard(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: const Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,9 +108,9 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
-                ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
+                ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -126,7 +127,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                             '$streak day streak',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.white.withValues(alpha: 0.8),
+                              color: AppColors.secondaryText,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -135,13 +136,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       loading: () => const SizedBox.shrink(),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     totalCompletedAsync.when(
                       data: (total) => Text(
                         '$total completed',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: AppColors.secondaryText,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -149,21 +150,21 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       error: (_, __) => const SizedBox.shrink(),
                     ),
                   ],
-                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),
           ),
           ClearGlassCard(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Text(
               'Day ${_currentDay + 1}',
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.primaryText,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
             ),
-          ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
         ],
       ),
     );
@@ -173,7 +174,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
     final progressService = ref.read(devotionalProgressServiceProvider);
 
     return FrostedGlassCard(
-      padding: const EdgeInsets.all(24),
+      padding: AppSpacing.screenPaddingLarge,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -188,7 +189,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -211,10 +212,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: AppSpacing.screenPadding,
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
@@ -232,29 +233,29 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       color: AppTheme.primaryColor,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                     const Text(
                       'Today\'s Verse',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 Text(
                   '"${devotional.verse}"',
                   style: const TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                     height: 1.5,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 Text(
                   devotional.verseReference,
                   style: const TextStyle(
@@ -267,17 +268,17 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
           const Text(
             'Reflection',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: AppColors.primaryText,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           Text(
             devotional.content,
@@ -289,7 +290,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
           if (!devotional.isCompleted)
             GlassButton(
@@ -306,7 +307,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           else
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: AppSpacing.cardPadding,
               decoration: BoxDecoration(
                 color: Colors.green.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
@@ -324,7 +325,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                         color: Colors.green,
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -369,7 +370,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 600.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.slow).slideY(begin: 0.3);
   }
 
   Widget _buildNavigationButtons(int totalDevotionals) {
@@ -389,14 +390,14 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       children: [
                         const Icon(
                           Icons.arrow_back_ios,
-                          color: Colors.white,
+                          color: AppColors.primaryText,
                           size: 16,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.sm),
                         const Text(
                           'Previous Day',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.primaryText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -407,7 +408,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               : const SizedBox(),
         ),
         if (_currentDay > 0 && _currentDay < totalDevotionals - 1)
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: _currentDay < totalDevotionals - 1
               ? GestureDetector(
@@ -423,14 +424,14 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                         const Text(
                           'Next Day',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.primaryText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.sm),
                         const Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white,
+                          color: AppColors.primaryText,
                           size: 16,
                         ),
                       ],
@@ -440,12 +441,12 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               : const SizedBox(),
         ),
       ],
-    ).animate().fadeIn(duration: 600.ms, delay: 800.ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 800.ms);
   }
 
   Widget _buildProgressIndicator(List<Devotional> devotionals) {
     return FrostedGlassCard(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -457,27 +458,27 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
               Text(
                 '${_currentDay + 1} of ${devotionals.length}',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: AppColors.secondaryText,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           LinearProgressIndicator(
             value: (_currentDay + 1) / devotionals.length,
             backgroundColor: Colors.white.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             borderRadius: BorderRadius.circular(4),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -527,13 +528,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 1000.ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 1000.ms);
   }
 
   Widget _buildEmptyState() {
     return Center(
       child: FrostedGlassCard(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.screenPaddingLarge,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -542,21 +543,21 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               color: Colors.white.withValues(alpha: 0.5),
               size: 64,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               'No Devotionals Available',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'Check back later for daily devotionals',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: AppColors.secondaryText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -569,7 +570,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
   Widget _buildErrorState(Object error) {
     return Center(
       child: FrostedGlassCard(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.screenPaddingLarge,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -578,21 +579,21 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               color: Colors.red.withValues(alpha: 0.8),
               size: 64,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               'Error Loading Devotionals',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               error.toString(),
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: AppColors.secondaryText,
               ),
               textAlign: TextAlign.center,
             ),

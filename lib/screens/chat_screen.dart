@@ -6,9 +6,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
 import '../core/models/chat_message.dart';
 import '../core/providers/app_providers.dart';
 import '../hooks/animation_hooks.dart';
+import '../core/navigation/navigation_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -104,7 +107,7 @@ class ChatScreen extends HookConsumerWidget {
 
   Widget _buildAppBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           Container(
@@ -123,10 +126,10 @@ class ChatScreen extends HookConsumerWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => NavigationService.pop(),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +139,7 @@ class ChatScreen extends HookConsumerWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                     shadows: [
                       Shadow(
                         color: Colors.black26,
@@ -151,7 +154,7 @@ class ChatScreen extends HookConsumerWidget {
                   'Powered by local AI',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -159,7 +162,7 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -175,13 +178,13 @@ class ChatScreen extends HookConsumerWidget {
             ),
             child: const Icon(
               Icons.auto_awesome,
-              color: Colors.white,
+              color: AppColors.primaryText,
               size: 20,
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: -0.3);
   }
 
   Widget _buildMessagesList(ScrollController scrollController, List<ChatMessage> messages, bool isTyping) {
@@ -208,7 +211,7 @@ class ChatScreen extends HookConsumerWidget {
         children: [
           if (!message.isUser) ...[
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -224,15 +227,15 @@ class ChatScreen extends HookConsumerWidget {
               ),
               child: const Icon(
                 Icons.auto_awesome,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: AppSpacing.cardPadding,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: message.isUser
@@ -272,7 +275,7 @@ class ChatScreen extends HookConsumerWidget {
                     message.content,
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                       height: 1.4,
                       fontWeight: FontWeight.w500,
                       shadows: [
@@ -284,7 +287,7 @@ class ChatScreen extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
@@ -298,9 +301,9 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
           if (message.isUser) ...[
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -316,14 +319,14 @@ class ChatScreen extends HookConsumerWidget {
               ),
               child: const Icon(
                 Icons.person,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
           ],
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms, delay: (index * 100).ms).slideX(
+    ).animate().fadeIn(duration: AppAnimations.normal, delay: (index * 100).ms).slideX(
           begin: message.isUser ? 0.3 : -0.3,
         );
   }
@@ -334,7 +337,7 @@ class ChatScreen extends HookConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -350,13 +353,13 @@ class ChatScreen extends HookConsumerWidget {
             ),
             child: const Icon(
               Icons.auto_awesome,
-              color: Colors.white,
+              color: AppColors.primaryText,
               size: 20,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -396,18 +399,18 @@ class ChatScreen extends HookConsumerWidget {
       width: 8,
       height: 8,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.6),
+        color: AppColors.tertiaryText,
         borderRadius: BorderRadius.circular(4),
       ),
     ).animate(onPlay: (controller) => controller.repeat()).fadeIn(
-          duration: 600.ms,
+          duration: AppAnimations.slow,
           delay: delay.ms,
         );
   }
 
   Widget _buildMessageInput(TextEditingController messageController, void Function(String) sendMessage) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           Expanded(
@@ -428,13 +431,13 @@ class ChatScreen extends HookConsumerWidget {
               child: TextField(
                 controller: messageController,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   fontSize: 15,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Ask for biblical guidance...',
                   hintStyle: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: AppColors.tertiaryText,
                     fontSize: 15,
                   ),
                   border: InputBorder.none,
@@ -451,7 +454,7 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -477,14 +480,14 @@ class ChatScreen extends HookConsumerWidget {
               onPressed: () => sendMessage(messageController.text),
               icon: const Icon(
                 Icons.send,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3);
   }
 
   String _getContextualResponse(String message) {

@@ -5,6 +5,7 @@ import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
 import '../components/glass_button.dart';
 import '../components/glass/static_liquid_glass_lens.dart';
+import '../theme/app_theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -67,14 +68,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.xxl),
 
                     Text(
                       'Your faith-guided companion for life\'s moments',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.secondaryText,
                         height: 1.4,
                         fontWeight: FontWeight.w500,
                       ),
@@ -92,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         description: 'Get personalized Bible verses and wisdom for any situation',
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.xl),
                     BlurFade(
                       delay: const Duration(milliseconds: 300),
                       isVisible: _showFeatures,
@@ -102,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         description: 'Receive encouraging Scripture at 9:30 AM or your preferred time',
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.xl),
                     BlurFade(
                       delay: const Duration(milliseconds: 500),
                       isVisible: _showFeatures,
@@ -127,7 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Skip option
                     TextButton(
@@ -172,11 +173,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           child: Icon(
             icon,
-            color: Colors.white,
+            color: AppColors.primaryText,
             size: 24,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
               const SizedBox(height: 4),

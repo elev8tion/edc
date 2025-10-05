@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/auth/services/auth_service.dart';
 import '../features/auth/widgets/auth_form.dart';
 import '../theme/app_theme.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
 import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
@@ -71,7 +73,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // Liquid glass logo section
                   BlurFade(
@@ -93,21 +95,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                             fit: BoxFit.contain,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.lg),
                         const Text(
                           'Welcome Back',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.primaryText,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           'Sign in to continue your spiritual journey',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: AppColors.secondaryText,
                             height: 1.4,
                             fontWeight: FontWeight.w500,
                           ),
@@ -117,7 +119,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xxl),
 
                   // Auth form
                   BlurFade(
@@ -126,7 +128,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     child: const AuthForm(),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
 
                   // Privacy note
                   Text(

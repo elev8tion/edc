@@ -87,8 +87,8 @@ class GlassContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultGradientColors = [
-      Colors.white.withOpacity(0.15),
-      Colors.white.withOpacity(0.05),
+      Colors.white.withValues(alpha: 0.15),
+      Colors.white.withValues(alpha: 0.05),
     ];
 
     return Container(
@@ -104,12 +104,12 @@ class GlassContainer extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(borderRadius),
         border: border ?? Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

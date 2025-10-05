@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../theme/app_theme.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
@@ -122,7 +124,7 @@ class SplashScreen extends HookConsumerWidget {
                                         child: const Icon(
                                           Icons.auto_stories,
                                           size: 60,
-                                          color: Colors.white,
+                                          color: AppColors.primaryText,
                                         ),
                                       );
                                     },
@@ -130,7 +132,7 @@ class SplashScreen extends HookConsumerWidget {
                                 ),
                               ),
 
-                              const SizedBox(height: 24),
+                              const SizedBox(height: AppSpacing.xxl),
 
                               // App name
                               const Text(
@@ -148,11 +150,11 @@ class SplashScreen extends HookConsumerWidget {
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 2,
-                                  color: Colors.white,
+                                  color: AppColors.primaryText,
                                 ),
                               ),
 
-                              const SizedBox(height: 16),
+                              const SizedBox(height: AppSpacing.lg),
 
                               // Tagline
                               Text(
@@ -182,14 +184,14 @@ class SplashScreen extends HookConsumerWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
 
                         // Loading text
                         Text(
                           'Preparing your spiritual journey...',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: AppColors.secondaryText,
                           ),
                         ),
                       ],
@@ -214,7 +216,7 @@ class SplashScreen extends HookConsumerWidget {
                           color: Colors.white.withValues(alpha: 0.5),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       Text(
                         'Built with ❤️ for faith',
                         style: TextStyle(

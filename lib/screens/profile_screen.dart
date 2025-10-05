@@ -3,10 +3,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
 import '../components/category_badge.dart';
 import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/app_routes.dart';
+import '../core/navigation/navigation_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -77,18 +82,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _buildHeader(),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: AppSpacing.screenPadding,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildProfileCard(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
                         _buildStatsSection(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
                         _buildAchievementsSection(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
                         _buildMenuSection(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.xxl),
                       ],
                     ),
                   ),
@@ -104,38 +109,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildHeader() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.screenPadding,
         child: Row(
           children: [
             GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () => NavigationService.pop(),
               child: ClearGlassCard(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: const Icon(
                   Icons.arrow_back_ios_new,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   size: 20,
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.lg),
             Expanded(
               child: const Text(
                 'Profile',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
-              ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
+              ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
             ),
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
+              onTap: () => NavigationService.goToSettings(),
               child: ClearGlassCard(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 child: const Icon(
                   Icons.settings,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   size: 20,
                 ),
               ),
@@ -175,13 +180,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
             ),
-          ).animate().scale(duration: 600.ms),
+          ).animate().scale(duration: AppAnimations.slow),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
 
           // Name
           Text(
@@ -189,9 +194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: AppColors.primaryText,
             ),
-          ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
 
           const SizedBox(height: 4),
 
@@ -202,18 +207,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 14,
               color: Colors.white.withValues(alpha: 0.7),
             ),
-          ).animate().fadeIn(duration: 600.ms, delay: 300.ms),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: 300.ms),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           // Member since
           CategoryBadge(
             text: 'Member since ${_formatDate(memberSince)}',
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             fontSize: 11,
-          ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
 
           // Edit Profile Button
           GestureDetector(
@@ -232,16 +237,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: const Text(
                 'Edit Profile',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
               ),
             ),
-          ).animate().fadeIn(duration: 600.ms, delay: 500.ms),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: 500.ms),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2);
+    ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: 0.2);
   }
 
   Widget _buildStatsSection() {
@@ -253,11 +258,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.primaryText,
           ),
-        ).animate().fadeIn(duration: 600.ms, delay: 600.ms),
+        ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.slow),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
 
         GridView.count(
           shrinkWrap: true,
@@ -303,13 +308,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatCard(String label, String value, IconData icon, Color color, int delay) {
     return FrostedGlassCard(
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
@@ -320,13 +325,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: color,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             value,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: AppColors.primaryText,
             ),
           ),
           const SizedBox(height: 2),
@@ -334,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             label,
             style: TextStyle(
               fontSize: 10,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: AppColors.secondaryText,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -343,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
   }
 
   Widget _buildAchievementsSection() {
@@ -358,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
             ),
             CategoryBadge(
@@ -367,9 +372,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 11,
             ),
           ],
-        ).animate().fadeIn(duration: 600.ms, delay: 1100.ms),
+        ).animate().fadeIn(duration: AppAnimations.slow, delay: 1100.ms),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
 
         ListView.builder(
           shrinkWrap: true,
@@ -379,7 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             final achievement = achievements[index];
             return _buildAchievementCard(achievement, index)
                 .animate()
-                .fadeIn(duration: 600.ms, delay: (1200 + index * 100).ms)
+                .fadeIn(duration: AppAnimations.slow, delay: (1200 + index * 100).ms)
                 .slideX(begin: 0.2);
           },
         ),
@@ -391,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: FrostedGlassCard(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Row(
           children: [
             // Icon
@@ -413,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.lg),
 
             // Content
             Expanded(
@@ -451,7 +456,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   if (!achievement.isUnlocked && achievement.progress != null) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
@@ -466,7 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       '${achievement.progress}/${achievement.total}',
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.white.withValues(alpha: 0.6),
+                        color: AppColors.tertiaryText,
                       ),
                     ),
                   ],
@@ -488,20 +493,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.primaryText,
           ),
-        ).animate().fadeIn(duration: 600.ms, delay: 1500.ms),
+        ).animate().fadeIn(duration: AppAnimations.slow, delay: 1500.ms),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
 
         FrostedGlassCard(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(AppSpacing.sm),
           child: Column(
             children: [
               _buildMenuItem(
                 'Settings',
                 Icons.settings,
-                () => Navigator.pushNamed(context, AppRoutes.settings),
+                () => NavigationService.goToSettings(),
               ),
               _buildDivider(),
               _buildMenuItem(
@@ -530,7 +535,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-        ).animate().fadeIn(duration: 600.ms, delay: 1600.ms).slideY(begin: 0.2),
+        ).animate().fadeIn(duration: AppAnimations.slow, delay: 1200.ms).slideY(begin: 0.2),
       ],
     );
   }
@@ -585,20 +590,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
 
               const Text(
                 'Name',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: TextEditingController(text: userName),
                 onChanged: (value) => newName = value,
@@ -615,17 +620,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               const Text(
                 'Email',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: TextEditingController(text: userEmail),
                 onChanged: (value) => newEmail = value,
@@ -643,7 +648,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl),
 
               Row(
                 children: [
@@ -651,17 +656,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: GlassButton(
                       text: 'Cancel',
                       height: 48,
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => NavigationService.pop(),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: GlassButton(
                       text: 'Save',
                       height: 48,
                       onPressed: () {
                         // In production, save to user service/provider
-                        Navigator.pop(context);
+                        NavigationService.pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text('Profile updated successfully'),
@@ -698,43 +703,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 size: 48,
                 color: Colors.red,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               const Text(
                 'Sign Out?',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               Text(
                 'Are you sure you want to sign out?',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: AppColors.secondaryText,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl),
               Row(
                 children: [
                   Expanded(
                     child: GlassButton(
                       text: 'Cancel',
                       height: 48,
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => NavigationService.pop(),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: GlassButton(
                       text: 'Sign Out',
                       height: 48,
                       onPressed: () {
                         // In production, handle sign out logic
-                        Navigator.pop(context);
-                        Navigator.pop(context); // Go back to home
+                        NavigationService.pop();
+                        NavigationService.pop(); // Go back to home
                       },
                     ),
                   ),

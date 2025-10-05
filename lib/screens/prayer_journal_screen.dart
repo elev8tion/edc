@@ -3,9 +3,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
+import '../core/navigation/navigation_service.dart';
 
 class PrayerJournalScreen extends StatefulWidget {
   const PrayerJournalScreen({super.key});
@@ -98,21 +103,21 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => NavigationService.pop(),
             child: ClearGlassCard(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: const Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,18 +127,18 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
-                ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
+                ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
                 Text(
                   'Bring your requests to God',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
-                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),
           ),
@@ -144,7 +149,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
 
   Widget _buildTabBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: AppSpacing.horizontalXl,
       child: FrostedGlassCard(
         padding: const EdgeInsets.all(4),
         child: TabBar(
@@ -171,7 +176,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal);
   }
 
   Widget _buildActivePrayers() {
@@ -184,12 +189,12 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       itemCount: _activePrayers.length,
       itemBuilder: (context, index) {
         final prayer = _activePrayers[index];
         return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
+            .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
             .slideY(begin: 0.3);
       },
     );
@@ -205,12 +210,12 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       itemCount: _answeredPrayers.length,
       itemBuilder: (context, index) {
         final prayer = _answeredPrayers[index];
         return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: 600.ms, delay: (600 + index * 100).ms)
+            .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
             .slideY(begin: 0.3);
       },
     );
@@ -228,33 +233,33 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClearGlassCard(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.screenPaddingLarge,
               child: Icon(
                 icon,
                 size: 48,
-                color: Colors.white.withValues(alpha: 0.6),
+                color: AppColors.tertiaryText,
               ),
-            ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.8, 0.8)),
-            const SizedBox(height: 24),
+            ).animate().fadeIn(duration: AppAnimations.slow).scale(begin: const Offset(0.8, 0.8)),
+            const SizedBox(height: AppSpacing.xxl),
             Text(
               title,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
               textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-            const SizedBox(height: 12),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
+            const SizedBox(height: AppSpacing.md),
             Text(
               subtitle,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: AppColors.secondaryText,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
           ],
         ),
       ),
@@ -304,7 +309,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                         child: Row(
                           children: [
                             Icon(Icons.check, size: 18),
-                            SizedBox(width: 8),
+                            SizedBox(width: AppSpacing.sm),
                             Text('Mark as Answered'),
                           ],
                         ),
@@ -314,7 +319,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                         child: Row(
                           children: [
                             Icon(Icons.delete, size: 18, color: Colors.red),
-                            SizedBox(width: 8),
+                            SizedBox(width: AppSpacing.sm),
                             Text('Delete', style: TextStyle(color: Colors.red)),
                           ],
                         ),
@@ -325,22 +330,22 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                       child: const Icon(
                         Icons.more_vert,
                         size: 18,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Text(
               prayer.title,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               prayer.description,
               style: TextStyle(
@@ -350,9 +355,9 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
               ),
             ),
             if (prayer.isAnswered && prayer.answerDescription != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -384,24 +389,24 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                 ),
               ),
             ],
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 Icon(
                   Icons.schedule,
                   size: 14,
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: AppColors.tertiaryText,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   _formatDate(prayer.dateCreated),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: AppColors.tertiaryText,
                   ),
                 ),
                 if (prayer.isAnswered && prayer.dateAnswered != null) ...[
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.lg),
                   Icon(
                     Icons.check_circle,
                     size: 14,
@@ -445,26 +450,26 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.xl),
 
                   const Text(
                     'Title',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   TextField(
                     onChanged: (value) => title = value,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'What are you praying for?',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                      hintStyle: TextStyle(color: AppColors.tertiaryText),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
@@ -474,19 +479,19 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.lg),
                   const Text(
                     'Category',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: AppSpacing.horizontalMd,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -511,23 +516,23 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.lg),
                   const Text(
                     'Description',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   TextField(
                     onChanged: (value) => description = value,
                     maxLines: 3,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Share more details about your prayer request...',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                      hintStyle: TextStyle(color: AppColors.tertiaryText),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
@@ -537,17 +542,17 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xxl),
                   Row(
                     children: [
                       Expanded(
                         child: GlassButton(
                           text: 'Cancel',
                           height: 48,
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => NavigationService.pop(),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: GlassButton(
                           text: 'Add Prayer',
@@ -555,7 +560,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                           onPressed: () {
                             if (title.isNotEmpty && description.isNotEmpty) {
                               _addPrayer(title, description, selectedCategory);
-                              Navigator.pop(context);
+                              NavigationService.pop();
                             }
                           },
                         ),
@@ -604,27 +609,27 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.xl),
 
                 const Text(
                   'How did God answer this prayer?',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 TextField(
                   onChanged: (value) => answerDescription = value,
                   maxLines: 3,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Share how God answered your prayer...',
-                    hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                    hintStyle: TextStyle(color: AppColors.tertiaryText),
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.1),
                     border: OutlineInputBorder(
@@ -634,17 +639,17 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 Row(
                   children: [
                     Expanded(
                       child: GlassButton(
                         text: 'Cancel',
                         height: 48,
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => NavigationService.pop(),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: GlassButton(
                         text: 'Mark Answered',
@@ -658,7 +663,7 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                               _activePrayers.remove(prayer);
                               _answeredPrayers.insert(0, prayer);
                             });
-                            Navigator.pop(context);
+                            NavigationService.pop();
                           }
                         },
                       ),

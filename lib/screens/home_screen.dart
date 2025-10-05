@@ -11,6 +11,7 @@ import '../components/gradient_background.dart';
 import '../components/category_badge.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/providers/app_providers.dart';
+import '../core/navigation/navigation_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -34,7 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _setGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      greeting = "Good morning";
+      greeting = "Rise and shine";
     } else if (hour < 17) {
       greeting = "Good afternoon";
     } else {
@@ -53,20 +54,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: AppSpacing.screenPadding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                 _buildHeader(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 _buildStatsRow(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 _buildMainFeatures(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 _buildQuickActions(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 _buildDailyVerse(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 _buildStartChatButton(),
               ],
             ),
@@ -89,28 +90,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$greeting, $userName! 👋',
+                    '$greeting, $userName!',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: AppColors.primaryText,
                     ),
                     overflow: TextOverflow.ellipsis,
-                  ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
+                  ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                   const SizedBox(height: 4),
                   Text(
                     'How can I encourage you today?',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: AppColors.secondaryText,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
-                  ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideX(begin: -0.3),
+                  ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideX(begin: -0.3),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Container(
               width: 40,
               height: 40,
@@ -124,10 +125,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: Icon(
                 Icons.person,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
-            ).animate().fadeIn(duration: 600.ms, delay: 400.ms).scale(begin: const Offset(0.8, 0.8)),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal).scale(begin: const Offset(0.8, 0.8)),
           ],
         ),
       ],
@@ -165,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               delay: 600,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           _buildStatCard(
             value: "42",
             label: "Prayers",
@@ -173,7 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: Colors.red,
             delay: 700,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           _buildStatCard(
             value: "156",
             label: "Verses Read",
@@ -181,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: AppTheme.goldColor,
             delay: 800,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           totalCompletedAsync.when(
             data: (total) => _buildStatCard(
               value: "$total",
@@ -218,7 +219,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }) {
     return Container(
       width: 140,
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -264,7 +265,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: AppColors.primaryText,
               shadows: [
                 Shadow(
                   color: Colors.black.withValues(alpha: 0.3),
@@ -298,7 +299,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: delay.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
   }
 
   Widget _buildStatCardLoading({
@@ -309,7 +310,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }) {
     return Container(
       width: 140,
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -382,7 +383,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: delay.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
   }
 
   Widget _buildMainFeatures() {
@@ -392,7 +393,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Expanded(
               child: FrostedGlassCard(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.chat),
+                onTap: () => NavigationService.goToChat(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -401,16 +402,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Icon(
                         Icons.chat_bubble_outline,
                         size: 24,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       "AI Guidance",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -420,7 +421,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       "Get biblical wisdom for any situation you're facing",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.secondaryText,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -428,12 +429,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 600.ms, delay: 900.ms).slideX(begin: -0.3),
+              ).animate().fadeIn(duration: AppAnimations.slow, delay: 900.ms).slideX(begin: -0.3),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: FrostedGlassCard(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.devotional),
+                onTap: () => NavigationService.goToDevotional(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -442,16 +443,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Icon(
                         Icons.auto_stories,
                         size: 24,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       "Daily Devotional",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -461,7 +462,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       "Grow closer to God with daily reflections",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.secondaryText,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -469,16 +470,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 600.ms, delay: 1000.ms).slideX(begin: 0.3),
+              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1000.ms).slideX(begin: 0.3),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         Row(
           children: [
             Expanded(
               child: FrostedGlassCard(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.prayerJournal),
+                onTap: () => NavigationService.goToPrayerJournal(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -487,16 +488,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Icon(
                         Icons.favorite_outline,
                         size: 24,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       "Prayer Journal",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -506,7 +507,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       "Track your prayers and see God's faithfulness",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.secondaryText,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -514,12 +515,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 600.ms, delay: 1100.ms).slideX(begin: -0.3),
+              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1100.ms).slideX(begin: -0.3),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: FrostedGlassCard(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.readingPlan),
+                onTap: () => NavigationService.goToReadingPlan(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -528,16 +529,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Icon(
                         Icons.library_books_outlined,
                         size: 24,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       "Reading Plans",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -547,7 +548,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       "Structured Bible reading with daily guidance",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.secondaryText,
                         height: 1.3,
                       ),
                       maxLines: 2,
@@ -555,7 +556,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 600.ms, delay: 1200.ms).slideX(begin: 0.3),
+              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1200.ms).slideX(begin: 0.3),
             ),
           ],
         ),
@@ -572,7 +573,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.primaryText,
             shadows: [
               Shadow(
                 color: Colors.black26,
@@ -581,8 +582,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
-        ).animate().fadeIn(duration: 600.ms, delay: 1300.ms),
-        const SizedBox(height: 16),
+        ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
+        const SizedBox(height: AppSpacing.lg),
         SizedBox(
           height: 120,
           child: ListView(
@@ -595,15 +596,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
                 delay: 1400,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               _buildQuickActionCard(
                 label: "Add Prayer",
                 icon: Icons.add,
                 color: Colors.green,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.prayerJournal),
+                onTap: () => NavigationService.goToPrayerJournal(),
                 delay: 1500,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               _buildQuickActionCard(
                 label: "Share Verse",
                 icon: Icons.share,
@@ -611,20 +612,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
                 delay: 1600,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               _buildQuickActionCard(
                 label: "Settings",
                 icon: Icons.settings,
                 color: Colors.grey[300]!,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
+                onTap: () => NavigationService.goToSettings(),
                 delay: 1700,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               _buildQuickActionCard(
                 label: "Profile",
                 icon: Icons.person,
                 color: Colors.purple,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                onTap: () => NavigationService.goToProfile(),
                 delay: 1800,
               ),
             ],
@@ -645,7 +646,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       onTap: onTap,
       child: Container(
         width: 100,
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -684,7 +685,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 color: color,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Flexible(
               child: Text(
                 label,
@@ -708,12 +709,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
   }
 
   Widget _buildDailyVerse() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: AppSpacing.screenPaddingLarge,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -758,18 +759,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Text(
                   'Verse of the Day',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                     shadows: [
                       Shadow(
                         color: Colors.black.withValues(alpha: 0.3),
@@ -782,9 +783,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -800,7 +801,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                     fontStyle: FontStyle.italic,
                     height: 1.6,
                     fontWeight: FontWeight.w500,
@@ -813,7 +814,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -842,13 +843,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 1800.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 1800.ms).slideY(begin: 0.3);
   }
 
   Widget _buildStartChatButton() {
     return GlassButton(
       text: 'Start Spiritual Conversation',
-      onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
-    ).animate().fadeIn(duration: 600.ms, delay: 1900.ms).slideY(begin: 0.5);
+      onPressed: () => NavigationService.goToChat(),
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 1900.ms).slideY(begin: 0.5);
   }
 }

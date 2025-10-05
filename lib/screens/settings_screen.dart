@@ -5,6 +5,11 @@ import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
+import '../core/navigation/navigation_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -45,7 +50,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildAppBar() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           Container(
@@ -64,17 +69,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => NavigationService.pop(),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: const Text(
               'Settings',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 shadows: [
                   Shadow(
                     color: Colors.black26,
@@ -86,7 +91,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -102,18 +107,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             child: const Icon(
               Icons.settings,
-              color: Colors.white,
+              color: AppColors.primaryText,
               size: 20,
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: -0.3);
   }
 
   Widget _buildSettingsContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: AppSpacing.horizontalXl,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -141,7 +146,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'Bible Settings',
             Icons.menu_book,
@@ -162,7 +167,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'Display',
             Icons.text_fields,
@@ -177,7 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'Data & Privacy',
             Icons.security,
@@ -202,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'Support',
             Icons.help,
@@ -227,7 +232,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'About',
             Icons.info,
@@ -256,14 +261,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildSettingsSection(String title, IconData icon, List<Widget> children) {
     return FrostedGlassCard(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -279,17 +284,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 child: Icon(
                   icon,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Text(
                 title,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.primaryText,
                   shadows: [
                     Shadow(
                       color: Colors.black26,
@@ -301,17 +306,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           ...children,
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: 0.3);
   }
 
   Widget _buildSwitchTile(String title, String subtitle, bool value, Function(bool) onChanged) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -331,7 +336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -368,7 +373,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildSliderTile(String title, String subtitle, double value, double min, double max, Function(double) onChanged) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -392,7 +397,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -416,7 +421,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: Colors.white,
@@ -440,7 +445,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildDropdownTile(String title, String subtitle, String value, List<String> options, Function(String?) onChanged) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -457,7 +462,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: AppColors.primaryText,
             ),
           ),
           const SizedBox(height: 4),
@@ -468,9 +473,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: AppSpacing.horizontalMd,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -485,7 +490,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 isExpanded: true,
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
                 dropdownColor: const Color(0xFF2D3748),
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: const TextStyle(color: AppColors.primaryText, fontSize: 15),
                 items: options.map((String option) {
                   return DropdownMenuItem<String>(
                     value: option,
@@ -510,7 +515,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
@@ -522,18 +527,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     icon,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,7 +548,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.primaryText,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -573,7 +578,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildInfoTile(String title, String value) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -590,14 +595,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: AppColors.primaryText,
             ),
           ),
           Text(
             value,
             style: TextStyle(
               fontSize: 15,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: AppColors.secondaryText,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -618,12 +623,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => NavigationService.pop(),
             child: Text('Cancel', style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              NavigationService.pop();
               _showSnackBar('Cache cleared successfully');
             },
             child: Text('Clear', style: TextStyle(color: AppTheme.primaryColor)),
@@ -649,7 +654,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => NavigationService.pop(),
             child: Text('Close', style: TextStyle(color: AppTheme.primaryColor)),
           ),
         ],

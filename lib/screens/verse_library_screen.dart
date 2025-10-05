@@ -4,9 +4,16 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
+import '../components/frosted_glass_card.dart';
+import '../components/clear_glass_card.dart';
+import '../components/glass_card.dart';
 import '../components/category_badge.dart';
 import '../components/base_bottom_sheet.dart';
 import '../theme/app_theme.dart';
+import '../core/navigation/navigation_service.dart';
 
 class VerseLibraryScreen extends StatefulWidget {
   const VerseLibraryScreen({super.key});
@@ -151,21 +158,21 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: () => NavigationService.pop(),
             child: const ClearGlassCard(
               padding: EdgeInsets.all(12),
               child: Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 size: 20,
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,18 +182,18 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                    color: AppColors.primaryText,
                   ),
-                ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3),
+                ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
                 Text(
                   'Find comfort in God\'s word',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
-                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),
           ),
@@ -197,7 +204,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
 
   Widget _buildSearchBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: AppSpacing.horizontalXl,
       child: GlassCard(
         borderRadius: 24,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -210,7 +217,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
             _filterVerses();
           },
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.primaryText,
             fontSize: 16,
           ),
           decoration: InputDecoration(
@@ -222,10 +229,10 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
             filled: true,
             fillColor: Colors.transparent,
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+            contentPadding: AppSpacing.verticalMd,
             prefixIcon: Icon(
               Icons.search,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: AppColors.secondaryText,
             ),
             suffixIcon: _isSearching
                 ? GestureDetector(
@@ -238,23 +245,23 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                     },
                     child: Icon(
                       Icons.clear,
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: AppColors.secondaryText,
                     ),
                   )
                 : null,
           ),
         ),
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal);
   }
 
   Widget _buildCategoryFilter() {
     return Container(
       height: 50,
-      margin: const EdgeInsets.symmetric(vertical: 16),
+      margin: AppSpacing.verticalLg,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: AppSpacing.horizontalXl,
         itemCount: _categories.length,
         itemBuilder: (context, index) {
           final category = _categories[index];
@@ -274,7 +281,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                 isSelected: isSelected,
               ),
             ),
-          ).animate().fadeIn(duration: 600.ms, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
         },
       ),
     );
@@ -284,7 +291,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     final favoriteCount = _allVerses.where((v) => v.isFavorite).length;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: AppSpacing.horizontalXl,
       child: FrostedGlassCard(
         padding: const EdgeInsets.all(4),
         child: TabBar(
@@ -311,7 +318,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
           ],
         ),
       ),
-    ).animate().fadeIn(duration: 600.ms, delay: 800.ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 800.ms);
   }
 
   Widget _buildAllVerses() {
@@ -326,12 +333,12 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       itemCount: _filteredVerses.length,
       itemBuilder: (context, index) {
         final verse = _filteredVerses[index];
         return _buildVerseCard(verse, index).animate()
-            .fadeIn(duration: 600.ms, delay: (1000 + index * 100).ms)
+            .fadeIn(duration: AppAnimations.slow, delay: (1000 + index * 100).ms)
             .slideY(begin: 0.3);
       },
     );
@@ -349,12 +356,12 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: AppSpacing.screenPadding,
       itemCount: favoriteVerses.length,
       itemBuilder: (context, index) {
         final verse = favoriteVerses[index];
         return _buildVerseCard(verse, index).animate()
-            .fadeIn(duration: 600.ms, delay: (1000 + index * 100).ms)
+            .fadeIn(duration: AppAnimations.slow, delay: (1000 + index * 100).ms)
             .slideY(begin: 0.3);
       },
     );
@@ -372,33 +379,33 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClearGlassCard(
-              padding: const EdgeInsets.all(24),
+              padding: AppSpacing.screenPaddingLarge,
               child: Icon(
                 icon,
                 size: 48,
-                color: Colors.white.withValues(alpha: 0.6),
+                color: AppColors.tertiaryText,
               ),
-            ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.8, 0.8)),
-            const SizedBox(height: 24),
+            ).animate().fadeIn(duration: AppAnimations.slow).scale(begin: const Offset(0.8, 0.8)),
+            const SizedBox(height: AppSpacing.xxl),
             Text(
               title,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.primaryText,
               ),
               textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-            const SizedBox(height: 12),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
+            const SizedBox(height: AppSpacing.md),
             Text(
               subtitle,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: AppColors.secondaryText,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms, delay: 400.ms),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
           ],
         ),
       ),
@@ -425,7 +432,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                     GestureDetector(
                       onTap: () => _toggleFavorite(verse),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Icon(
                           verse.isFavorite ? Icons.favorite : Icons.favorite_outline,
                           size: 20,
@@ -436,7 +443,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                     GestureDetector(
                       onTap: () => _showShareOptions(verse),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Icon(
                           Icons.share,
                           size: 20,
@@ -448,18 +455,18 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               '"${verse.text}"',
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: AppColors.primaryText,
                 height: 1.5,
                 fontWeight: FontWeight.w500,
                 fontStyle: FontStyle.italic,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Row(
               children: [
                 Icon(
@@ -467,7 +474,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                   size: 16,
                   color: AppTheme.goldColor.withValues(alpha: 0.8),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 Text(
                   verse.reference,
                   style: TextStyle(
@@ -498,7 +505,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               title: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Copy verse to clipboard
-                Navigator.pop(context);
+                NavigationService.pop();
               },
             ),
             ListTile(
@@ -506,7 +513,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               title: const Text('Share with Friends', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Share verse
-                Navigator.pop(context);
+                NavigationService.pop();
               },
             ),
             ListTile(
@@ -514,10 +521,10 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               title: const Text('Create Image Quote', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Create image quote
-                Navigator.pop(context);
+                NavigationService.pop();
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
           ],
         ),
       ),

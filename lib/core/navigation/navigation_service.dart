@@ -61,6 +61,45 @@ class NavigationService {
     return pushAndRemoveUntil(AppRoutes.splash);
   }
 
+  // ============================================================================
+  // Convenience navigation methods for common routes
+  // ============================================================================
+
+  /// Navigate to chat screen
+  static Future<void> goToChat() {
+    return pushNamed(AppRoutes.chat);
+  }
+
+  /// Navigate to devotional screen
+  static Future<void> goToDevotional() {
+    return pushNamed(AppRoutes.devotional);
+  }
+
+  /// Navigate to prayer journal screen
+  static Future<void> goToPrayerJournal() {
+    return pushNamed(AppRoutes.prayerJournal);
+  }
+
+  /// Navigate to verse library screen
+  static Future<void> goToVerseLibrary() {
+    return pushNamed(AppRoutes.verseLibrary);
+  }
+
+  /// Navigate to settings screen
+  static Future<void> goToSettings() {
+    return pushNamed(AppRoutes.settings);
+  }
+
+  /// Navigate to profile screen
+  static Future<void> goToProfile() {
+    return pushNamed(AppRoutes.profile);
+  }
+
+  /// Navigate to reading plan screen
+  static Future<void> goToReadingPlan() {
+    return pushNamed(AppRoutes.readingPlan);
+  }
+
   /// Show a dialog
   static Future<T?> showAppDialog<T>({
     required Widget dialog,
