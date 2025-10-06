@@ -121,28 +121,187 @@ class VerseService {
     }
   }
 
-  Future<BibleVerse?> getVerseOfTheDay() async {
+  /// Get smart daily verse based on user preferences and history
+  Future<BibleVerse?> getVerseOfTheDay({String? forceTheme}) async {
     final db = await _database.database;
-    // Get random verse from actual Bible
-    final maps = await db.query(
-      'bible_verses',
-      where: 'version = ?',
-      whereArgs: ['KJV'],
-      orderBy: 'RANDOM()',
-      limit: 1,
+    final today = _getTodayTimestamp();
+
+    // Check if we already selected a verse for today
+    final todayVerse = await _getTodaySelectedVerse(today);
+    if (todayVerse != null) {
+      return todayVerse;
+    }
+
+    // Get user preferences
+    final preferences = await _getVersePreferences();
+    final preferredThemes = preferences['preferred_themes']?.split(',') ?? ['faith', 'hope', 'love'];
+    final avoidRecentDays = int.tryParse(preferences['avoid_recent_days'] ?? '30') ?? 30;
+    final preferredVersion = preferences['preferred_version'] ?? 'KJV';
+
+    // Get recently shown verses to avoid
+    final recentVerseIds = await _getRecentVerseIds(avoidRecentDays);
+
+    // Select theme (use forced theme or rotate through preferences)
+    final theme = forceTheme ?? await _selectDailyTheme(preferredThemes);
+
+    // Search for verse matching theme, excluding recent ones
+    BibleVerse? selectedVerse = await _findVerseByThemeExcluding(
+      theme: theme,
+      excludeIds: recentVerseIds,
+      version: preferredVersion,
     );
 
-    if (maps.isNotEmpty) {
-      final verse = maps.first;
-      return BibleVerse(
-        id: verse['id'].toString(),
-        text: verse['text'] as String,
-        reference: '${verse['book']} ${verse['chapter']}:${verse['verse']}',
-        category: VerseCategory.faith,
-        isFavorite: false,
+    // Fallback: if no verse found, get any random verse excluding recent
+    selectedVerse ??= await _getRandomVerseExcluding(
+      excludeIds: recentVerseIds,
+      version: preferredVersion,
+    );
+
+    // Record the selection in history
+    if (selectedVerse != null) {
+      await _recordDailyVerse(
+        int.parse(selectedVerse.id),
+        today,
+        theme,
       );
     }
-    return null;
+
+    return selectedVerse;
+  }
+
+  /// Get today's timestamp (date only, no time)
+  int _getTodayTimestamp() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return today.millisecondsSinceEpoch;
+  }
+
+  /// Check if we already selected a verse for today
+  Future<BibleVerse?> _getTodaySelectedVerse(int todayTimestamp) async {
+    final db = await _database.database;
+    final maps = await db.rawQuery('''
+      SELECT bv.* FROM bible_verses bv
+      INNER JOIN daily_verse_history dvh ON bv.id = dvh.verse_id
+      WHERE dvh.shown_date = ?
+      LIMIT 1
+    ''', [todayTimestamp]);
+
+    if (maps.isEmpty) return null;
+
+    final verse = maps.first;
+    return BibleVerse(
+      id: verse['id'].toString(),
+      text: verse['text'] as String,
+      reference: '${verse['book']} ${verse['chapter']}:${verse['verse']}',
+      category: VerseCategory.faith,
+      isFavorite: false,
+    );
+  }
+
+  /// Get user verse preferences
+  Future<Map<String, String>> _getVersePreferences() async {
+    final db = await _database.database;
+    final maps = await db.query('verse_preferences');
+
+    final prefs = <String, String>{};
+    for (final map in maps) {
+      prefs[map['preference_key'] as String] = map['preference_value'] as String;
+    }
+    return prefs;
+  }
+
+  /// Get verse IDs shown in the last N days
+  Future<List<int>> _getRecentVerseIds(int days) async {
+    final db = await _database.database;
+    final cutoffDate = DateTime.now().subtract(Duration(days: days));
+    final cutoffTimestamp = cutoffDate.millisecondsSinceEpoch;
+
+    final maps = await db.query(
+      'daily_verse_history',
+      columns: ['verse_id'],
+      where: 'shown_date >= ?',
+      whereArgs: [cutoffTimestamp],
+    );
+
+    return maps.map((map) => map['verse_id'] as int).toList();
+  }
+
+  /// Select theme for today (rotating through preferences)
+  Future<String> _selectDailyTheme(List<String> themes) async {
+    if (themes.isEmpty) return 'faith';
+
+    // Use day of year to rotate through themes
+    final dayOfYear = DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays;
+    final themeIndex = dayOfYear % themes.length;
+    return themes[themeIndex];
+  }
+
+  /// Find verse by theme, excluding recent IDs
+  Future<BibleVerse?> _findVerseByThemeExcluding({
+    required String theme,
+    required List<int> excludeIds,
+    String version = 'KJV',
+  }) async {
+    // Use FTS5 search for theme
+    final verses = await searchByTheme(theme, version: version, limit: 100);
+
+    // Filter out recently shown verses
+    final filtered = verses.where((v) {
+      final id = int.tryParse(v.id);
+      return id != null && !excludeIds.contains(id);
+    }).toList();
+
+    // Return random from filtered results
+    if (filtered.isEmpty) return null;
+    filtered.shuffle();
+    return filtered.first;
+  }
+
+  /// Get random verse excluding recent IDs
+  Future<BibleVerse?> _getRandomVerseExcluding({
+    required List<int> excludeIds,
+    String version = 'KJV',
+  }) async {
+    final db = await _database.database;
+
+    String excludeClause = '';
+    if (excludeIds.isNotEmpty) {
+      final placeholders = excludeIds.map((_) => '?').join(',');
+      excludeClause = 'AND id NOT IN ($placeholders)';
+    }
+
+    final maps = await db.rawQuery('''
+      SELECT * FROM bible_verses
+      WHERE version = ? $excludeClause
+      ORDER BY RANDOM()
+      LIMIT 1
+    ''', [version, ...excludeIds]);
+
+    if (maps.isEmpty) return null;
+
+    final verse = maps.first;
+    return BibleVerse(
+      id: verse['id'].toString(),
+      text: verse['text'] as String,
+      reference: '${verse['book']} ${verse['chapter']}:${verse['verse']}',
+      category: VerseCategory.faith,
+      isFavorite: false,
+    );
+  }
+
+  /// Record daily verse selection in history
+  Future<void> _recordDailyVerse(int verseId, int shownDate, String theme) async {
+    final db = await _database.database;
+    await db.insert(
+      'daily_verse_history',
+      {
+        'verse_id': verseId,
+        'shown_date': shownDate,
+        'theme': theme,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   /// Get a specific verse by reference (e.g., "John 3:16")
@@ -429,5 +588,85 @@ class VerseService {
     ''', [limit]);
 
     return maps.map((map) => map['query'] as String).toList();
+  }
+
+  // ============================================================================
+  // VERSE PREFERENCE METHODS
+  // ============================================================================
+
+  /// Update user's preferred themes for daily verses
+  Future<void> updatePreferredThemes(List<String> themes) async {
+    final db = await _database.database;
+    await db.update(
+      'verse_preferences',
+      {
+        'preference_value': themes.join(','),
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      where: 'preference_key = ?',
+      whereArgs: ['preferred_themes'],
+    );
+  }
+
+  /// Update how many days to avoid showing recent verses
+  Future<void> updateAvoidRecentDays(int days) async {
+    final db = await _database.database;
+    await db.update(
+      'verse_preferences',
+      {
+        'preference_value': days.toString(),
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      where: 'preference_key = ?',
+      whereArgs: ['avoid_recent_days'],
+    );
+  }
+
+  /// Update preferred Bible version for daily verses
+  Future<void> updatePreferredVersion(String version) async {
+    final db = await _database.database;
+    await db.update(
+      'verse_preferences',
+      {
+        'preference_value': version,
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      where: 'preference_key = ?',
+      whereArgs: ['preferred_version'],
+    );
+  }
+
+  /// Get daily verse history
+  Future<List<Map<String, dynamic>>> getDailyVerseHistory({int limit = 30}) async {
+    final db = await _database.database;
+    final maps = await db.rawQuery('''
+      SELECT
+        bv.*,
+        dvh.shown_date,
+        dvh.theme,
+        dvh.created_at
+      FROM bible_verses bv
+      INNER JOIN daily_verse_history dvh ON bv.id = dvh.verse_id
+      ORDER BY dvh.shown_date DESC
+      LIMIT ?
+    ''', [limit]);
+
+    return maps.map((map) => {
+      'verse': BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      ),
+      'theme': map['theme'] as String?,
+      'shownDate': DateTime.fromMillisecondsSinceEpoch(map['shown_date'] as int),
+    }).toList();
+  }
+
+  /// Clear daily verse history (for testing or user request)
+  Future<void> clearDailyVerseHistory() async {
+    final db = await _database.database;
+    await db.delete('daily_verse_history');
   }
 }

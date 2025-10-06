@@ -9,7 +9,7 @@ import '../models/reading_plan.dart';
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 4;
+  static const int _databaseVersion = 5;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -150,6 +150,54 @@ class DatabaseService {
       await db.execute('''
         CREATE INDEX idx_search_history ON search_history(created_at DESC)
       ''');
+    }
+
+    if (oldVersion < 5) {
+      // Daily verse history tracking
+      await db.execute('''
+        CREATE TABLE daily_verse_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          shown_date INTEGER NOT NULL,
+          theme TEXT,
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+          UNIQUE(verse_id, shown_date)
+        )
+      ''');
+
+      await db.execute('''
+        CREATE INDEX idx_daily_verse_date ON daily_verse_history(shown_date DESC)
+      ''');
+
+      // User verse preferences
+      await db.execute('''
+        CREATE TABLE verse_preferences (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          preference_key TEXT NOT NULL UNIQUE,
+          preference_value TEXT NOT NULL,
+          updated_at INTEGER NOT NULL
+        )
+      ''');
+
+      // Insert default preferences
+      await db.insert('verse_preferences', {
+        'preference_key': 'preferred_themes',
+        'preference_value': 'faith,hope,love,peace,strength',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      });
+
+      await db.insert('verse_preferences', {
+        'preference_key': 'avoid_recent_days',
+        'preference_value': '30',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      });
+
+      await db.insert('verse_preferences', {
+        'preference_key': 'preferred_version',
+        'preference_value': 'KJV',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      });
     }
   }
 
@@ -334,6 +382,33 @@ class DatabaseService {
         VALUES (new.id, new.book, new.chapter, new.verse, new.text);
       END
     ''');
+
+    // Daily verse history table (v5)
+    await db.execute('''
+      CREATE TABLE daily_verse_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        verse_id INTEGER NOT NULL,
+        shown_date INTEGER NOT NULL,
+        theme TEXT,
+        created_at INTEGER NOT NULL,
+        FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+        UNIQUE(verse_id, shown_date)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_daily_verse_date ON daily_verse_history(shown_date DESC)
+    ''');
+
+    // Verse preferences table (v5)
+    await db.execute('''
+      CREATE TABLE verse_preferences (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        preference_key TEXT NOT NULL UNIQUE,
+        preference_value TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
   }
 
   Future<void> _insertInitialData(Database db) async {
@@ -379,6 +454,29 @@ class DatabaseService {
 
     for (final plan in readingPlans) {
       await db.insert('reading_plans', plan);
+    }
+
+    // Insert default verse preferences (v5)
+    final versePreferences = [
+      {
+        'preference_key': 'preferred_themes',
+        'preference_value': 'faith,hope,love,peace,strength',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'preference_key': 'avoid_recent_days',
+        'preference_value': '30',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'preference_key': 'preferred_version',
+        'preference_value': 'KJV',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+    ];
+
+    for (final pref in versePreferences) {
+      await db.insert('verse_preferences', pref);
     }
   }
 
