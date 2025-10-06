@@ -63,6 +63,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollToBottom();
   }
 
+  void _replaceMessage(int index, ChatMessage newMessage) {
+    setState(() {
+      _messages[index] = newMessage;
+    });
+  }
+
   void _scrollToBottom({bool animated = true}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -410,9 +416,59 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               (index < _messages.length - 1 &&
                _messages[index + 1].type != message.type),
           onVersePressed: _handleVersePressed,
+          onRegenerateResponse: message.isAI ? () => _regenerateResponse(index) : null,
         );
       },
     );
+  }
+
+  Future<void> _regenerateResponse(int aiMessageIndex) async {
+    // Find the previous user message
+    String? userInput;
+    for (int i = aiMessageIndex - 1; i >= 0; i--) {
+      if (_messages[i].isUser) {
+        userInput = _messages[i].content;
+        break;
+      }
+    }
+
+    if (userInput == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not find previous user message')),
+      );
+      return;
+    }
+
+    // Show loading state on the message
+    setState(() {
+      _isTyping = true;
+    });
+
+    try {
+      // Generate new AI response with same input
+      final newResponse = await _generateAIResponse(userInput);
+
+      // Replace the old AI message with the new one
+      _replaceMessage(aiMessageIndex, newResponse);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Response regenerated successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to regenerate response: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isTyping = false;
+      });
+    }
   }
 
   void _showChatOptions() {

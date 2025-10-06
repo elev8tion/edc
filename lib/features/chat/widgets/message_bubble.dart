@@ -14,6 +14,7 @@ class MessageBubble extends StatelessWidget {
   final bool showTimestamp;
   final VoidCallback? onLongPress;
   final Function(BibleVerse)? onVersePressed;
+  final VoidCallback? onRegenerateResponse;
 
   const MessageBubble({
     super.key,
@@ -22,6 +23,7 @@ class MessageBubble extends StatelessWidget {
     this.showTimestamp = false,
     this.onLongPress,
     this.onVersePressed,
+    this.onRegenerateResponse,
   });
 
   @override
@@ -266,14 +268,14 @@ class MessageBubble extends StatelessWidget {
               },
             ),
 
-            if (message.isAI) ...[
+            if (message.isAI && onRegenerateResponse != null) ...[
               _buildOptionTile(
                 context,
                 icon: Icons.refresh,
                 title: 'Regenerate Response',
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Implement regenerate functionality
+                  onRegenerateResponse?.call();
                 },
               ),
             ],

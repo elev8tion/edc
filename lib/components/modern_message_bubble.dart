@@ -8,12 +8,14 @@ class ModernMessageBubble extends StatelessWidget {
   final ChatMessage message;
   final bool showTimestamp;
   final Function(BibleVerse)? onVersePressed;
+  final VoidCallback? onRegenerateResponse;
 
   const ModernMessageBubble({
     super.key,
     required this.message,
     this.showTimestamp = false,
     this.onVersePressed,
+    this.onRegenerateResponse,
   });
 
   @override
@@ -82,59 +84,116 @@ class ModernMessageBubble extends StatelessWidget {
   }
 
   Widget _buildMessageContent(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: message.isUser
-            ? AppTheme.primaryGradient
-            : null,
-        color: message.isUser
-            ? null
-            : Theme.of(context).cardColor,
-        borderRadius: BorderRadius.only(
-          topLeft: const Radius.circular(20),
-          topRight: const Radius.circular(20),
-          bottomLeft: Radius.circular(message.isUser ? 20 : 4),
-          bottomRight: Radius.circular(message.isUser ? 4 : 20),
-        ),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (message.type == MessageType.system) ...[
-            Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: message.isUser ? Colors.white : AppTheme.primaryColor,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'System',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: message.isUser ? Colors.white70 : AppTheme.primaryColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-          Text(
-            message.content,
-            style: TextStyle(
-              fontSize: 16,
-              color: message.isUser
-                  ? Colors.white
-                  : Theme.of(context).textTheme.bodyLarge?.color,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
+    return GestureDetector(
+      onLongPress: message.isAI && onRegenerateResponse != null
+          ? () => _showMessageOptions(context)
+          : null,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: message.isUser
+              ? AppTheme.primaryGradient
+              : null,
+          color: message.isUser
+              ? null
+              : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(message.isUser ? 20 : 4),
+            bottomRight: Radius.circular(message.isUser ? 4 : 20),
           ),
-        ],
+          boxShadow: AppTheme.cardShadow,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (message.type == MessageType.system) ...[
+              Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: message.isUser ? Colors.white : AppTheme.primaryColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'System',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: message.isUser ? Colors.white70 : AppTheme.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+            Text(
+              message.content,
+              style: TextStyle(
+                fontSize: 16,
+                color: message.isUser
+                    ? Colors.white
+                    : Theme.of(context).textTheme.bodyLarge?.color,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMessageOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.grey.shade900.withValues(alpha: 0.95),
+              Colors.grey.shade800.withValues(alpha: 0.95),
+            ],
+          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.refresh, color: AppTheme.primaryColor),
+                title: const Text(
+                  'Regenerate Response',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                subtitle: const Text(
+                  'Get a new AI response',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  onRegenerateResponse?.call();
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
   }
