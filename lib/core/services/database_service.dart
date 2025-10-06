@@ -9,7 +9,7 @@ import '../models/reading_plan.dart';
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 3;
+  static const int _databaseVersion = 4;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -73,6 +73,82 @@ class DatabaseService {
       // Create index for fast date lookups
       await db.execute('''
         CREATE INDEX idx_prayer_activity_date ON prayer_streak_activity(activity_date)
+      ''');
+    }
+
+    if (oldVersion < 4) {
+      // Create FTS5 virtual table for full-text search
+      await db.execute('''
+        CREATE VIRTUAL TABLE bible_verses_fts USING fts5(
+          book,
+          chapter,
+          verse,
+          text,
+          content=bible_verses,
+          content_rowid=id
+        )
+      ''');
+
+      // Populate FTS table with existing data
+      await db.execute('''
+        INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+        SELECT id, book, chapter, verse, text FROM bible_verses
+      ''');
+
+      // Create triggers to keep FTS in sync with main table
+      await db.execute('''
+        CREATE TRIGGER bible_verses_ai AFTER INSERT ON bible_verses BEGIN
+          INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+          VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+        END
+      ''');
+
+      await db.execute('''
+        CREATE TRIGGER bible_verses_ad AFTER DELETE ON bible_verses BEGIN
+          DELETE FROM bible_verses_fts WHERE rowid = old.id;
+        END
+      ''');
+
+      await db.execute('''
+        CREATE TRIGGER bible_verses_au AFTER UPDATE ON bible_verses BEGIN
+          DELETE FROM bible_verses_fts WHERE rowid = old.id;
+          INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+          VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+        END
+      ''');
+
+      // Create bookmarks table for user-saved verses
+      await db.execute('''
+        CREATE TABLE verse_bookmarks (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          note TEXT,
+          tags TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER,
+          FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+          UNIQUE(verse_id)
+        )
+      ''');
+
+      // Create index for fast bookmark lookups
+      await db.execute('''
+        CREATE INDEX idx_bookmarks_created ON verse_bookmarks(created_at DESC)
+      ''');
+
+      // Create search history table
+      await db.execute('''
+        CREATE TABLE search_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          query TEXT NOT NULL,
+          search_type TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
+      // Create index for recent searches
+      await db.execute('''
+        CREATE INDEX idx_search_history ON search_history(created_at DESC)
       ''');
     }
   }
@@ -191,6 +267,72 @@ class DatabaseService {
     // Create index for fast date lookups
     await db.execute('''
       CREATE INDEX idx_prayer_activity_date ON prayer_streak_activity(activity_date)
+    ''');
+
+    // FTS5 virtual table for full-text search (v4)
+    await db.execute('''
+      CREATE VIRTUAL TABLE bible_verses_fts USING fts5(
+        book,
+        chapter,
+        verse,
+        text,
+        content=bible_verses,
+        content_rowid=id
+      )
+    ''');
+
+    // Bookmarks table (v4)
+    await db.execute('''
+      CREATE TABLE verse_bookmarks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        verse_id INTEGER NOT NULL,
+        note TEXT,
+        tags TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER,
+        FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+        UNIQUE(verse_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_bookmarks_created ON verse_bookmarks(created_at DESC)
+    ''');
+
+    // Search history table (v4)
+    await db.execute('''
+      CREATE TABLE search_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        query TEXT NOT NULL,
+        search_type TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_search_history ON search_history(created_at DESC)
+    ''');
+
+    // Create triggers to keep FTS in sync (v4)
+    await db.execute('''
+      CREATE TRIGGER bible_verses_ai AFTER INSERT ON bible_verses BEGIN
+        INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+        VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+      END
+    ''');
+
+    await db.execute('''
+      CREATE TRIGGER bible_verses_ad AFTER DELETE ON bible_verses BEGIN
+        DELETE FROM bible_verses_fts WHERE rowid = old.id;
+      END
+    ''');
+
+    await db.execute('''
+      CREATE TRIGGER bible_verses_au AFTER UPDATE ON bible_verses BEGIN
+        DELETE FROM bible_verses_fts WHERE rowid = old.id;
+        INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+        VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+      END
     ''');
   }
 

@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../models/bible_verse.dart';
 import 'database_service.dart';
 
@@ -28,14 +29,77 @@ class VerseService {
     return maps.map((map) => _verseFromMap(map)).toList();
   }
 
-  Future<List<BibleVerse>> searchVerses(String query) async {
+  /// Search verses using FTS5 full-text search (FAST!)
+  Future<List<BibleVerse>> searchVerses(String query, {String? version, int limit = 50}) async {
+    if (query.trim().isEmpty) return [];
+
     final db = await _database.database;
-    final maps = await db.query(
-      'bible_verses',
-      where: 'text LIKE ? OR reference LIKE ?',
-      whereArgs: ['%$query%', '%$query%'],
-    );
-    return maps.map((map) => _verseFromMap(map)).toList();
+
+    // Save to search history
+    await _saveSearchHistory(query, 'full_text');
+
+    try {
+      // Use FTS5 for fast full-text search
+      final versionFilter = version != null ? 'AND bv.version = ?' : '';
+      final versionArgs = version != null ? [version] : [];
+
+      final maps = await db.rawQuery('''
+        SELECT bv.* FROM bible_verses bv
+        INNER JOIN bible_verses_fts fts ON bv.id = fts.rowid
+        WHERE bible_verses_fts MATCH ? $versionFilter
+        ORDER BY rank
+        LIMIT ?
+      ''', [query, ...versionArgs, limit]);
+
+      return maps.map((map) => BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      )).toList();
+    } catch (e) {
+      // Fallback to LIKE search if FTS5 fails
+      print('FTS5 search failed, using fallback: $e');
+      final maps = await db.query(
+        'bible_verses',
+        where: 'text LIKE ? ${version != null ? 'AND version = ?' : ''}',
+        whereArgs: version != null ? ['%$query%', version] : ['%$query%'],
+        limit: limit,
+      );
+      return maps.map((map) => BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      )).toList();
+    }
+  }
+
+  /// Search by theme/topic (searches themes column if exists, or uses keywords)
+  Future<List<BibleVerse>> searchByTheme(String theme, {String? version, int limit = 50}) async {
+    final db = await _database.database;
+
+    // Save to search history
+    await _saveSearchHistory(theme, 'theme');
+
+    // Map common themes to search keywords
+    final themeKeywords = {
+      'love': 'love loved loving',
+      'faith': 'faith believe trust',
+      'hope': 'hope hopeful future',
+      'peace': 'peace calm rest',
+      'strength': 'strength strong power',
+      'forgiveness': 'forgive forgiveness mercy',
+      'joy': 'joy joyful rejoice glad',
+      'prayer': 'pray prayer praying',
+      'wisdom': 'wisdom wise understanding',
+      'grace': 'grace gracious mercy',
+    };
+
+    final searchTerms = themeKeywords[theme.toLowerCase()] ?? theme;
+    return searchVerses(searchTerms, version: version, limit: limit);
   }
 
   Future<void> toggleFavorite(String verseId) async {
@@ -201,5 +265,169 @@ class VerseService {
       'is_favorite': verse.isFavorite ? 1 : 0,
       'date_added': verse.dateAdded?.millisecondsSinceEpoch,
     };
+  }
+
+  // ============================================================================
+  // BOOKMARK METHODS
+  // ============================================================================
+
+  /// Add a bookmark for a verse
+  Future<void> addBookmark(int verseId, {String? note, List<String>? tags}) async {
+    final db = await _database.database;
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    await db.insert(
+      'verse_bookmarks',
+      {
+        'verse_id': verseId,
+        'note': note,
+        'tags': tags?.join(','),
+        'created_at': now,
+        'updated_at': now,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  /// Remove a bookmark
+  Future<void> removeBookmark(int verseId) async {
+    final db = await _database.database;
+    await db.delete(
+      'verse_bookmarks',
+      where: 'verse_id = ?',
+      whereArgs: [verseId],
+    );
+  }
+
+  /// Update bookmark note or tags
+  Future<void> updateBookmark(int verseId, {String? note, List<String>? tags}) async {
+    final db = await _database.database;
+    await db.update(
+      'verse_bookmarks',
+      {
+        'note': note,
+        'tags': tags?.join(','),
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      where: 'verse_id = ?',
+      whereArgs: [verseId],
+    );
+  }
+
+  /// Check if a verse is bookmarked
+  Future<bool> isBookmarked(int verseId) async {
+    final db = await _database.database;
+    final result = await db.query(
+      'verse_bookmarks',
+      where: 'verse_id = ?',
+      whereArgs: [verseId],
+    );
+    return result.isNotEmpty;
+  }
+
+  /// Get all bookmarked verses with their notes and tags
+  Future<List<Map<String, dynamic>>> getBookmarks() async {
+    final db = await _database.database;
+    final maps = await db.rawQuery('''
+      SELECT
+        bv.*,
+        vb.note,
+        vb.tags,
+        vb.created_at as bookmark_created_at
+      FROM bible_verses bv
+      INNER JOIN verse_bookmarks vb ON bv.id = vb.verse_id
+      ORDER BY vb.created_at DESC
+    ''');
+
+    return maps.map((map) => {
+      'verse': BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      ),
+      'note': map['note'] as String?,
+      'tags': (map['tags'] as String?)?.split(',') ?? <String>[],
+      'bookmarkedAt': DateTime.fromMillisecondsSinceEpoch(map['bookmark_created_at'] as int),
+    }).toList();
+  }
+
+  /// Search bookmarks by tag
+  Future<List<Map<String, dynamic>>> searchBookmarksByTag(String tag) async {
+    final db = await _database.database;
+    final maps = await db.rawQuery('''
+      SELECT
+        bv.*,
+        vb.note,
+        vb.tags,
+        vb.created_at as bookmark_created_at
+      FROM bible_verses bv
+      INNER JOIN verse_bookmarks vb ON bv.id = vb.verse_id
+      WHERE vb.tags LIKE ?
+      ORDER BY vb.created_at DESC
+    ''', ['%$tag%']);
+
+    return maps.map((map) => {
+      'verse': BibleVerse(
+        id: map['id'].toString(),
+        text: map['text'] as String,
+        reference: '${map['book']} ${map['chapter']}:${map['verse']}',
+        category: VerseCategory.faith,
+        isFavorite: false,
+      ),
+      'note': map['note'] as String?,
+      'tags': (map['tags'] as String?)?.split(',') ?? <String>[],
+      'bookmarkedAt': DateTime.fromMillisecondsSinceEpoch(map['bookmark_created_at'] as int),
+    }).toList();
+  }
+
+  // ============================================================================
+  // SEARCH HISTORY METHODS
+  // ============================================================================
+
+  /// Save search to history
+  Future<void> _saveSearchHistory(String query, String searchType) async {
+    final db = await _database.database;
+    await db.insert('search_history', {
+      'query': query,
+      'search_type': searchType,
+      'created_at': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  /// Get recent search history
+  Future<List<Map<String, dynamic>>> getSearchHistory({int limit = 20}) async {
+    final db = await _database.database;
+    final maps = await db.query(
+      'search_history',
+      orderBy: 'created_at DESC',
+      limit: limit,
+    );
+
+    return maps.map((map) => {
+      'query': map['query'] as String,
+      'searchType': map['search_type'] as String,
+      'searchedAt': DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+    }).toList();
+  }
+
+  /// Clear search history
+  Future<void> clearSearchHistory() async {
+    final db = await _database.database;
+    await db.delete('search_history');
+  }
+
+  /// Get distinct search suggestions from history
+  Future<List<String>> getSearchSuggestions({int limit = 10}) async {
+    final db = await _database.database;
+    final maps = await db.rawQuery('''
+      SELECT DISTINCT query
+      FROM search_history
+      ORDER BY created_at DESC
+      LIMIT ?
+    ''', [limit]);
+
+    return maps.map((map) => map['query'] as String).toList();
   }
 }
