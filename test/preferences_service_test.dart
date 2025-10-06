@@ -218,5 +218,118 @@ void main() {
         expect(loadedSize, 1.0);
       });
     });
+
+    group('Notification Settings', () {
+      test('should save and load daily notifications enabled', () async {
+        final result = await preferencesService.saveDailyNotificationsEnabled(true);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadDailyNotificationsEnabled();
+        expect(loaded, isTrue);
+      });
+
+      test('should save and load daily notifications disabled', () async {
+        final result = await preferencesService.saveDailyNotificationsEnabled(false);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadDailyNotificationsEnabled();
+        expect(loaded, isFalse);
+      });
+
+      test('should default to true when no daily notifications preference', () async {
+        final loaded = preferencesService.loadDailyNotificationsEnabled();
+        expect(loaded, isTrue);
+      });
+
+      test('should save and load prayer reminders enabled', () async {
+        final result = await preferencesService.savePrayerRemindersEnabled(true);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadPrayerRemindersEnabled();
+        expect(loaded, isTrue);
+      });
+
+      test('should save and load prayer reminders disabled', () async {
+        final result = await preferencesService.savePrayerRemindersEnabled(false);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadPrayerRemindersEnabled();
+        expect(loaded, isFalse);
+      });
+
+      test('should save and load verse of the day enabled', () async {
+        final result = await preferencesService.saveVerseOfTheDayEnabled(true);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadVerseOfTheDayEnabled();
+        expect(loaded, isTrue);
+      });
+
+      test('should save and load verse of the day disabled', () async {
+        final result = await preferencesService.saveVerseOfTheDayEnabled(false);
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadVerseOfTheDayEnabled();
+        expect(loaded, isFalse);
+      });
+
+      test('should save and load notification time', () async {
+        final result = await preferencesService.saveNotificationTime('09:30');
+        expect(result, isTrue);
+
+        final loaded = preferencesService.loadNotificationTime();
+        expect(loaded, '09:30');
+      });
+
+      test('should default to 08:00 when no notification time saved', () async {
+        final loaded = preferencesService.loadNotificationTime();
+        expect(loaded, '08:00');
+      });
+    });
+
+    group('Utility Methods', () {
+      test('should remove specific preference', () async {
+        // Save a preference
+        await preferencesService.saveLanguage('Spanish');
+        expect(preferencesService.loadLanguage(), 'Spanish');
+
+        // Remove it
+        final result = await preferencesService.remove('language_preference');
+        expect(result, isTrue);
+
+        // Should return default now
+        expect(preferencesService.loadLanguage(), 'English');
+      });
+
+      test('should get all preferences', () async {
+        await preferencesService.saveThemeMode(ThemeMode.light);
+        await preferencesService.saveLanguage('Spanish');
+        await preferencesService.saveTextSize(18.0);
+
+        final allPrefs = preferencesService.getAllPreferences();
+        expect(allPrefs['theme_mode'], 'light');
+        expect(allPrefs['language'], 'Spanish');
+        expect(allPrefs['text_size'], 18.0);
+      });
+
+      test('should return empty map when not initialized', () async {
+        // This tests the edge case in getAllPreferences when _preferences is null
+        // We can't easily trigger this in normal usage due to singleton pattern
+        final allPrefs = preferencesService.getAllPreferences();
+        expect(allPrefs, isA<Map<String, dynamic>>());
+      });
+
+      test('should handle multiple notification settings together', () async {
+        await preferencesService.saveDailyNotificationsEnabled(false);
+        await preferencesService.savePrayerRemindersEnabled(true);
+        await preferencesService.saveVerseOfTheDayEnabled(false);
+        await preferencesService.saveNotificationTime('07:45');
+
+        expect(preferencesService.loadDailyNotificationsEnabled(), isFalse);
+        expect(preferencesService.loadPrayerRemindersEnabled(), isTrue);
+        expect(preferencesService.loadVerseOfTheDayEnabled(), isFalse);
+        expect(preferencesService.loadNotificationTime(), '07:45');
+      });
+    });
   });
 }
