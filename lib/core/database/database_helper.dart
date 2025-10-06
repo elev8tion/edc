@@ -135,17 +135,44 @@ class DatabaseHelper {
   }) async {
     final db = await database;
 
+    // If we have a FTS query, we need to join with verses_fts table
+    if (query != null && query.isNotEmpty) {
+      String sql = '''
+        SELECT v.*
+        FROM verses v
+        INNER JOIN verses_fts fts ON v.id = fts.rowid
+        WHERE verses_fts MATCH ?
+      ''';
+      List<dynamic> args = [query];
+
+      // Add theme filtering
+      if (themes != null && themes.isNotEmpty) {
+        sql += ' AND (${themes.map((theme) => 'v.themes LIKE ?').join(' OR ')})';
+        args.addAll(themes.map((theme) => '%"$theme"%'));
+      }
+
+      // Add translation filtering
+      if (translation != null) {
+        sql += ' AND v.translation = ?';
+        args.add(translation);
+      }
+
+      sql += ' ORDER BY RANDOM()';
+
+      if (limit != null) {
+        sql += ' LIMIT ?';
+        args.add(limit);
+      }
+
+      return await db.rawQuery(sql, args);
+    }
+
+    // If no FTS query, use regular query
     String whereClause = '';
     List<dynamic> whereArgs = [];
 
-    if (query != null && query.isNotEmpty) {
-      whereClause += 'verses_fts MATCH ?';
-      whereArgs.add(query);
-    }
-
     if (themes != null && themes.isNotEmpty) {
-      if (whereClause.isNotEmpty) whereClause += ' AND ';
-      whereClause += themes.map((theme) => 'themes LIKE ?').join(' OR ');
+      whereClause += '(${themes.map((theme) => 'themes LIKE ?').join(' OR ')})';
       whereArgs.addAll(themes.map((theme) => '%"$theme"%'));
     }
 

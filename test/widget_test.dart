@@ -19,6 +19,11 @@ void main() {
     DatabaseHelper.setTestDatabasePath(inMemoryDatabasePath);
   });
 
+  tearDownAll(() async {
+    // Clean up database resources
+    await DatabaseHelper.instance.close();
+  });
+
   testWidgets('AuthScreen renders without crashing', (WidgetTester tester) async {
     // Build AuthScreen wrapped in necessary providers
     await tester.pumpWidget(
@@ -40,6 +45,9 @@ void main() {
 
     // Verify screen rendered successfully
     expect(find.byType(Scaffold), findsOneWidget);
+
+    // Ensure all pending timers complete before test ends
+    await tester.pumpAndSettle();
   });
 
   testWidgets('AuthScreen displays welcome message after animations', (WidgetTester tester) async {
@@ -58,6 +66,9 @@ void main() {
     // Verify welcome text appears after animations
     expect(find.text('Welcome Back'), findsOneWidget);
     expect(find.text('Sign in to continue your spiritual journey'), findsOneWidget);
+
+    // Ensure all pending timers complete before test ends
+    await tester.pumpAndSettle();
   });
 
   testWidgets('AuthScreen has sign in and sign up tabs', (WidgetTester tester) async {
@@ -75,6 +86,9 @@ void main() {
     // Verify tabs are present
     expect(find.text('Sign In'), findsWidgets); // Tab and potentially button
     expect(find.text('Sign Up'), findsAtLeastNWidgets(1)); // At least the tab
+
+    // Ensure all pending timers complete before test ends
+    await tester.pumpAndSettle();
   });
 
   testWidgets('AuthScreen contains authentication form', (WidgetTester tester) async {
@@ -91,6 +105,9 @@ void main() {
 
     // Verify authentication UI elements are present
     expect(find.byType(TextFormField), findsAtLeastNWidgets(2));
+
+    // Ensure all pending timers complete before test ends
+    await tester.pumpAndSettle();
   });
 
   testWidgets('Email and password fields are present after animations', (WidgetTester tester) async {
@@ -112,5 +129,8 @@ void main() {
     // Verify TextFormField widgets are rendered
     final textFields = find.byType(TextFormField);
     expect(textFields, findsAtLeastNWidgets(2)); // At least email and password
+
+    // Ensure all pending timers complete before test ends
+    await tester.pumpAndSettle();
   });
 }

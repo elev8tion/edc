@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
-  static const FlutterSecureStorage _storage = FlutterSecureStorage(
+  final FlutterSecureStorage _storage;
+
+  // Default storage instance
+  static const FlutterSecureStorage _defaultStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
     ),
@@ -17,6 +20,10 @@ class SecureStorageService {
   static const String _biometricEnabledKey = 'biometric_enabled';
   static const String _lastLoginKey = 'last_login';
   static const String _sessionTokenKey = 'session_token';
+
+  // Constructor with optional dependency injection for testing
+  const SecureStorageService({FlutterSecureStorage? storage})
+      : _storage = storage ?? _defaultStorage;
 
   /// Store user data securely
   Future<void> storeUserData(Map<String, dynamic> userData) async {

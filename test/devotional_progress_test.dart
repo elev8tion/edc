@@ -343,24 +343,59 @@ void main() {
           progressService.markAsComplete(devotionals[2].id),
         ]);
 
+        // Add small delay to ensure all database writes are committed
+        await Future.delayed(const Duration(milliseconds: 50));
+
+        // Verify all three devotionals were marked as complete
         final count = await progressService.getTotalCompleted();
         expect(count, equals(3));
+
+        // Verify individual completion statuses
+        expect(await progressService.getCompletionStatus(devotionals[0].id), isTrue);
+        expect(await progressService.getCompletionStatus(devotionals[1].id), isTrue);
+        expect(await progressService.getCompletionStatus(devotionals[2].id), isTrue);
       });
 
       test('should maintain data integrity across operations', () async {
         final devotionals = await progressService.getAllDevotionals();
 
-        // Perform various operations
+        // Perform various operations sequentially with explicit awaits
         await progressService.markAsComplete(devotionals[0].id);
-        await progressService.markAsComplete(devotionals[1].id);
-        await progressService.markAsIncomplete(devotionals[0].id);
-        await progressService.markAsComplete(devotionals[2].id);
+        // Ensure first operation completes
+        await Future.delayed(const Duration(milliseconds: 10));
 
-        // Verify final state
-        expect(await progressService.getCompletionStatus(devotionals[0].id), isFalse);
-        expect(await progressService.getCompletionStatus(devotionals[1].id), isTrue);
-        expect(await progressService.getCompletionStatus(devotionals[2].id), isTrue);
-        expect(await progressService.getTotalCompleted(), equals(2));
+        await progressService.markAsComplete(devotionals[1].id);
+        // Ensure second operation completes
+        await Future.delayed(const Duration(milliseconds: 10));
+
+        await progressService.markAsIncomplete(devotionals[0].id);
+        // Ensure third operation completes
+        await Future.delayed(const Duration(milliseconds: 10));
+
+        await progressService.markAsComplete(devotionals[2].id);
+        // Ensure final operation completes
+        await Future.delayed(const Duration(milliseconds: 10));
+
+        // Verify final state with individual checks
+        final status0 = await progressService.getCompletionStatus(devotionals[0].id);
+        expect(status0, isFalse, reason: 'Devotional 0 should be incomplete after being unmarked');
+
+        final status1 = await progressService.getCompletionStatus(devotionals[1].id);
+        expect(status1, isTrue, reason: 'Devotional 1 should be complete');
+
+        final status2 = await progressService.getCompletionStatus(devotionals[2].id);
+        expect(status2, isTrue, reason: 'Devotional 2 should be complete');
+
+        // Verify total count
+        final totalCompleted = await progressService.getTotalCompleted();
+        expect(totalCompleted, equals(2), reason: 'Total completed should be 2 (devotionals 1 and 2)');
+
+        // Double-check by querying the completed list
+        final completedList = await progressService.getCompletedDevotionals();
+        expect(completedList.length, equals(2), reason: 'Completed list should contain exactly 2 devotionals');
+        expect(completedList.any((d) => d.id == devotionals[1].id), isTrue, reason: 'Devotional 1 should be in completed list');
+        expect(completedList.any((d) => d.id == devotionals[2].id), isTrue, reason: 'Devotional 2 should be in completed list');
+        expect(completedList.any((d) => d.id == devotionals[0].id), isFalse, reason: 'Devotional 0 should NOT be in completed list');
       });
     });
 
