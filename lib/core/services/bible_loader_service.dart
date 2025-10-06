@@ -12,6 +12,7 @@ class BibleLoaderService {
   /// Load all Bible versions into the database
   Future<void> loadAllBibles() async {
     await loadBible('KJV', 'assets/bible/kjv.json', 'en');
+    await loadBible('WEB', 'assets/bible/web.json', 'en');
     await loadBible('RVR1909', 'assets/bible/rvr1909.json', 'es');
   }
 
@@ -20,46 +21,77 @@ class BibleLoaderService {
     try {
       // Load JSON from assets
       final jsonString = await rootBundle.loadString(assetPath);
-      final List<dynamic> books = json.decode(jsonString);
+      final dynamic jsonData = json.decode(jsonString);
 
       final db = await _database.database;
 
-      // Process each book
-      for (var bookData in books) {
-        final String abbrev = bookData['abbrev'] ?? '';
-        final String bookName = _getBookName(abbrev);
-        final List<dynamic> chapters = bookData['chapters'] ?? [];
-
-        // Insert verses for each chapter
-        for (int chapterIndex = 0; chapterIndex < chapters.length; chapterIndex++) {
-          final List<dynamic> verses = chapters[chapterIndex];
-          final int chapterNum = chapterIndex + 1;
-
-          for (int verseIndex = 0; verseIndex < verses.length; verseIndex++) {
-            final int verseNum = verseIndex + 1;
-            final String verseText = verses[verseIndex];
-
-            // Insert verse into database
-            await db.insert(
-              'bible_verses',
-              {
-                'version': version,
-                'book': bookName,
-                'chapter': chapterNum,
-                'verse': verseNum,
-                'text': verseText,
-                'language': language,
-              },
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
-        }
+      // Handle different JSON structures
+      if (jsonData is Map && jsonData.containsKey('verses')) {
+        // WEB format: flat list of verses with metadata
+        await _loadFlatVerses(db, version, language, jsonData['verses']);
+      } else if (jsonData is List) {
+        // KJV/RVR1909 format: nested books/chapters/verses
+        await _loadNestedBooks(db, version, language, jsonData);
+      } else {
+        throw Exception('Unknown Bible JSON format for $version');
       }
 
       print('✅ Loaded $version Bible ($language)');
     } catch (e) {
       print('❌ Error loading $version: $e');
       rethrow;
+    }
+  }
+
+  /// Load WEB-style flat verses format
+  Future<void> _loadFlatVerses(Database db, String version, String language, List<dynamic> verses) async {
+    for (var verseData in verses) {
+      await db.insert(
+        'bible_verses',
+        {
+          'version': version,
+          'book': verseData['book_name'],
+          'chapter': verseData['chapter'],
+          'verse': verseData['verse'],
+          'text': verseData['text'],
+          'language': language,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  /// Load KJV/RVR1909-style nested books format
+  Future<void> _loadNestedBooks(Database db, String version, String language, List<dynamic> books) async {
+    for (var bookData in books) {
+      final String abbrev = bookData['abbrev'] ?? '';
+      final String bookName = _getBookName(abbrev);
+      final List<dynamic> chapters = bookData['chapters'] ?? [];
+
+      // Insert verses for each chapter
+      for (int chapterIndex = 0; chapterIndex < chapters.length; chapterIndex++) {
+        final List<dynamic> verses = chapters[chapterIndex];
+        final int chapterNum = chapterIndex + 1;
+
+        for (int verseIndex = 0; verseIndex < verses.length; verseIndex++) {
+          final int verseNum = verseIndex + 1;
+          final String verseText = verses[verseIndex];
+
+          // Insert verse into database
+          await db.insert(
+            'bible_verses',
+            {
+              'version': version,
+              'book': bookName,
+              'chapter': chapterNum,
+              'verse': verseNum,
+              'text': verseText,
+              'language': language,
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      }
     }
   }
 
@@ -161,6 +193,12 @@ class BibleLoaderService {
       whereArgs: ['KJV'],
     );
 
+    final webCount = await db.query(
+      'bible_verses',
+      where: 'version = ?',
+      whereArgs: ['WEB'],
+    );
+
     final rvrCount = await db.query(
       'bible_verses',
       where: 'version = ?',
@@ -169,8 +207,9 @@ class BibleLoaderService {
 
     return {
       'KJV': kjvCount.length,
+      'WEB': webCount.length,
       'RVR1909': rvrCount.length,
-      'total': kjvCount.length + rvrCount.length,
+      'total': kjvCount.length + webCount.length + rvrCount.length,
     };
   }
 }
