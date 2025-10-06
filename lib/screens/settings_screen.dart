@@ -4,13 +4,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/blur_dropdown.dart';
 import '../core/navigation/navigation_service.dart';
+import '../core/providers/app_providers.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -20,12 +16,12 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  // Local state for notification toggles (not persisted yet)
   bool _dailyNotifications = true;
   bool _prayerReminders = true;
   bool _verseOfTheDay = true;
   bool _offlineMode = false;
   String _selectedBibleVersion = 'KJV';
-  double _fontSize = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -162,16 +158,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
-            'Display',
-            Icons.text_fields,
+            'Appearance',
+            Icons.palette,
             [
+              _buildDropdownTile(
+                'Theme',
+                'Choose your app theme',
+                ref.watch(themeModeProvider) == ThemeMode.dark ? 'Dark' : 'Light',
+                ['Dark', 'Light'],
+                (value) {
+                  final mode = value == 'Dark' ? ThemeMode.dark : ThemeMode.light;
+                  ref.read(themeModeProvider.notifier).setTheme(mode);
+                },
+              ),
+              _buildDropdownTile(
+                'Language',
+                'Choose your preferred language',
+                ref.watch(languageProvider),
+                ['English', 'Spanish'],
+                (value) => ref.read(languageProvider.notifier).setLanguage(value!),
+              ),
               _buildSliderTile(
                 'Text Size',
                 'Adjust reading text size for better readability',
-                _fontSize,
+                ref.watch(textSizeProvider),
                 12.0,
                 24.0,
-                (value) => setState(() => _fontSize = value),
+                (value) => ref.read(textSizeProvider.notifier).setTextSize(value),
               ),
             ],
           ),
