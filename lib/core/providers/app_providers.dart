@@ -371,6 +371,27 @@ final textSizeProvider = StateNotifierProvider<TextSizeNotifier, double>((ref) {
   return TextSizeNotifier(preferencesAsync);
 });
 
+// Notification Settings Providers
+final dailyNotificationsProvider = StateNotifierProvider<DailyNotificationsNotifier, bool>((ref) {
+  final preferencesAsync = ref.watch(preferencesServiceProvider);
+  return DailyNotificationsNotifier(preferencesAsync, ref);
+});
+
+final prayerRemindersProvider = StateNotifierProvider<PrayerRemindersNotifier, bool>((ref) {
+  final preferencesAsync = ref.watch(preferencesServiceProvider);
+  return PrayerRemindersNotifier(preferencesAsync, ref);
+});
+
+final verseOfTheDayProvider = StateNotifierProvider<VerseOfTheDayNotifier, bool>((ref) {
+  final preferencesAsync = ref.watch(preferencesServiceProvider);
+  return VerseOfTheDayNotifier(preferencesAsync, ref);
+});
+
+final notificationTimeProvider = StateNotifierProvider<NotificationTimeNotifier, String>((ref) {
+  final preferencesAsync = ref.watch(preferencesServiceProvider);
+  return NotificationTimeNotifier(preferencesAsync, ref);
+});
+
 class TextSizeNotifier extends StateNotifier<double> {
   final AsyncValue<PreferencesService> _preferencesAsync;
   PreferencesService? _preferences;
@@ -424,6 +445,184 @@ class TextSizeNotifier extends StateNotifier<double> {
       }
     } else {
       print('⚠️ Preferences service not initialized, text size not persisted');
+    }
+  }
+}
+
+// Notification Settings Notifiers
+class DailyNotificationsNotifier extends StateNotifier<bool> {
+  final AsyncValue<PreferencesService> _preferencesAsync;
+  final Ref _ref;
+  PreferencesService? _preferences;
+
+  DailyNotificationsNotifier(this._preferencesAsync, this._ref) : super(true) {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _preferencesAsync.when(
+      data: (prefs) {
+        _preferences = prefs;
+        state = prefs.loadDailyNotificationsEnabled();
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+  }
+
+  Future<void> toggle(bool enabled) async {
+    state = enabled;
+    await _preferences?.saveDailyNotificationsEnabled(enabled);
+    if (enabled) {
+      await _scheduleNotifications();
+    } else {
+      await _ref.read(notificationServiceProvider).cancel(1);
+    }
+  }
+
+  Future<void> _scheduleNotifications() async {
+    final time = _ref.read(notificationTimeProvider);
+    final parts = time.split(':');
+    await _ref.read(notificationServiceProvider).scheduleDailyDevotional(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+}
+
+class PrayerRemindersNotifier extends StateNotifier<bool> {
+  final AsyncValue<PreferencesService> _preferencesAsync;
+  final Ref _ref;
+  PreferencesService? _preferences;
+
+  PrayerRemindersNotifier(this._preferencesAsync, this._ref) : super(true) {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _preferencesAsync.when(
+      data: (prefs) {
+        _preferences = prefs;
+        state = prefs.loadPrayerRemindersEnabled();
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+  }
+
+  Future<void> toggle(bool enabled) async {
+    state = enabled;
+    await _preferences?.savePrayerRemindersEnabled(enabled);
+    if (enabled) {
+      await _scheduleNotifications();
+    } else {
+      await _ref.read(notificationServiceProvider).cancel(2);
+    }
+  }
+
+  Future<void> _scheduleNotifications() async {
+    final time = _ref.read(notificationTimeProvider);
+    final parts = time.split(':');
+    await _ref.read(notificationServiceProvider).schedulePrayerReminder(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+      title: 'Your Prayer Requests',
+    );
+  }
+}
+
+class VerseOfTheDayNotifier extends StateNotifier<bool> {
+  final AsyncValue<PreferencesService> _preferencesAsync;
+  final Ref _ref;
+  PreferencesService? _preferences;
+
+  VerseOfTheDayNotifier(this._preferencesAsync, this._ref) : super(true) {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _preferencesAsync.when(
+      data: (prefs) {
+        _preferences = prefs;
+        state = prefs.loadVerseOfTheDayEnabled();
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+  }
+
+  Future<void> toggle(bool enabled) async {
+    state = enabled;
+    await _preferences?.saveVerseOfTheDayEnabled(enabled);
+    if (enabled) {
+      await _scheduleNotifications();
+    } else {
+      await _ref.read(notificationServiceProvider).cancel(3);
+    }
+  }
+
+  Future<void> _scheduleNotifications() async {
+    final time = _ref.read(notificationTimeProvider);
+    final parts = time.split(':');
+    await _ref.read(notificationServiceProvider).scheduleReadingPlanReminder(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+  }
+}
+
+class NotificationTimeNotifier extends StateNotifier<String> {
+  final AsyncValue<PreferencesService> _preferencesAsync;
+  final Ref _ref;
+  PreferencesService? _preferences;
+
+  NotificationTimeNotifier(this._preferencesAsync, this._ref) : super('08:00') {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _preferencesAsync.when(
+      data: (prefs) {
+        _preferences = prefs;
+        state = prefs.loadNotificationTime();
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
+  }
+
+  Future<void> setTime(String time) async {
+    state = time;
+    await _preferences?.saveNotificationTime(time);
+    // Reschedule all enabled notifications with new time
+    await _rescheduleNotifications();
+  }
+
+  Future<void> _rescheduleNotifications() async {
+    final parts = state.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    if (_ref.read(dailyNotificationsProvider)) {
+      await _ref.read(notificationServiceProvider).scheduleDailyDevotional(
+        hour: hour,
+        minute: minute,
+      );
+    }
+
+    if (_ref.read(prayerRemindersProvider)) {
+      await _ref.read(notificationServiceProvider).schedulePrayerReminder(
+        hour: hour,
+        minute: minute,
+        title: 'Your Prayer Requests',
+      );
+    }
+
+    if (_ref.read(verseOfTheDayProvider)) {
+      await _ref.read(notificationServiceProvider).scheduleReadingPlanReminder(
+        hour: hour,
+        minute: minute,
+      );
     }
   }
 }

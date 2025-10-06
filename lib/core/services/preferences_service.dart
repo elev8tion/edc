@@ -36,11 +36,17 @@ class PreferencesService {
   static const String _themeModeKey = 'theme_mode';
   static const String _languageKey = 'language_preference';
   static const String _textSizeKey = 'text_size';
+  static const String _dailyNotificationsKey = 'daily_notifications_enabled';
+  static const String _prayerRemindersKey = 'prayer_reminders_enabled';
+  static const String _verseOfTheDayKey = 'verse_of_the_day_enabled';
+  static const String _notificationTimeKey = 'notification_time';
 
   // Default values
   static const String _defaultThemeMode = 'dark';
   static const String _defaultLanguage = 'English';
   static const double _defaultTextSize = 16.0;
+  static const bool _defaultNotificationsEnabled = true;
+  static const String _defaultNotificationTime = '08:00'; // 8:00 AM
 
   // ============================================================================
   // THEME MODE METHODS
@@ -181,6 +187,110 @@ class PreferencesService {
     } catch (e) {
       print('❌ Error loading text size: $e');
       return _defaultTextSize;
+    }
+  }
+
+  // ============================================================================
+  // NOTIFICATION SETTINGS METHODS
+  // ============================================================================
+
+  /// Save daily notifications enabled status
+  Future<bool> saveDailyNotificationsEnabled(bool enabled) async {
+    try {
+      final result = await _preferences?.setBool(_dailyNotificationsKey, enabled);
+      if (result == true) {
+        print('✅ Daily notifications enabled: $enabled');
+      }
+      return result ?? false;
+    } catch (e) {
+      print('❌ Error saving daily notifications setting: $e');
+      return false;
+    }
+  }
+
+  /// Load daily notifications enabled status
+  bool loadDailyNotificationsEnabled() {
+    try {
+      final bool? enabled = _preferences?.getBool(_dailyNotificationsKey);
+      return enabled ?? _defaultNotificationsEnabled;
+    } catch (e) {
+      print('❌ Error loading daily notifications setting: $e');
+      return _defaultNotificationsEnabled;
+    }
+  }
+
+  /// Save prayer reminders enabled status
+  Future<bool> savePrayerRemindersEnabled(bool enabled) async {
+    try {
+      final result = await _preferences?.setBool(_prayerRemindersKey, enabled);
+      if (result == true) {
+        print('✅ Prayer reminders enabled: $enabled');
+      }
+      return result ?? false;
+    } catch (e) {
+      print('❌ Error saving prayer reminders setting: $e');
+      return false;
+    }
+  }
+
+  /// Load prayer reminders enabled status
+  bool loadPrayerRemindersEnabled() {
+    try {
+      final bool? enabled = _preferences?.getBool(_prayerRemindersKey);
+      return enabled ?? _defaultNotificationsEnabled;
+    } catch (e) {
+      print('❌ Error loading prayer reminders setting: $e');
+      return _defaultNotificationsEnabled;
+    }
+  }
+
+  /// Save verse of the day enabled status
+  Future<bool> saveVerseOfTheDayEnabled(bool enabled) async {
+    try {
+      final result = await _preferences?.setBool(_verseOfTheDayKey, enabled);
+      if (result == true) {
+        print('✅ Verse of the day enabled: $enabled');
+      }
+      return result ?? false;
+    } catch (e) {
+      print('❌ Error saving verse of the day setting: $e');
+      return false;
+    }
+  }
+
+  /// Load verse of the day enabled status
+  bool loadVerseOfTheDayEnabled() {
+    try {
+      final bool? enabled = _preferences?.getBool(_verseOfTheDayKey);
+      return enabled ?? _defaultNotificationsEnabled;
+    } catch (e) {
+      print('❌ Error loading verse of the day setting: $e');
+      return _defaultNotificationsEnabled;
+    }
+  }
+
+  /// Save notification time (format: "HH:mm")
+  Future<bool> saveNotificationTime(String time) async {
+    try {
+      final result = await _preferences?.setString(_notificationTimeKey, time);
+      if (result == true) {
+        print('✅ Notification time saved: $time');
+      }
+      return result ?? false;
+    } catch (e) {
+      print('❌ Error saving notification time: $e');
+      return false;
+    }
+  }
+
+  /// Load notification time (format: "HH:mm")
+  String loadNotificationTime() {
+    try {
+      final String? time = _preferences?.getString(_notificationTimeKey);
+      return time ?? _defaultNotificationTime;
+    } catch (e) {
+      print('❌ Error loading notification time: $e');
+      return _defaultNotificationTime;
     }
   }
 

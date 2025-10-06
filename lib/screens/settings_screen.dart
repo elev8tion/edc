@@ -16,10 +16,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  // Local state for notification toggles (not persisted yet)
-  bool _dailyNotifications = true;
-  bool _prayerReminders = true;
-  bool _verseOfTheDay = true;
+  // Local state for non-persisted settings
   bool _offlineMode = false;
   String _selectedBibleVersion = 'KJV';
 
@@ -123,22 +120,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Icons.notifications,
             [
               _buildSwitchTile(
-                'Daily Notifications',
-                'Receive daily spiritual reminders',
-                _dailyNotifications,
-                (value) => setState(() => _dailyNotifications = value),
+                'Daily Devotional',
+                'Receive daily devotional reminders',
+                ref.watch(dailyNotificationsProvider),
+                (value) => ref.read(dailyNotificationsProvider.notifier).toggle(value),
               ),
               _buildSwitchTile(
                 'Prayer Reminders',
                 'Get reminded to pray throughout the day',
-                _prayerReminders,
-                (value) => setState(() => _prayerReminders = value),
+                ref.watch(prayerRemindersProvider),
+                (value) => ref.read(prayerRemindersProvider.notifier).toggle(value),
               ),
               _buildSwitchTile(
                 'Verse of the Day',
                 'Daily Bible verse notifications',
-                _verseOfTheDay,
-                (value) => setState(() => _verseOfTheDay = value),
+                ref.watch(verseOfTheDayProvider),
+                (value) => ref.read(verseOfTheDayProvider.notifier).toggle(value),
+              ),
+              _buildTimePicker(
+                'Notification Time',
+                'Set your preferred time for daily notifications',
+                ref.watch(notificationTimeProvider),
+                (time) => ref.read(notificationTimeProvider.notifier).setTime(time),
               ),
             ],
           ),
@@ -492,6 +495,117 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildTimePicker(String title, String subtitle, String value, Function(String) onChanged) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showTimePicker(value, onChanged),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: AppSpacing.cardPadding,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.access_time,
+                    color: AppColors.primaryText,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryText,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryColor,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Icon(
+                  Icons.chevron_right,
+                  color: AppColors.tertiaryText,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showTimePicker(String currentTime, Function(String) onChanged) async {
+    final parts = currentTime.split(':');
+    final initialTime = TimeOfDay(
+      hour: int.parse(parts[0]),
+      minute: int.parse(parts[1]),
+    );
+
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppTheme.primaryColor,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E1E1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF1E1E1E),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      final hour = picked.hour.toString().padLeft(2, '0');
+      final minute = picked.minute.toString().padLeft(2, '0');
+      onChanged('$hour:$minute');
+    }
   }
 
   Widget _buildActionTile(String title, String subtitle, IconData icon, VoidCallback onTap) {
