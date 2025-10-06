@@ -14,7 +14,9 @@ class ConnectivityService {
 
   void _initConnectivity() {
     _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      _connectivityController.add(result != ConnectivityResult.none);
+      if (!_connectivityController.isClosed) {
+        _connectivityController.add(result != ConnectivityResult.none);
+      }
     });
 
     // Check initial connectivity
@@ -24,9 +26,13 @@ class ConnectivityService {
   Future<void> _checkConnectivity() async {
     try {
       final result = await _connectivity.checkConnectivity();
-      _connectivityController.add(result != ConnectivityResult.none);
+      if (!_connectivityController.isClosed) {
+        _connectivityController.add(result != ConnectivityResult.none);
+      }
     } catch (e) {
-      _connectivityController.add(false);
+      if (!_connectivityController.isClosed) {
+        _connectivityController.add(false);
+      }
     }
   }
 
