@@ -161,3 +161,25 @@ class GlassBottomSheet extends StatelessWidget {
     );
   }
 }
+
+/// Helper to show bottom sheet with full-screen backdrop blur
+Future<T?> showGlassBottomSheet<T>({
+  required BuildContext context,
+  required Widget child,
+  bool isScrollControlled = false,
+  bool isDismissible = true,
+  bool enableDrag = true,
+}) {
+  return showModalBottomSheet<T>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: isScrollControlled,
+    isDismissible: isDismissible,
+    enableDrag: enableDrag,
+    barrierColor: Colors.black.withValues(alpha: 0.6),
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+      child: child,
+    ),
+  );
+}

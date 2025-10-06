@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'app_routes.dart';
+import '../../components/glass_card.dart';
 
 class NavigationService {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -112,16 +114,19 @@ class NavigationService {
     );
   }
 
-  /// Show bottom sheet
+  /// Show bottom sheet with glass blur styling
   static Future<T?> showBottomSheet<T>({
     required Widget content,
     bool isScrollControlled = false,
+    bool isDismissible = true,
+    bool enableDrag = true,
   }) {
-    return showModalBottomSheet<T>(
+    return showGlassBottomSheet<T>(
       context: context!,
+      child: content,
       isScrollControlled: isScrollControlled,
-      backgroundColor: Colors.transparent,
-      builder: (_) => content,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
     );
   }
 }

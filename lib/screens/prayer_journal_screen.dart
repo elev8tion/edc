@@ -11,6 +11,7 @@ import '../components/glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../components/blur_dropdown.dart';
+import '../components/blur_popup_menu.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 
@@ -305,12 +306,21 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     ),
                   )
                 else
-                  PopupMenuButton<String>(
-                    color: Colors.transparent,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
+                  BlurPopupMenu(
+                    items: const [
+                      BlurPopupMenuItem(
+                        value: 'mark_answered',
+                        icon: Icons.check,
+                        label: 'Mark as Answered',
+                      ),
+                      BlurPopupMenuItem(
+                        value: 'delete',
+                        icon: Icons.delete,
+                        label: 'Delete',
+                        iconColor: Colors.red,
+                        textColor: Colors.red,
+                      ),
+                    ],
                     onSelected: (value) {
                       if (value == 'mark_answered') {
                         _markPrayerAnswered(prayer);
@@ -318,93 +328,6 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                         _deletePrayer(prayer);
                       }
                     },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'mark_answered',
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                              child: Material(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(24),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(24),
-                                  onTap: () {
-                                    Navigator.pop(context, 'mark_answered');
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white.withValues(alpha: 0.1)
-                                          : Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(24),
-                                      border: Border.all(
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? Colors.white24
-                                            : Colors.white54,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                    child: const Row(
-                                      children: [
-                                        Icon(Icons.check, size: 18, color: Colors.white),
-                                        SizedBox(width: AppSpacing.sm),
-                                        Text('Mark as Answered', style: TextStyle(color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                            child: Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(24),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(24),
-                                onTap: () {
-                                  Navigator.pop(context, 'delete');
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.white.withValues(alpha: 0.1)
-                                        : Colors.white.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(
-                                      color: Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white24
-                                          : Colors.white54,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                  child: const Row(
-                                    children: [
-                                      Icon(Icons.delete, size: 18, color: Colors.red),
-                                      SizedBox(width: AppSpacing.sm),
-                                      Text('Delete', style: TextStyle(color: Colors.red)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       child: const Icon(

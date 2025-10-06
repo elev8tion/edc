@@ -209,10 +209,9 @@ class MessageBubble extends StatelessWidget {
   void _showMessageOptions(BuildContext context) {
     HapticFeedback.mediumImpact();
 
-    showModalBottomSheet(
+    showGlassBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => GlassBottomSheet(
+      child: GlassBottomSheet(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

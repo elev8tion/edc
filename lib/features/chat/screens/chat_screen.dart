@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/modern_message_bubble.dart';
 import '../../../components/modern_chat_input.dart';
+import '../../../components/glass_card.dart';
 import '../../../models/chat_message.dart';
 import '../../../models/bible_verse.dart';
 import '../../../providers/ai_provider.dart';
@@ -229,19 +230,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   void _handleVersePressed(BibleVerse verse) {
-    showModalBottomSheet(
+    showGlassBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
+      child: DraggableScrollableSheet(
         initialChildSize: 0.7,
         maxChildSize: 0.9,
         minChildSize: 0.5,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
+        builder: (context, scrollController) => GlassBottomSheet(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -251,7 +247,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: Colors.white.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -420,14 +416,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   void _showChatOptions() {
-    showModalBottomSheet(
+    showGlassBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+      child: GlassBottomSheet(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -436,13 +427,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               height: 4,
               margin: const EdgeInsets.only(bottom: 20, top: 12),
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Colors.white.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             ListTile(
               leading: Icon(Icons.refresh, color: AppTheme.primaryColor),
-              title: Text('New Conversation', style: TextStyle(fontWeight: FontWeight.w600)),
+              title: const Text('New Conversation', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 _startNewConversation();
@@ -450,7 +441,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             ),
             ListTile(
               leading: Icon(Icons.share, color: AppTheme.primaryColor),
-              title: Text('Share Conversation', style: TextStyle(fontWeight: FontWeight.w600)),
+              title: const Text('Share Conversation', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 _shareConversation();
@@ -458,7 +449,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             ),
             ListTile(
               leading: Icon(Icons.bookmark, color: AppTheme.primaryColor),
-              title: Text('Save Conversation', style: TextStyle(fontWeight: FontWeight.w600)),
+              title: const Text('Save Conversation', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
                 _saveConversation();

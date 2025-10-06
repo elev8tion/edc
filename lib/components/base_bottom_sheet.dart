@@ -19,58 +19,63 @@ class BaseBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1a1a2e).withValues(alpha: 0.95),
-            const Color(0xFF0f0f1e).withValues(alpha: 0.98),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(32),
-        ),
-        border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
-          width: 2,
-        ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(32),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showHandle)
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(2),
-              ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+        child: Container(
+          height: height,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.white.withValues(alpha: 0.2),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(32),
             ),
-          if (title != null)
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                title!,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            border: Border.all(
+              color: isDark ? Colors.white24 : Colors.white54,
+              width: 2,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showHandle)
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-            ),
-          Flexible(child: child),
-        ],
+              if (title != null)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    title!,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              Flexible(child: child),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Helper function for showing bottom sheets with blur effect
+/// Helper function for showing bottom sheets with full-screen blur effect
 Future<T?> showCustomBottomSheet<T>({
   required BuildContext context,
   required Widget child,
@@ -84,9 +89,9 @@ Future<T?> showCustomBottomSheet<T>({
     backgroundColor: Colors.transparent,
     enableDrag: true,
     isDismissible: true,
-    barrierColor: Colors.black.withValues(alpha: 0.5),
+    barrierColor: Colors.black.withValues(alpha: 0.6),
     builder: (context) => BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
       child: BaseBottomSheet(
         title: title,
         showHandle: showHandle,
