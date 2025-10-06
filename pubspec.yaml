@@ -35,6 +35,9 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_hooks: ^0.20.5
 
+  # AI & Machine Learning
+  onnxruntime: ^1.4.1
+
   # Utilities
   crypto: ^3.0.3
   intl: ^0.20.2
@@ -73,6 +76,7 @@ flutter:
     - assets/icons/
     - assets/data/
     - assets/bible/
+    - assets/models/
 
   shaders:
     - shaders/liquid_glass_lens.frag
