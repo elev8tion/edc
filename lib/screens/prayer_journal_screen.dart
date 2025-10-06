@@ -1,62 +1,28 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../components/blur_dropdown.dart';
 import '../components/blur_popup_menu.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
+import '../core/models/prayer_request.dart';
+import '../core/providers/prayer_providers.dart';
 
-class PrayerJournalScreen extends StatefulWidget {
+class PrayerJournalScreen extends ConsumerStatefulWidget {
   const PrayerJournalScreen({super.key});
 
   @override
-  State<PrayerJournalScreen> createState() => _PrayerJournalScreenState();
+  ConsumerState<PrayerJournalScreen> createState() => _PrayerJournalScreenState();
 }
 
-class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerProviderStateMixin {
+class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _prayerController = TextEditingController();
-
-  final List<PrayerRequest> _activePrayers = [
-    PrayerRequest(
-      id: '1',
-      title: 'Healing for Mom',
-      description: 'Praying for my mother\'s recovery from surgery',
-      category: PrayerCategory.health,
-      dateCreated: DateTime.now().subtract(const Duration(days: 3)),
-      isAnswered: false,
-    ),
-    PrayerRequest(
-      id: '2',
-      title: 'Job Interview',
-      description: 'Praying for wisdom and favor in upcoming job interview',
-      category: PrayerCategory.work,
-      dateCreated: DateTime.now().subtract(const Duration(days: 1)),
-      isAnswered: false,
-    ),
-  ];
-
-  final List<PrayerRequest> _answeredPrayers = [
-    PrayerRequest(
-      id: '3',
-      title: 'Safe Travel',
-      description: 'Praying for safe travels on family vacation',
-      category: PrayerCategory.protection,
-      dateCreated: DateTime.now().subtract(const Duration(days: 10)),
-      isAnswered: true,
-      dateAnswered: DateTime.now().subtract(const Duration(days: 2)),
-      answerDescription: 'Had a wonderful and safe trip with the family!',
-    ),
-  ];
 
   @override
   void initState() {
@@ -181,9 +147,9 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
             fontWeight: FontWeight.w600,
             fontSize: 14,
           ),
-          tabs: [
-            Tab(text: 'Active (${_activePrayers.length})'),
-            Tab(text: 'Answered (${_answeredPrayers.length})'),
+          tabs: const [
+            Tab(text: 'Active'),
+            Tab(text: 'Answered'),
           ],
         ),
       ),
@@ -191,44 +157,70 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
   }
 
   Widget _buildActivePrayers() {
-    if (_activePrayers.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.favorite_outline,
-        title: 'No Active Prayers',
-        subtitle: 'Start your prayer journey by adding your first prayer request',
-      );
-    }
+    final activePrayersAsync = ref.watch(activePrayersProvider);
 
-    return ListView.builder(
-      padding: AppSpacing.screenPadding,
-      itemCount: _activePrayers.length,
-      itemBuilder: (context, index) {
-        final prayer = _activePrayers[index];
-        return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
+    return activePrayersAsync.when(
+      data: (prayers) {
+        if (prayers.isEmpty) {
+          return _buildEmptyState(
+            icon: Icons.favorite_outline,
+            title: 'No Active Prayers',
+            subtitle: 'Start your prayer journey by adding your first prayer request',
+          );
+        }
+
+        return ListView.builder(
+          padding: AppSpacing.screenPadding,
+          itemCount: prayers.length,
+          itemBuilder: (context, index) {
+            final prayer = prayers[index];
+            return _buildPrayerCard(prayer, index).animate()
+                .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text(
+          'Error loading prayers: $error',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 
   Widget _buildAnsweredPrayers() {
-    if (_answeredPrayers.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.check_circle_outline,
-        title: 'No Answered Prayers Yet',
-        subtitle: 'When God answers your prayers, mark them as answered to see them here',
-      );
-    }
+    final answeredPrayersAsync = ref.watch(answeredPrayersProvider);
 
-    return ListView.builder(
-      padding: AppSpacing.screenPadding,
-      itemCount: _answeredPrayers.length,
-      itemBuilder: (context, index) {
-        final prayer = _answeredPrayers[index];
-        return _buildPrayerCard(prayer, index).animate()
-            .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
-            .slideY(begin: 0.3);
+    return answeredPrayersAsync.when(
+      data: (prayers) {
+        if (prayers.isEmpty) {
+          return _buildEmptyState(
+            icon: Icons.check_circle_outline,
+            title: 'No Answered Prayers Yet',
+            subtitle: 'When God answers your prayers, mark them as answered to see them here',
+          );
+        }
+
+        return ListView.builder(
+          padding: AppSpacing.screenPadding,
+          itemCount: prayers.length,
+          itemBuilder: (context, index) {
+            final prayer = prayers[index];
+            return _buildPrayerCard(prayer, index).animate()
+                .fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Text(
+          'Error loading answered prayers: $error',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -570,19 +562,32 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
     );
   }
 
-  void _addPrayer(String title, String description, PrayerCategory category) {
-    final newPrayer = PrayerRequest(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: title,
-      description: description,
-      category: category,
-      dateCreated: DateTime.now(),
-      isAnswered: false,
-    );
+  Future<void> _addPrayer(String title, String description, PrayerCategory category) async {
+    final actions = ref.read(prayerActionsProvider);
 
-    setState(() {
-      _activePrayers.insert(0, newPrayer);
-    });
+    try {
+      await actions.addPrayer(title, description, category);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Prayer added successfully'),
+            backgroundColor: AppTheme.primaryColor,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding prayer: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   void _markPrayerAnswered(PrayerRequest prayer) {
@@ -648,16 +653,34 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                       child: GlassButton(
                         text: 'Mark Answered',
                         height: 48,
-                        onPressed: () {
+                        onPressed: () async {
                           if (answerDescription.isNotEmpty) {
-                            setState(() {
-                              prayer.isAnswered = true;
-                              prayer.dateAnswered = DateTime.now();
-                              prayer.answerDescription = answerDescription;
-                              _activePrayers.remove(prayer);
-                              _answeredPrayers.insert(0, prayer);
-                            });
-                            NavigationService.pop();
+                            final actions = ref.read(prayerActionsProvider);
+
+                            try {
+                              await actions.markAnswered(prayer.id, answerDescription);
+
+                              if (mounted) {
+                                NavigationService.pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Prayer marked as answered! 🙏'),
+                                    backgroundColor: AppTheme.primaryColor,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: $e'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                              }
+                            }
                           }
                         },
                       ),
@@ -672,50 +695,121 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
     );
   }
 
-  void _deletePrayer(PrayerRequest prayer) {
-    setState(() {
-      _activePrayers.remove(prayer);
-    });
-  }
+  Future<void> _deletePrayer(PrayerRequest prayer) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: FrostedGlassCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                size: 48,
+                color: Colors.orange,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              const Text(
+                'Delete Prayer',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                'Are you sure you want to delete "${prayer.title}"?',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.secondaryText,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassButton(
+                      text: 'Cancel',
+                      height: 48,
+                      onPressed: () => Navigator.of(context).pop(false),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => Navigator.of(context).pop(true),
+                          borderRadius: BorderRadius.circular(24),
+                          child: Container(
+                            height: 48,
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
 
-  Color _getCategoryColor(PrayerCategory category) {
-    switch (category) {
-      case PrayerCategory.health:
-        return Colors.red;
-      case PrayerCategory.family:
-        return Colors.pink;
-      case PrayerCategory.work:
-        return Colors.blue;
-      case PrayerCategory.protection:
-        return Colors.orange;
-      case PrayerCategory.guidance:
-        return Colors.purple;
-      case PrayerCategory.gratitude:
-        return Colors.green;
-      case PrayerCategory.general:
-      default:
-        return Colors.grey;
+    if (confirmed == true) {
+      final actions = ref.read(prayerActionsProvider);
+
+      try {
+        await actions.deletePrayer(prayer.id);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Prayer deleted'),
+              backgroundColor: AppTheme.primaryColor,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error deleting prayer: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     }
   }
+
 
   String _getCategoryName(PrayerCategory category) {
-    switch (category) {
-      case PrayerCategory.health:
-        return 'Health';
-      case PrayerCategory.family:
-        return 'Family';
-      case PrayerCategory.work:
-        return 'Work/Career';
-      case PrayerCategory.protection:
-        return 'Protection';
-      case PrayerCategory.guidance:
-        return 'Guidance';
-      case PrayerCategory.gratitude:
-        return 'Gratitude';
-      case PrayerCategory.general:
-      default:
-        return 'General';
-    }
+    return category.displayName;
   }
 
   String _formatDate(DateTime date) {
@@ -732,36 +826,4 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
       return '${date.day}/${date.month}/${date.year}';
     }
   }
-}
-
-class PrayerRequest {
-  final String id;
-  final String title;
-  final String description;
-  final PrayerCategory category;
-  final DateTime dateCreated;
-  bool isAnswered;
-  DateTime? dateAnswered;
-  String? answerDescription;
-
-  PrayerRequest({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.dateCreated,
-    required this.isAnswered,
-    this.dateAnswered,
-    this.answerDescription,
-  });
-}
-
-enum PrayerCategory {
-  general,
-  health,
-  family,
-  work,
-  protection,
-  guidance,
-  gratitude,
 }
