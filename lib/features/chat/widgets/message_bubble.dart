@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../models/chat_message.dart';
 import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
@@ -313,8 +314,7 @@ class MessageBubble extends StatelessWidget {
 
     shareText += '\n\nShared from Everyday Christian App';
 
-    // TODO: Implement actual sharing functionality
-    // Share.share(shareText);
+    Share.share(shareText);
   }
 }
 

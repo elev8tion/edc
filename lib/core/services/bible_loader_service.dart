@@ -13,7 +13,6 @@ class BibleLoaderService {
   Future<void> loadAllBibles() async {
     await loadBible('KJV', 'assets/bible/kjv.json', 'en');
     await loadBible('WEB', 'assets/bible/web.json', 'en');
-    await loadBible('RVR1909', 'assets/bible/rvr1909.json', 'es');
   }
 
   /// Load a single Bible version from JSON asset

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
@@ -250,19 +251,7 @@ ${verse.translation}
 
 Shared from Everyday Christian App''';
 
-    // TODO: Implement actual sharing
-    // Share.share(text);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Verse ready to share'),
-        backgroundColor: AppTheme.primaryColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
+    Share.share(text);
   }
 }
 

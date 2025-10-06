@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
@@ -9,6 +10,7 @@ import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
+import '../components/blur_dropdown.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 
@@ -304,6 +306,11 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                   )
                 else
                   PopupMenuButton<String>(
+                    color: Colors.transparent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                     onSelected: (value) {
                       if (value == 'mark_answered') {
                         _markPrayerAnswered(prayer);
@@ -312,24 +319,89 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'mark_answered',
-                        child: Row(
-                          children: [
-                            Icon(Icons.check, size: 18),
-                            SizedBox(width: AppSpacing.sm),
-                            Text('Mark as Answered'),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                              child: Material(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(24),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(24),
+                                  onTap: () {
+                                    Navigator.pop(context, 'mark_answered');
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white.withValues(alpha: 0.1)
+                                          : Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(24),
+                                      border: Border.all(
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? Colors.white24
+                                            : Colors.white54,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.check, size: 18, color: Colors.white),
+                                        SizedBox(width: AppSpacing.sm),
+                                        Text('Mark as Answered', style: TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 18, color: Colors.red),
-                            SizedBox(width: AppSpacing.sm),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
-                          ],
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                            child: Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(24),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(24),
+                                onTap: () {
+                                  Navigator.pop(context, 'delete');
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white.withValues(alpha: 0.1)
+                                        : Colors.white.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white24
+                                          : Colors.white54,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.delete, size: 18, color: Colors.red),
+                                      SizedBox(width: AppSpacing.sm),
+                                      Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -497,30 +569,21 @@ class _PrayerJournalScreenState extends State<PrayerJournalScreen> with TickerPr
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Container(
-                    width: double.infinity,
-                    padding: AppSpacing.horizontalMd,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: DropdownButton<PrayerCategory>(
-                      value: selectedCategory,
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      dropdownColor: AppTheme.primaryColor,
-                      style: const TextStyle(color: Colors.white),
+                  SizedBox(
+                    height: 40,
+                    child: BlurDropdown(
+                      value: _getCategoryName(selectedCategory),
+                      items: PrayerCategory.values.map((category) => _getCategoryName(category)).toList(),
+                      hint: 'Select Category',
                       onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value!;
-                        });
+                        if (value != null) {
+                          setState(() {
+                            selectedCategory = PrayerCategory.values.firstWhere(
+                              (category) => _getCategoryName(category) == value,
+                            );
+                          });
+                        }
                       },
-                      items: PrayerCategory.values.map((category) {
-                        return DropdownMenuItem(
-                          value: category,
-                          child: Text(_getCategoryName(category)),
-                        );
-                      }).toList(),
                     ),
                   ),
 

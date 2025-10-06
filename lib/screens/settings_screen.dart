@@ -9,6 +9,7 @@ import '../components/glass_card.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
+import '../components/blur_dropdown.dart';
 import '../core/navigation/navigation_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -23,8 +24,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _prayerReminders = true;
   bool _verseOfTheDay = true;
   bool _offlineMode = false;
-  String _selectedBibleVersion = 'ESV';
-  String _selectedLanguage = 'English';
+  String _selectedBibleVersion = 'KJV';
   double _fontSize = 16.0;
 
   @override
@@ -155,15 +155,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Bible Version',
                 'Choose your preferred translation',
                 _selectedBibleVersion,
-                ['ESV', 'NIV', 'NASB', 'KJV', 'NLT', 'NKJV'],
+                ['KJV', 'WEB'],
                 (value) => setState(() => _selectedBibleVersion = value!),
-              ),
-              _buildDropdownTile(
-                'Language',
-                'Select app language',
-                _selectedLanguage,
-                ['English', 'Spanish'],
-                (value) => setState(() => _selectedLanguage = value!),
               ),
             ],
           ),
@@ -474,31 +467,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Container(
-            padding: AppSpacing.horizontalMd,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: value,
-                isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                dropdownColor: const Color(0xFF2D3748),
-                style: const TextStyle(color: AppColors.primaryText, fontSize: 15),
-                items: options.map((String option) {
-                  return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
-                  );
-                }).toList(),
-                onChanged: onChanged,
-              ),
+          SizedBox(
+            height: 40,
+            child: BlurDropdown(
+              value: value,
+              items: options,
+              hint: 'Select $title',
+              onChanged: onChanged,
             ),
           ),
         ],
