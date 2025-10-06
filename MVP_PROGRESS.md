@@ -106,8 +106,8 @@
 **AI Chat:**
 - ✅ UI complete
 - ✅ Local AI service structure
-- ❌ Cloud AI integration
-- ❌ Context-aware responses
+- 🔄 Phi-3 Mini INT4 integration (in progress)
+- ✅ Context-aware fallback responses (temporary)
 
 ### ⚠️ Content (5%)
 - ❌ Bible API (ESV/NIV/KJV)
@@ -173,7 +173,7 @@
 - [ ] Empty states for all lists
 
 ### P2 - Polish (Post-MVP)
-- [ ] Cloud AI integration (better responses)
+- [ ] Fine-tune Phi-3 Mini on biblical guidance data (optional enhancement)
 - [ ] Advanced search filters
 - [ ] Data export (PDF)
 - [ ] Profile photo upload

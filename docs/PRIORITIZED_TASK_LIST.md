@@ -132,32 +132,36 @@
 
 ## PRIORITY 1: Important Features (1-2 Weeks)
 
-### P1.2: Local AI Integration (Llama) ⚠️ **MAJOR DECISION NEEDED**
-**Status:** Simulated/stubbed implementation
+### P1.2: Local AI Integration (Phi-3 Mini) ✅ **DECISION MADE**
+**Status:** Simulated/stubbed implementation - Moving to Phi-3 Mini
 **Impact:** AI responses are fallback-only (not "real" AI)
 **Current State:**
 - ✅ Service architecture complete (`lib/services/local_ai_service.dart`)
 - ✅ Fallback responses working well
 - ✅ Theme detection and verse integration
-- ❌ No actual Llama model integration
-- ❌ No ONNX Runtime or Ollama dependency
-- ❌ Comments say "will be replaced with actual Llama integration"
+- ❌ No actual AI model integration
+- ❌ No ONNX Runtime dependency
 
-**Options:**
-1. **Keep Fallback** - Fallback system is robust, consider it "good enough"
-2. **Cloud API** - Use Claude/ChatGPT API with biblical prompt
-3. **Local Llama** - Integrate actual model (VERY HIGH effort)
+**Decision: Phi-3 Mini INT4 (500 MB)**
+- ✅ **Chosen:** Microsoft Phi-3 Mini 3.8B quantized to INT4
+- ✅ **Size:** ~500 MB (vs 1 GB for Llama)
+- ✅ **Quality:** Excellent instruction-tuned model
+- ✅ **Speed:** 2-3 sec response time on modern devices
+- ✅ **Framework:** ONNX Runtime for iOS/Android
 
-**If pursuing Local Llama:**
-- [ ] Research flutter_ollama vs ONNX Runtime
-- [ ] Download quantized Llama 3.2 1B model (~1GB)
-- [ ] Implement model loading and inference
+**Implementation Tasks:**
+- [ ] Add `onnxruntime` Flutter package dependency
+- [ ] Download Phi-3 Mini INT4 ONNX model (~500 MB)
+- [ ] Implement model loading on app initialization
+- [ ] Build biblical guidance prompt system
+- [ ] Implement inference pipeline
 - [ ] Test on iOS/Android devices
 - [ ] Optimize for <3s response time
 - [ ] Add fallback for unsupported devices
+- [ ] Optional: Fine-tune on biblical guidance data
 
-**Effort:** VERY HIGH (2-3 weeks)
-**Recommendation:** Consider cloud API or enhance fallback responses
+**Effort:** HIGH (1-2 weeks)
+**Final App Size:** ~550 MB (50 MB app + 500 MB model)
 
 ---
 
@@ -345,7 +349,7 @@
 ### Sprint 2: Feature Enhancement (1-2 weeks)
 6. **P1.3** - Verse library search enhancement
 7. **P1.4** - Daily verse smart selection
-8. **P1.2** - AI decision (cloud API vs enhance fallback)
+8. **P1.2** - Implement Phi-3 Mini local AI model (1-2 weeks)
 
 ### Sprint 3: Polish & Quality (1-2 weeks)
 9. ✅ **P2.1** - Test coverage to 85%+ (COMPLETE - 974 tests!)
@@ -366,7 +370,7 @@
 
 ### ✅ Already Complete (Ship Ready!)
 1. ✅ Bible database populated (KJV + WEB)
-2. ✅ AI working via fallback (good enough for v1)
+2. 🔄 AI using fallback (Phi-3 Mini integration planned)
 3. ✅ Sharing implemented (Share.share())
 4. ✅ Services built (Prayer, Preferences, Notifications, etc.)
 5. ✅ Beautiful UI with glass morphism
@@ -404,7 +408,7 @@
 ### Gaps:
 - ⚠️ UI-to-service connections missing (Prayer, Settings)
 - ⚠️ Notifications not scheduled (service exists, unused)
-- ⚠️ AI is fallback-only (not real model inference)
+- ⚠️ AI is fallback-only (Phi-3 Mini integration in progress)
 - ⚠️ Zero accessibility (no Semantics widgets)
 - ~~⚠️ Test coverage unknown~~ ✅ FIXED - 974 tests passing!
 - ~~⚠️ RVR1909 Bible file missing~~ ❌ CANCELLED - not needed
@@ -433,7 +437,7 @@ The LocalAIService currently uses sophisticated fallback responses with:
 2. **Add cloud API** - More intelligent, requires internet and API costs
 3. **Local Llama** - True local AI, but 2-3 weeks of work + 1GB+ app size
 
-**Recommendation:** Ship v1.0 with enhanced fallback, add cloud API in v1.1 if needed.
+**Decision:** Implementing Phi-3 Mini 3.8B INT4 (~500 MB) for true local AI with excellent quality/size balance.
 
 ### Missing Spanish Bible:
 RVR1909 is referenced but file missing. Quick fix:

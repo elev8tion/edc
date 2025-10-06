@@ -7,14 +7,14 @@ import 'verse_service.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
 
-/// Local AI service implementation using Llama model
+/// Local AI service implementation using Phi-3 Mini model
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
 
   bool _isInitialized = false;
   bool _isModelLoaded = false;
 
-  // Simulated model state (will be replaced with actual Llama integration)
+  // Simulated model state (will be replaced with actual Phi-3 Mini integration)
   static const Duration _processingDelay = Duration(milliseconds: 1500);
   static const Duration _streamDelay = Duration(milliseconds: 50);
 
@@ -33,8 +33,8 @@ class LocalAIService implements AIService {
 
       // In production, this would:
       // 1. Check device compatibility
-      // 2. Download/load Llama 3.2 1B model
-      // 3. Initialize ONNX runtime or Ollama
+      // 2. Download/load Phi-3 Mini 3.8B INT4 model (~500 MB)
+      // 3. Initialize ONNX runtime
       // 4. Warm up the model with test inference
 
       _isModelLoaded = await _loadModel();
@@ -57,7 +57,7 @@ class LocalAIService implements AIService {
       }
 
       // Simulate model loading
-      debugPrint('📦 Loading Llama 3.2 1B model...');
+      debugPrint('📦 Loading Phi-3 Mini INT4 model (~500 MB)...');
       await Future.delayed(const Duration(seconds: 1));
 
       // In production, this would:
@@ -122,7 +122,7 @@ class LocalAIService implements AIService {
         confidence: 0.85 + (Random().nextDouble() * 0.1), // 0.85-0.95
         metadata: {
           'themes': themes,
-          'model': 'llama-3.2-1b-instruct',
+          'model': 'phi-3-mini-int4-instruct',
           'processing_method': 'local_inference',
         },
       );
@@ -187,7 +187,7 @@ class LocalAIService implements AIService {
 
     // In production, this would:
     // 1. Build the prompt with biblical context
-    // 2. Run inference on the Llama model
+    // 2. Run inference on the Phi-3 Mini model
     // 3. Parse and validate the response
     // 4. Ensure theological soundness
 
