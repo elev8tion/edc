@@ -4,17 +4,22 @@ import 'package:flutter/foundation.dart';
 
 import 'ai_service.dart';
 import 'verse_service.dart';
+import 'onnx_model_service.dart';
+import 'phi3_tokenizer.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
 
 /// Local AI service implementation using Phi-3 Mini model
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
+  final OnnxModelService _onnxService = OnnxModelService.instance;
+  final Phi3Tokenizer _tokenizer = Phi3Tokenizer.instance;
 
   bool _isInitialized = false;
   bool _isModelLoaded = false;
+  bool _useRealInference = false;
 
-  // Simulated model state (will be replaced with actual Phi-3 Mini integration)
+  // Simulated model state for fallback
   static const Duration _processingDelay = Duration(milliseconds: 1500);
   static const Duration _streamDelay = Duration(milliseconds: 50);
 
@@ -28,46 +33,59 @@ class LocalAIService implements AIService {
     try {
       debugPrint('🤖 Initializing Local AI Service...');
 
-      // Simulate model loading time
-      await Future.delayed(const Duration(seconds: 2));
+      // Initialize ONNX Runtime
+      await _onnxService.initialize();
 
-      // In production, this would:
-      // 1. Check device compatibility
-      // 2. Download/load Phi-3 Mini 3.8B INT4 model (~500 MB)
-      // 3. Initialize ONNX runtime
-      // 4. Warm up the model with test inference
+      // Initialize tokenizer
+      await _tokenizer.initialize();
 
+      // Try to load the model
       _isModelLoaded = await _loadModel();
       _isInitialized = true;
 
-      debugPrint('✅ Local AI Service initialized successfully');
+      if (_isModelLoaded) {
+        debugPrint('✅ Local AI Service initialized with Phi-3 Mini model');
+        _useRealInference = true;
+      } else {
+        debugPrint('⚠️ Local AI Service initialized with fallback responses');
+        _useRealInference = false;
+      }
     } catch (e) {
       debugPrint('❌ Failed to initialize AI Service: $e');
       _isInitialized = false;
       _isModelLoaded = false;
+      _useRealInference = false;
     }
   }
 
   Future<bool> _loadModel() async {
     try {
-      // Simulate device compatibility check
+      // Check if model file exists
+      final modelExists = await _onnxService.modelExists();
+
+      if (!modelExists) {
+        debugPrint('⚠️ Phi-3 Mini model file not found');
+        debugPrint('📖 See assets/models/README.md for download instructions');
+        return false;
+      }
+
+      // Check device compatibility
       if (!_isDeviceCompatible()) {
         debugPrint('⚠️ Device not compatible with local AI model');
         return false;
       }
 
-      // Simulate model loading
+      // Load the model
       debugPrint('📦 Loading Phi-3 Mini INT4 model (~500 MB)...');
-      await Future.delayed(const Duration(seconds: 1));
+      final loaded = await _onnxService.loadModel();
 
-      // In production, this would:
-      // - Load the quantized model file
-      // - Initialize the inference engine
-      // - Set up memory allocation
-      // - Validate model integrity
-
-      debugPrint('🚀 Model loaded and ready for inference');
-      return true;
+      if (loaded) {
+        debugPrint('🚀 Phi-3 Mini model loaded and ready for inference');
+        return true;
+      } else {
+        debugPrint('❌ Failed to load Phi-3 Mini model');
+        return false;
+      }
     } catch (e) {
       debugPrint('❌ Model loading failed: $e');
       return false;
@@ -182,16 +200,72 @@ class LocalAIService implements AIService {
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    // Simulate AI processing time
+    // Use real inference if model is loaded
+    if (_useRealInference && _tokenizer.isReady) {
+      try {
+        return await _runPhi3Inference(
+          userInput: userInput,
+          themes: themes,
+          verses: verses,
+          conversationHistory: conversationHistory,
+        );
+      } catch (e) {
+        debugPrint('⚠️ Real inference failed, using fallback: $e');
+        // Fall through to fallback
+      }
+    }
+
+    // Fallback: template-based response
     await Future.delayed(_processingDelay);
-
-    // In production, this would:
-    // 1. Build the prompt with biblical context
-    // 2. Run inference on the Phi-3 Mini model
-    // 3. Parse and validate the response
-    // 4. Ensure theological soundness
-
     return _buildContextualResponse(userInput, themes, verses);
+  }
+
+  /// Run real inference using Phi-3 Mini model
+  Future<String> _runPhi3Inference({
+    required String userInput,
+    required List<String> themes,
+    required List<BibleVerse> verses,
+    List<ChatMessage> conversationHistory = const [],
+  }) async {
+    // Build the prompt using Phi-3 chat format
+    final systemMessage = BiblicalPrompts.systemPrompt;
+    final conversationStrings = conversationHistory
+        .map((msg) => msg.content)
+        .toList();
+
+    // Build biblical context
+    final versesContext = verses.isNotEmpty
+        ? '\n\nRelevant Scripture:\n${verses.map((v) => '${v.reference}: "${v.text}"').join('\n')}'
+        : '';
+
+    final enhancedUserInput = '$userInput$versesContext';
+
+    final prompt = _tokenizer.buildChatPrompt(
+      systemMessage: systemMessage,
+      userMessage: enhancedUserInput,
+      conversationHistory: conversationStrings,
+    );
+
+    // Tokenize the prompt
+    final tokenIds = _tokenizer.encode(prompt, addSpecialTokens: false);
+
+    debugPrint('🔢 Prompt tokens: ${tokenIds.length}');
+
+    // Run inference
+    // Note: This is simplified - real implementation needs proper tensor handling
+    final outputTokens = await _onnxService.runInference(tokenIds.map((i) => i.toDouble()).toList());
+
+    if (outputTokens == null || outputTokens.isEmpty) {
+      throw Exception('Inference returned no output');
+    }
+
+    // Convert output tokens back to text
+    final outputTokenIds = outputTokens.map((d) => d.toInt()).toList();
+    final response = _tokenizer.decode(outputTokenIds, skipSpecialTokens: true);
+
+    debugPrint('✅ Generated response: ${response.substring(0, min(100, response.length))}...');
+
+    return response;
   }
 
   String _buildContextualResponse(
