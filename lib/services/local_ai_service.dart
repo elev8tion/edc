@@ -5,19 +5,22 @@ import 'package:flutter/foundation.dart';
 import 'ai_service.dart';
 import 'verse_service.dart';
 import 'theme_classifier_service.dart';
+import 'text_generator_service.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 
-/// Local AI service implementation using TFLite theme classification
+/// Local AI service implementation using TFLite theme classification + text generation
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
   final ThemeClassifierService _themeClassifier = ThemeClassifierService.instance;
+  final TextGeneratorService _textGenerator = TextGeneratorService.instance;
   final AppLogger _logger = AppLogger.instance;
 
   bool _isInitialized = false;
   bool _isModelLoaded = false;
+  bool _useAIGeneration = false; // Toggle between AI and template responses
 
   // Simulated model state for fallback
   static const Duration _processingDelay = Duration(milliseconds: 1500);
@@ -37,11 +40,23 @@ class LocalAIService implements AIService {
         // Initialize theme classifier
         await _themeClassifier.initialize();
 
+        // Try to initialize text generator
+        try {
+          await _textGenerator.initialize();
+          _useAIGeneration = _textGenerator.isReady;
+          _logger.info('Text generator initialized', context: 'LocalAIService');
+        } catch (e) {
+          _logger.warning('Text generator not available, using templates: $e', context: 'LocalAIService');
+          _useAIGeneration = false;
+        }
+
         _isModelLoaded = _themeClassifier.isReady;
         _isInitialized = true;
 
-        if (_isModelLoaded) {
-          _logger.info('AI Service initialized with TFLite theme classifier', context: 'LocalAIService');
+        if (_isModelLoaded && _useAIGeneration) {
+          _logger.info('AI Service initialized with theme classifier + text generation', context: 'LocalAIService');
+        } else if (_isModelLoaded) {
+          _logger.info('AI Service initialized with theme classifier only', context: 'LocalAIService');
         } else {
           _logger.warning('AI Service initialized with keyword-based fallback', context: 'LocalAIService');
         }
@@ -152,7 +167,26 @@ class LocalAIService implements AIService {
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    // Use template-based response with detected themes
+    // Use AI text generation if available, otherwise fall back to templates
+    if (_useAIGeneration) {
+      try {
+        final theme = themes.isNotEmpty ? themes.first : 'general';
+        final aiResponse = await _textGenerator.generateResponse(
+          userInput: userInput,
+          theme: theme,
+          maxLength: 250,
+        );
+
+        // If AI generation succeeds, return it
+        if (aiResponse.isNotEmpty) {
+          return aiResponse;
+        }
+      } catch (e) {
+        _logger.warning('AI generation failed, using template: $e', context: 'LocalAIService');
+      }
+    }
+
+    // Fallback to template-based response
     await Future.delayed(_processingDelay);
     return _buildContextualResponse(userInput, themes, verses);
   }
@@ -254,6 +288,9 @@ class LocalAIService implements AIService {
   @override
   Future<void> dispose() async {
     await _themeClassifier.dispose();
+    if (_useAIGeneration) {
+      await _textGenerator.dispose();
+    }
     _isInitialized = false;
     _isModelLoaded = false;
     debugPrint('🤖 Local AI Service disposed');
