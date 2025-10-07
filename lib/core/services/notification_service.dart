@@ -32,8 +32,50 @@ class NotificationService {
   }
 
   void _onNotificationTapped(NotificationResponse response) {
-    // Handle notification tap
+    // Handle notification tap with payload routing
     print('Notification tapped: ${response.payload}');
+    if (response.payload != null) {
+      _handleNotificationPayload(response.payload!);
+    }
+  }
+
+  void _handleNotificationPayload(String payload) {
+    // Parse payload and navigate accordingly
+    // Format: "type:data" e.g., "verse:John 3:16" or "prayer:123"
+    final parts = payload.split(':');
+    if (parts.length >= 2) {
+      final type = parts[0];
+      final data = parts.sublist(1).join(':');
+
+      switch (type) {
+        case 'verse':
+          // Navigate to daily verse screen with verse reference
+          _navigateToDailyVerse(data);
+          break;
+        case 'prayer':
+          // Navigate to prayer journal
+          _navigateToPrayer(data);
+          break;
+        case 'reading':
+          // Navigate to reading plan
+          _navigateToReading(data);
+          break;
+      }
+    }
+  }
+
+  void _navigateToDailyVerse(String reference) {
+    // This will be handled by the app's navigation service
+    // For now, just log the action
+    print('Navigate to daily verse: $reference');
+  }
+
+  void _navigateToPrayer(String prayerId) {
+    print('Navigate to prayer: $prayerId');
+  }
+
+  void _navigateToReading(String planId) {
+    print('Navigate to reading plan: $planId');
   }
 
   Future<void> scheduleDailyDevotional({
@@ -58,6 +100,80 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  Future<void> scheduleDailyVerse({
+    required int hour,
+    required int minute,
+    required String verseReference,
+    required String versePreview,
+  }) async {
+    // Create payload for deep linking
+    final payload = 'verse:$verseReference';
+
+    await _notifications.zonedSchedule(
+      4, // Unique ID for daily verse notifications
+      'Verse of the Day',
+      '$verseReference - $versePreview',
+      _nextInstanceOfTime(hour, minute),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_verse_channel',
+          'Daily Verse',
+          channelDescription: 'Daily verse notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          styleInformation: BigTextStyleInformation(
+            versePreview,
+            contentTitle: 'Verse of the Day',
+            summaryText: verseReference,
+          ),
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      payload: payload,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  Future<void> showDailyVerseNotification({
+    required String verseReference,
+    required String verseText,
+  }) async {
+    // Immediate notification for testing or on-demand
+    final payload = 'verse:$verseReference';
+
+    await _notifications.show(
+      4,
+      'Verse of the Day',
+      '$verseReference - ${verseText.substring(0, verseText.length > 50 ? 50 : verseText.length)}...',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_verse_channel',
+          'Daily Verse',
+          channelDescription: 'Daily verse notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          styleInformation: BigTextStyleInformation(
+            verseText,
+            contentTitle: 'Verse of the Day',
+            summaryText: verseReference,
+          ),
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      payload: payload,
     );
   }
 
