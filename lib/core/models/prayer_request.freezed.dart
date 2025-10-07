@@ -23,7 +23,8 @@ mixin _$PrayerRequest {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
-  PrayerCategory get category => throw _privateConstructorUsedError;
+  String get categoryId =>
+      throw _privateConstructorUsedError; // Changed from PrayerCategory to String categoryId
   DateTime get dateCreated => throw _privateConstructorUsedError;
   bool get isAnswered => throw _privateConstructorUsedError;
   DateTime? get dateAnswered => throw _privateConstructorUsedError;
@@ -49,7 +50,7 @@ abstract class $PrayerRequestCopyWith<$Res> {
       {String id,
       String title,
       String description,
-      PrayerCategory category,
+      String categoryId,
       DateTime dateCreated,
       bool isAnswered,
       DateTime? dateAnswered,
@@ -74,7 +75,7 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
     Object? id = null,
     Object? title = null,
     Object? description = null,
-    Object? category = null,
+    Object? categoryId = null,
     Object? dateCreated = null,
     Object? isAnswered = null,
     Object? dateAnswered = freezed,
@@ -93,10 +94,10 @@ class _$PrayerRequestCopyWithImpl<$Res, $Val extends PrayerRequest>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as PrayerCategory,
+      categoryId: null == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
+              as String,
       dateCreated: null == dateCreated
           ? _value.dateCreated
           : dateCreated // ignore: cast_nullable_to_non_nullable
@@ -129,7 +130,7 @@ abstract class _$$PrayerRequestImplCopyWith<$Res>
       {String id,
       String title,
       String description,
-      PrayerCategory category,
+      String categoryId,
       DateTime dateCreated,
       bool isAnswered,
       DateTime? dateAnswered,
@@ -152,7 +153,7 @@ class __$$PrayerRequestImplCopyWithImpl<$Res>
     Object? id = null,
     Object? title = null,
     Object? description = null,
-    Object? category = null,
+    Object? categoryId = null,
     Object? dateCreated = null,
     Object? isAnswered = null,
     Object? dateAnswered = freezed,
@@ -171,10 +172,10 @@ class __$$PrayerRequestImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as PrayerCategory,
+      categoryId: null == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
+              as String,
       dateCreated: null == dateCreated
           ? _value.dateCreated
           : dateCreated // ignore: cast_nullable_to_non_nullable
@@ -202,7 +203,7 @@ class _$PrayerRequestImpl implements _PrayerRequest {
       {required this.id,
       required this.title,
       required this.description,
-      required this.category,
+      required this.categoryId,
       required this.dateCreated,
       this.isAnswered = false,
       this.dateAnswered,
@@ -218,7 +219,8 @@ class _$PrayerRequestImpl implements _PrayerRequest {
   @override
   final String description;
   @override
-  final PrayerCategory category;
+  final String categoryId;
+// Changed from PrayerCategory to String categoryId
   @override
   final DateTime dateCreated;
   @override
@@ -231,7 +233,7 @@ class _$PrayerRequestImpl implements _PrayerRequest {
 
   @override
   String toString() {
-    return 'PrayerRequest(id: $id, title: $title, description: $description, category: $category, dateCreated: $dateCreated, isAnswered: $isAnswered, dateAnswered: $dateAnswered, answerDescription: $answerDescription)';
+    return 'PrayerRequest(id: $id, title: $title, description: $description, categoryId: $categoryId, dateCreated: $dateCreated, isAnswered: $isAnswered, dateAnswered: $dateAnswered, answerDescription: $answerDescription)';
   }
 
   @override
@@ -243,8 +245,8 @@ class _$PrayerRequestImpl implements _PrayerRequest {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.category, category) ||
-                other.category == category) &&
+            (identical(other.categoryId, categoryId) ||
+                other.categoryId == categoryId) &&
             (identical(other.dateCreated, dateCreated) ||
                 other.dateCreated == dateCreated) &&
             (identical(other.isAnswered, isAnswered) ||
@@ -257,8 +259,8 @@ class _$PrayerRequestImpl implements _PrayerRequest {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, description, category,
-      dateCreated, isAnswered, dateAnswered, answerDescription);
+  int get hashCode => Object.hash(runtimeType, id, title, description,
+      categoryId, dateCreated, isAnswered, dateAnswered, answerDescription);
 
   /// Create a copy of PrayerRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -281,7 +283,7 @@ abstract class _PrayerRequest implements PrayerRequest {
       {required final String id,
       required final String title,
       required final String description,
-      required final PrayerCategory category,
+      required final String categoryId,
       required final DateTime dateCreated,
       final bool isAnswered,
       final DateTime? dateAnswered,
@@ -297,7 +299,7 @@ abstract class _PrayerRequest implements PrayerRequest {
   @override
   String get description;
   @override
-  PrayerCategory get category;
+  String get categoryId; // Changed from PrayerCategory to String categoryId
   @override
   DateTime get dateCreated;
   @override

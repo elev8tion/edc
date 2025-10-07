@@ -11,6 +11,7 @@ import '../components/animations/blur_fade.dart';
 import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
+import '../utils/responsive_utils.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -96,10 +97,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        const Text(
+                        Text(
                           'Welcome Back',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: ResponsiveUtils.fontSize(context, 28, minSize: 24, maxSize: 32),
                             fontWeight: FontWeight.bold,
                             color: AppColors.primaryText,
                           ),
@@ -108,7 +109,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         Text(
                           'Sign in to continue your spiritual journey',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                             color: AppColors.secondaryText,
                             height: 1.4,
                             fontWeight: FontWeight.w500,
@@ -135,7 +136,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                     'Your spiritual conversations remain completely private on your device',
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 12,
+                      fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,

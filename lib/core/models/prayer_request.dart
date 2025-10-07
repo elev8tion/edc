@@ -9,7 +9,7 @@ class PrayerRequest with _$PrayerRequest {
     required String id,
     required String title,
     required String description,
-    required PrayerCategory category,
+    required String categoryId,  // Changed from PrayerCategory to String categoryId
     required DateTime dateCreated,
     @Default(false) bool isAnswered,
     DateTime? dateAnswered,
@@ -18,35 +18,4 @@ class PrayerRequest with _$PrayerRequest {
 
   factory PrayerRequest.fromJson(Map<String, dynamic> json) =>
       _$PrayerRequestFromJson(json);
-}
-
-enum PrayerCategory {
-  general,
-  health,
-  family,
-  work,
-  protection,
-  guidance,
-  gratitude,
-}
-
-extension PrayerCategoryExtension on PrayerCategory {
-  String get displayName {
-    switch (this) {
-      case PrayerCategory.general:
-        return 'General';
-      case PrayerCategory.health:
-        return 'Health';
-      case PrayerCategory.family:
-        return 'Family';
-      case PrayerCategory.work:
-        return 'Work/Career';
-      case PrayerCategory.protection:
-        return 'Protection';
-      case PrayerCategory.guidance:
-        return 'Guidance';
-      case PrayerCategory.gratitude:
-        return 'Gratitude';
-    }
-  }
 }

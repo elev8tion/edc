@@ -4,20 +4,20 @@ import 'package:flutter/foundation.dart';
 
 import 'ai_service.dart';
 import 'verse_service.dart';
-import 'onnx_model_service.dart';
-import 'phi3_tokenizer.dart';
+import 'theme_classifier_service.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
+import '../core/error/error_handler.dart';
+import '../core/logging/app_logger.dart';
 
-/// Local AI service implementation using Phi-3 Mini model
+/// Local AI service implementation using TFLite theme classification
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
-  final OnnxModelService _onnxService = OnnxModelService.instance;
-  final Phi3Tokenizer _tokenizer = Phi3Tokenizer.instance;
+  final ThemeClassifierService _themeClassifier = ThemeClassifierService.instance;
+  final AppLogger _logger = AppLogger.instance;
 
   bool _isInitialized = false;
   bool _isModelLoaded = false;
-  bool _useRealInference = false;
 
   // Simulated model state for fallback
   static const Duration _processingDelay = Duration(milliseconds: 1500);
@@ -30,77 +30,26 @@ class LocalAIService implements AIService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    try {
-      debugPrint('🤖 Initializing Local AI Service...');
+    return await ErrorHandler.handleAsync(
+      () async {
+        _logger.info('Initializing Local AI Service with TFLite', context: 'LocalAIService');
 
-      // Initialize ONNX Runtime
-      await _onnxService.initialize();
+        // Initialize theme classifier
+        await _themeClassifier.initialize();
 
-      // Initialize tokenizer
-      await _tokenizer.initialize();
+        _isModelLoaded = _themeClassifier.isReady;
+        _isInitialized = true;
 
-      // Try to load the model
-      _isModelLoaded = await _loadModel();
-      _isInitialized = true;
-
-      if (_isModelLoaded) {
-        debugPrint('✅ Local AI Service initialized with Phi-3 Mini model');
-        _useRealInference = true;
-      } else {
-        debugPrint('⚠️ Local AI Service initialized with fallback responses');
-        _useRealInference = false;
-      }
-    } catch (e) {
-      debugPrint('❌ Failed to initialize AI Service: $e');
-      _isInitialized = false;
-      _isModelLoaded = false;
-      _useRealInference = false;
-    }
+        if (_isModelLoaded) {
+          _logger.info('AI Service initialized with TFLite theme classifier', context: 'LocalAIService');
+        } else {
+          _logger.warning('AI Service initialized with keyword-based fallback', context: 'LocalAIService');
+        }
+      },
+      context: 'LocalAIService.initialize',
+    );
   }
 
-  Future<bool> _loadModel() async {
-    try {
-      // Check if model file exists
-      final modelExists = await _onnxService.modelExists();
-
-      if (!modelExists) {
-        debugPrint('⚠️ Phi-3 Mini model file not found');
-        debugPrint('📖 See assets/models/README.md for download instructions');
-        return false;
-      }
-
-      // Check device compatibility
-      if (!_isDeviceCompatible()) {
-        debugPrint('⚠️ Device not compatible with local AI model');
-        return false;
-      }
-
-      // Load the model
-      debugPrint('📦 Loading Phi-3 Mini INT4 model (~500 MB)...');
-      final loaded = await _onnxService.loadModel();
-
-      if (loaded) {
-        debugPrint('🚀 Phi-3 Mini model loaded and ready for inference');
-        return true;
-      } else {
-        debugPrint('❌ Failed to load Phi-3 Mini model');
-        return false;
-      }
-    } catch (e) {
-      debugPrint('❌ Model loading failed: $e');
-      return false;
-    }
-  }
-
-  bool _isDeviceCompatible() {
-    // In production, check:
-    // - Available RAM (need ~2GB for 1B model)
-    // - CPU architecture compatibility
-    // - Operating system support
-    // - Flutter platform (mobile vs desktop)
-
-    return true; // Simplified for demo
-  }
 
   @override
   Future<AIResponse> generateResponse({
@@ -110,53 +59,56 @@ class LocalAIService implements AIService {
   }) async {
     final stopwatch = Stopwatch()..start();
 
-    try {
-      if (!isReady) {
-        debugPrint('⚠️ AI Service not ready, using fallback response');
-        return _getFallbackResponse(userInput);
-      }
+    return await ErrorHandler.handleAsync(
+      () async {
+        if (!isReady) {
+          _logger.warning('AI Service not ready, using fallback', context: 'LocalAIService');
+          return _getFallbackResponse(userInput);
+        }
 
-      // Detect themes from user input
-      final themes = BiblicalPrompts.detectThemes(userInput);
-      debugPrint('🎯 Detected themes: $themes');
+        // Detect themes using TFLite classifier
+        final primaryTheme = await _themeClassifier.getPrimaryTheme(userInput);
+        final themes = [primaryTheme];
+        _logger.debug('Detected primary theme: $primaryTheme', context: 'LocalAIService');
 
-      // Get relevant verses
-      final verses = await _getRelevantVersesForInput(userInput, themes);
+        // Get relevant verses
+        final verses = await _getRelevantVersesForInput(userInput, themes);
 
-      // Generate AI response
-      final response = await _generateAIResponse(
-        userInput: userInput,
-        themes: themes,
-        verses: verses,
-        conversationHistory: conversationHistory,
-      );
+        // Generate AI response
+        final response = await _generateAIResponse(
+          userInput: userInput,
+          themes: themes,
+          verses: verses,
+          conversationHistory: conversationHistory,
+        );
 
-      stopwatch.stop();
+        stopwatch.stop();
+        _logger.info(
+          'Generated AI response in ${stopwatch.elapsedMilliseconds}ms',
+          context: 'LocalAIService',
+        );
 
-      return AIResponse(
-        content: response,
-        verses: verses,
-        processingTime: stopwatch.elapsed,
-        confidence: 0.85 + (Random().nextDouble() * 0.1), // 0.85-0.95
-        metadata: {
-          'themes': themes,
-          'model': 'phi-3-mini-int4-instruct',
-          'processing_method': 'local_inference',
-        },
-      );
-
-    } catch (e) {
-      debugPrint('❌ AI generation error: $e');
-      stopwatch.stop();
-
-      return AIResponse(
+        return AIResponse(
+          content: response,
+          verses: verses,
+          processingTime: stopwatch.elapsed,
+          confidence: 0.85 + (Random().nextDouble() * 0.1),
+          metadata: {
+            'themes': themes,
+            'model': 'tflite-theme-classifier',
+            'processing_method': 'theme_classification',
+          },
+        );
+      },
+      context: 'LocalAIService.generateResponse',
+      fallbackValue: AIResponse(
         content: 'I apologize, but I\'m having trouble processing your request right now. Let me share some encouraging verses instead.',
         verses: await _getComfortVerses(),
         processingTime: stopwatch.elapsed,
         confidence: 0.5,
-        metadata: {'error': e.toString(), 'fallback': true},
-      );
-    }
+        metadata: {'error': 'Service error', 'fallback': true},
+      ),
+    );
   }
 
   @override
@@ -200,72 +152,9 @@ class LocalAIService implements AIService {
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    // Use real inference if model is loaded
-    if (_useRealInference && _tokenizer.isReady) {
-      try {
-        return await _runPhi3Inference(
-          userInput: userInput,
-          themes: themes,
-          verses: verses,
-          conversationHistory: conversationHistory,
-        );
-      } catch (e) {
-        debugPrint('⚠️ Real inference failed, using fallback: $e');
-        // Fall through to fallback
-      }
-    }
-
-    // Fallback: template-based response
+    // Use template-based response with detected themes
     await Future.delayed(_processingDelay);
     return _buildContextualResponse(userInput, themes, verses);
-  }
-
-  /// Run real inference using Phi-3 Mini model
-  Future<String> _runPhi3Inference({
-    required String userInput,
-    required List<String> themes,
-    required List<BibleVerse> verses,
-    List<ChatMessage> conversationHistory = const [],
-  }) async {
-    // Build the prompt using Phi-3 chat format
-    final systemMessage = BiblicalPrompts.systemPrompt;
-    final conversationStrings = conversationHistory
-        .map((msg) => msg.content)
-        .toList();
-
-    // Build biblical context
-    final versesContext = verses.isNotEmpty
-        ? '\n\nRelevant Scripture:\n${verses.map((v) => '${v.reference}: "${v.text}"').join('\n')}'
-        : '';
-
-    final enhancedUserInput = '$userInput$versesContext';
-
-    final prompt = _tokenizer.buildChatPrompt(
-      systemMessage: systemMessage,
-      userMessage: enhancedUserInput,
-      conversationHistory: conversationStrings,
-    );
-
-    // Tokenize the prompt
-    final tokenIds = _tokenizer.encode(prompt, addSpecialTokens: false);
-
-    debugPrint('🔢 Prompt tokens: ${tokenIds.length}');
-
-    // Run inference
-    // Note: This is simplified - real implementation needs proper tensor handling
-    final outputTokens = await _onnxService.runInference(tokenIds.map((i) => i.toDouble()).toList());
-
-    if (outputTokens == null || outputTokens.isEmpty) {
-      throw Exception('Inference returned no output');
-    }
-
-    // Convert output tokens back to text
-    final outputTokenIds = outputTokens.map((d) => d.toInt()).toList();
-    final response = _tokenizer.decode(outputTokenIds, skipSpecialTokens: true);
-
-    debugPrint('✅ Generated response: ${response.substring(0, min(100, response.length))}...');
-
-    return response;
   }
 
   String _buildContextualResponse(
@@ -343,16 +232,13 @@ class LocalAIService implements AIService {
     return verses.map((v) => BibleVerse.fromMap(v)).toList();
   }
 
-  AIResponse _getFallbackResponse(String userInput) {
-    final themes = BiblicalPrompts.detectThemes(userInput);
-    if (themes.isNotEmpty) {
-      return FallbackResponses.getThemeResponse(themes.first);
-    }
-    return FallbackResponses.getRandomResponse();
+  Future<AIResponse> _getFallbackResponse(String userInput) async {
+    final theme = await _themeClassifier.getPrimaryTheme(userInput);
+    return FallbackResponses.getThemeResponse(theme);
   }
 
   Stream<String> _streamFallbackResponse(String userInput) async* {
-    final response = _getFallbackResponse(userInput);
+    final response = await _getFallbackResponse(userInput);
     final words = response.content.split(' ');
 
     for (int i = 0; i < words.length; i++) {
@@ -367,11 +253,7 @@ class LocalAIService implements AIService {
 
   @override
   Future<void> dispose() async {
-    // In production, this would:
-    // - Unload the model from memory
-    // - Clean up ONNX runtime resources
-    // - Close any open streams or connections
-
+    await _themeClassifier.dispose();
     _isInitialized = false;
     _isModelLoaded = false;
     debugPrint('🤖 Local AI Service disposed');

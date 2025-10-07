@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.everyday_christian"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.everydaychristian.app"
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,23 +20,42 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.everyday_christian"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.everydaychristian.app"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
+
+        manifestPlaceholders["appName"] = "Everyday Christian"
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Production release configuration
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // Add signing config for production release
+            // signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
         }
     }
+
+    // Signing configurations (to be filled with production keys)
+    // signingConfigs {
+    //     release {
+    //         storeFile = file("release-keystore.jks")
+    //         storePassword = System.getenv("KEYSTORE_PASSWORD")
+    //         keyAlias = System.getenv("KEY_ALIAS")
+    //         keyPassword = System.getenv("KEY_PASSWORD")
+    //     }
+    // }
 }
 
 flutter {

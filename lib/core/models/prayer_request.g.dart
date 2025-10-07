@@ -11,7 +11,7 @@ _$PrayerRequestImpl _$$PrayerRequestImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
-      category: $enumDecode(_$PrayerCategoryEnumMap, json['category']),
+      categoryId: json['categoryId'] as String,
       dateCreated: DateTime.parse(json['dateCreated'] as String),
       isAnswered: json['isAnswered'] as bool? ?? false,
       dateAnswered: json['dateAnswered'] == null
@@ -25,19 +25,9 @@ Map<String, dynamic> _$$PrayerRequestImplToJson(_$PrayerRequestImpl instance) =>
       'id': instance.id,
       'title': instance.title,
       'description': instance.description,
-      'category': _$PrayerCategoryEnumMap[instance.category]!,
+      'categoryId': instance.categoryId,
       'dateCreated': instance.dateCreated.toIso8601String(),
       'isAnswered': instance.isAnswered,
       'dateAnswered': instance.dateAnswered?.toIso8601String(),
       'answerDescription': instance.answerDescription,
     };
-
-const _$PrayerCategoryEnumMap = {
-  PrayerCategory.general: 'general',
-  PrayerCategory.health: 'health',
-  PrayerCategory.family: 'family',
-  PrayerCategory.work: 'work',
-  PrayerCategory.protection: 'protection',
-  PrayerCategory.guidance: 'guidance',
-  PrayerCategory.gratitude: 'gratitude',
-};

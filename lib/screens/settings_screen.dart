@@ -7,6 +7,7 @@ import '../components/frosted_glass_card.dart';
 import '../components/blur_dropdown.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/providers/app_providers.dart';
+import '../utils/responsive_utils.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -67,10 +68,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
-            child: const Text(
+            child: Text(
               'Settings',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
                 shadows: [
@@ -98,10 +99,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 width: 1,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.settings,
               color: AppColors.primaryText,
-              size: 20,
+              size: ResponsiveUtils.iconSize(context, 20),
             ),
           ),
         ],
@@ -294,14 +295,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: Icon(
                   icon,
                   color: AppColors.primaryText,
-                  size: 20,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryText,
                   shadows: [
@@ -342,8 +343,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryText,
                   ),
@@ -352,7 +353,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                     color: Colors.white.withValues(alpha: 0.7),
                   ),
                 ),
@@ -403,8 +404,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryText,
                       ),
@@ -413,7 +414,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                         color: Colors.white.withValues(alpha: 0.7),
                       ),
                     ),
@@ -422,8 +423,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               Text(
                 '${value.round()}px',
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
                 ),
@@ -468,8 +469,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
               fontWeight: FontWeight.w600,
               color: AppColors.primaryText,
             ),
@@ -478,7 +479,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Text(
             subtitle,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
               color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
@@ -523,10 +524,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.access_time,
                     color: AppColors.primaryText,
-                    size: 20,
+                    size: ResponsiveUtils.iconSize(context, 20),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -536,8 +537,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryText,
                         ),
@@ -546,7 +547,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       Text(
                         subtitle,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                           color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
@@ -555,8 +556,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryColor,
                   ),
@@ -565,7 +566,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Icon(
                   Icons.chevron_right,
                   color: AppColors.tertiaryText,
-                  size: 20,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
               ],
             ),
@@ -637,7 +638,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   child: Icon(
                     icon,
                     color: AppColors.primaryText,
-                    size: 20,
+                    size: ResponsiveUtils.iconSize(context, 20),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -647,8 +648,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryText,
                         ),
@@ -657,7 +658,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       Text(
                         subtitle,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                           color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
@@ -694,8 +695,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
               fontWeight: FontWeight.w600,
               color: AppColors.primaryText,
             ),
@@ -703,7 +704,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Text(
             value,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
               color: AppColors.secondaryText,
               fontWeight: FontWeight.w500,
             ),

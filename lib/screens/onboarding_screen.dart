@@ -6,6 +6,7 @@ import '../components/animations/blur_fade.dart';
 import '../components/glass_button.dart';
 import '../components/glass/static_liquid_glass_lens.dart';
 import '../theme/app_theme.dart';
+import '../utils/responsive_utils.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -74,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       'Your faith-guided companion for life\'s moments',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                         color: AppColors.secondaryText,
                         height: 1.4,
                         fontWeight: FontWeight.w500,
@@ -133,11 +134,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     // Skip option
                     TextButton(
                       onPressed: () => NavigationService.pushNamed(AppRoutes.home),
-                      child: const Text(
+                      child: Text(
                         'Continue as Guest',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 14,
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -174,7 +175,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Icon(
             icon,
             color: AppColors.primaryText,
-            size: 24,
+            size: ResponsiveUtils.iconSize(context, 24),
           ),
         ),
         const SizedBox(width: AppSpacing.lg),
@@ -184,8 +185,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryText,
                 ),
@@ -193,8 +194,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 4),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   color: Colors.black,
                   height: 1.3,
                   fontWeight: FontWeight.w500,

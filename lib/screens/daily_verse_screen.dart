@@ -5,6 +5,7 @@ import '../core/services/verse_service.dart';
 import '../core/services/database_service.dart';
 import '../core/models/bible_verse.dart';
 import '../theme/app_theme.dart';
+import '../utils/responsive_utils.dart';
 
 class DailyVerseScreen extends StatefulWidget {
   const DailyVerseScreen({super.key});
@@ -87,10 +88,10 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: const Color(0xFF1A1A2E),
       appBar: AppBar(
         title: const Text('Daily Verse'),
-        backgroundColor: AppTheme.darkBackground,
+        backgroundColor: const Color(0xFF1A1A2E),
         elevation: 0,
         actions: [
           IconButton(
@@ -124,17 +125,17 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.auto_awesome_outlined,
-              size: 64,
+              size: ResponsiveUtils.iconSize(context, 64),
               color: AppTheme.goldColor,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'No verse available',
               style: TextStyle(
                 color: Colors.white70,
-                fontSize: 18,
+                fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
               ),
             ),
             const SizedBox(height: 24),
@@ -173,17 +174,17 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.calendar_today,
                   color: AppTheme.goldColor,
-                  size: 20,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   _formatDate(DateTime.now()),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -234,10 +235,10 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
                       color: AppTheme.goldColor.withOpacity(0.4),
                     ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.auto_awesome,
                     color: AppTheme.goldColor,
-                    size: 28,
+                    size: ResponsiveUtils.iconSize(context, 28),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -247,7 +248,7 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
                   _todayVerse!.text,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                     height: 1.6,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.w500,
@@ -265,9 +266,9 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
                 // Reference
                 Text(
                   _todayVerse!.reference,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppTheme.goldColor,
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -328,12 +329,12 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
 
   Widget _buildHistoryView() {
     if (_verseHistory.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No verse history yet',
           style: TextStyle(
             color: Colors.white70,
-            fontSize: 16,
+            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
           ),
         ),
       );
@@ -373,7 +374,7 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
                     _formatDate(shownDate),
                     style: TextStyle(
                       color: AppTheme.goldColor.withOpacity(0.8),
-                      fontSize: 12,
+                      fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -384,9 +385,9 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
               const SizedBox(height: 12),
               Text(
                 verse.text,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   height: 1.5,
                 ),
                 maxLines: 3,
@@ -395,9 +396,9 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
               const SizedBox(height: 8),
               Text(
                 verse.reference,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.goldColor,
-                  fontSize: 13,
+                  fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                   fontWeight: FontWeight.w600,
                 ),
               ),

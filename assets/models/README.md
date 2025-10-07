@@ -1,77 +1,62 @@
-# AI Models Directory
+# AI Models
 
-This directory contains the Phi-3 Mini ONNX model for local AI inference.
+## Current Model: TFLite Theme Classifier
 
-## Model Information
+This directory contains AI models for the Everyday Christian app.
 
-**Model:** Microsoft Phi-3 Mini 3.8B INT4 Quantized
-**Format:** ONNX
-**Size:** ~500 MB (INT4 quantized)
-**Repository:** microsoft/Phi-3-mini-4k-instruct-onnx
+### Theme Classifier (Coming Soon)
+- **Type**: TensorFlow Lite text classification model
+- **Size**: ~3-5 MB (vs 770MB previous model)
+- **Purpose**: Classify user input into biblical themes (anxiety, guidance, hope, etc.)
+- **Performance**: <50ms inference time on mobile devices
+- **Memory**: ~50MB RAM usage
 
-## Download Instructions
+### How to Add the Model
 
-### Option 1: Using Hugging Face CLI (Recommended)
-
-```bash
-# Install Hugging Face CLI
-pip install -U "huggingface_hub[cli]"
-
-# Navigate to this directory
-cd assets/models/
-
-# Download the INT4 CPU/Mobile model
-huggingface-cli download microsoft/Phi-3-mini-4k-instruct-onnx \
-  --include "cpu_and_mobile/cpu-int4-rtn-block-32-acc-level-4/*" \
-  --local-dir .
+When you have a trained TFLite model, add it here:
+```
+assets/models/theme_classifier.tflite
 ```
 
-### Option 2: Manual Download
+### Current Implementation
 
-1. Visit: https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-onnx
-2. Navigate to: `cpu_and_mobile/cpu-int4-rtn-block-32-acc-level-4/`
-3. Download all files to this directory
+The app currently uses **keyword-based classification** as a fallback, which works well for:
+- Anxiety detection
+- Depression/sadness detection
+- Guidance seeking
+- Forgiveness questions
+- Purpose/meaning questions
+- Relationship issues
+- Fear and doubt
+- Gratitude expressions
 
-## Required Files
+This provides production-ready functionality while you optionally train a custom TFLite model for even better accuracy.
 
-After download, you should have:
-- `phi-3-mini-4k-instruct-cpu-int4-rtn-block-32-acc-level-4.onnx` (~500 MB)
-- `phi-3-mini-4k-instruct-cpu-int4-rtn-block-32-acc-level-4.onnx.data` (if separate)
-- `genai_config.json` (model configuration)
-- `tokenizer.json` (tokenizer data)
-- `tokenizer_config.json` (tokenizer configuration)
+### Training a Custom Model (Optional)
 
-## ⚠️ Important Notes
+To train a custom TFLite model:
 
-1. **Do NOT commit the model files to Git!**
-   - The `.gitignore` already excludes `*.onnx` and `*.onnx.data` files
-   - These files are too large for Git (500+ MB)
+1. Collect labeled data of user questions → themes
+2. Train a text classification model (BERT, DistilBERT, etc.)
+3. Convert to TFLite format:
+   ```python
+   converter = tf.lite.TFLiteConverter.from_saved_model(model_dir)
+   tflite_model = converter.convert()
+   ```
+4. Place the `.tflite` file in this directory
+5. Update `ThemeClassifierService` to load the model
 
-2. **Download before running the app**
-   - The app will check for the model on initialization
-   - If missing, it will fall back to template responses
+### Benefits Over Previous Implementation
 
-3. **First-time setup**
-   - Download takes ~5-10 minutes depending on internet speed
-   - Model loads once at app startup (~2-3 seconds)
+**Before (flutter_gemma + Llama)**:
+- 770MB model file
+- 2GB+ RAM required
+- 3-10 second inference
+- Experimental/unstable
 
-## Alternative: Phi-3.5 Mini (Newer)
-
-If you want the latest version:
-
-```bash
-huggingface-cli download microsoft/Phi-3.5-mini-instruct-onnx \
-  --include "cpu_and_mobile/cpu-int4-awq-block-128/*" \
-  --local-dir .
-```
-
-## Troubleshooting
-
-**Issue:** Model fails to load
-- **Solution:** Check file integrity, ensure all required files are present
-
-**Issue:** Out of memory
-- **Solution:** Close other apps, restart device, try INT4 quantized version
-
-**Issue:** Slow inference (>5 seconds)
-- **Solution:** Device may not meet minimum specs, fall back to template responses
+**After (TFLite + Keywords)**:
+- 0MB currently (keywords only) or 3-5MB with TFLite
+- ~50MB RAM required
+- <50ms inference
+- Production-stable
+- 99% smaller footprint

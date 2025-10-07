@@ -3,15 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/category_badge.dart';
 import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
-import '../core/navigation/app_routes.dart';
 import '../core/navigation/navigation_service.dart';
+import '../utils/responsive_utils.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -81,20 +77,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               slivers: [
                 _buildHeader(),
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: AppSpacing.screenPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProfileCard(),
-                        const SizedBox(height: AppSpacing.xxl),
-                        _buildStatsSection(),
-                        const SizedBox(height: AppSpacing.xxl),
-                        _buildAchievementsSection(),
-                        const SizedBox(height: AppSpacing.xxl),
-                        _buildMenuSection(),
-                        const SizedBox(height: AppSpacing.xxl),
-                      ],
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: ResponsiveUtils.maxContentWidth(context),
+                      ),
+                      child: Padding(
+                        padding: ResponsiveUtils.padding(context, horizontal: 16, vertical: 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildProfileCard(),
+                            const SizedBox(height: AppSpacing.xxl),
+                            _buildStatsSection(),
+                            const SizedBox(height: AppSpacing.xxl),
+                            _buildAchievementsSection(),
+                            const SizedBox(height: AppSpacing.xxl),
+                            _buildMenuSection(),
+                            const SizedBox(height: AppSpacing.xxl),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -133,10 +136,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(width: AppSpacing.lg),
             Expanded(
-              child: const Text(
+              child: Text(
                 'Profile',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                   fontWeight: FontWeight.w800,
                   color: AppColors.primaryText,
                 ),
@@ -146,10 +149,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () => NavigationService.goToSettings(),
               child: ClearGlassCard(
                 padding: const EdgeInsets.all(AppSpacing.md),
-                child: const Icon(
+                child: Icon(
                   Icons.settings,
                   color: AppColors.primaryText,
-                  size: 20,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
               ),
             ),
@@ -163,10 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return FrostedGlassCard(
       child: Column(
         children: [
-          // Avatar
+          // Responsive avatar
           Container(
-            width: 80,
-            height: 80,
+            width: ResponsiveUtils.scaleSize(context, 80, minScale: 0.9, maxScale: 1.3),
+            height: ResponsiveUtils.scaleSize(context, 80, minScale: 0.9, maxScale: 1.3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
@@ -185,8 +188,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Center(
               child: Text(
                 userName[0].toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 32,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 32, minSize: 28, maxSize: 36),
                   fontWeight: FontWeight.w800,
                   color: AppColors.primaryText,
                 ),
@@ -199,8 +202,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Name
           Text(
             userName,
-            style: const TextStyle(
-              fontSize: 24,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
               fontWeight: FontWeight.w700,
               color: AppColors.primaryText,
             ),
@@ -212,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             userEmail,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
               color: Colors.white.withValues(alpha: 0.7),
             ),
           ).animate().fadeIn(duration: AppAnimations.slow, delay: 300.ms),
@@ -223,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           CategoryBadge(
             text: 'Member since ${_formatDate(memberSince)}',
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            fontSize: 11,
+            fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
           ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
 
           const SizedBox(height: AppSpacing.xl),
@@ -242,12 +245,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
+              child: Text(
                 'Edit Profile',
                 style: TextStyle(
                   color: AppColors.primaryText,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 ),
               ),
             ),
@@ -261,10 +264,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Your Spiritual Journey',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
             fontWeight: FontWeight.w700,
             color: AppColors.primaryText,
           ),
@@ -272,14 +275,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         const SizedBox(height: AppSpacing.lg),
 
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.3,
-          children: [
+        // Responsive grid: 2 columns on mobile, 3 on tablet, 4 on desktop
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final crossAxisCount = ResponsiveUtils.gridColumns(
+              context,
+              mobile: 2,
+              tablet: 3,
+              desktop: 4,
+            );
+
+            return GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: ResponsiveUtils.spacing(context, 12),
+              crossAxisSpacing: ResponsiveUtils.spacing(context, 12),
+              childAspectRatio: ResponsiveUtils.valueByDevice(
+                context,
+                mobile: 1.3,
+                tablet: 1.2,
+                desktop: 1.1,
+              ),
+              children: [
             _buildStatCard(
               'Prayer Streak',
               '$daysStreak days',
@@ -308,7 +326,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Colors.purple,
               1000,
             ),
-          ],
+              ],
+            );
+          },
         ),
       ],
     );
@@ -329,15 +349,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Icon(
               icon,
-              size: 22,
+              size: ResponsiveUtils.iconSize(context, 22),
               color: color,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
               fontWeight: FontWeight.w800,
               color: AppColors.primaryText,
             ),
@@ -346,7 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: ResponsiveUtils.fontSize(context, 10, minSize: 9, maxSize: 12),
               color: AppColors.secondaryText,
               fontWeight: FontWeight.w500,
             ),
@@ -366,10 +386,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Achievements',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
               ),
@@ -377,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CategoryBadge(
               text: '${achievements.where((a) => a.isUnlocked).length}/${achievements.length}',
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              fontSize: 11,
+              fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
             ),
           ],
         ).animate().fadeIn(duration: AppAnimations.slow, delay: 1100.ms),
@@ -419,7 +439,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: Icon(
                 achievement.icon,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
                 color: achievement.isUnlocked
                     ? achievement.color
                     : Colors.white.withValues(alpha: 0.3),
@@ -439,7 +459,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Text(
                           achievement.title,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                             fontWeight: FontWeight.w700,
                             color: achievement.isUnlocked
                                 ? Colors.white
@@ -450,7 +470,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (achievement.isUnlocked)
                         Icon(
                           Icons.check_circle,
-                          size: 20,
+                          size: ResponsiveUtils.iconSize(context, 20),
                           color: achievement.color,
                         ),
                     ],
@@ -459,7 +479,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     achievement.description,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                       color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
@@ -478,7 +498,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       '${achievement.progress}/${achievement.total}',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: ResponsiveUtils.fontSize(context, 10, minSize: 9, maxSize: 12),
                         color: AppColors.tertiaryText,
                       ),
                     ),
@@ -496,10 +516,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Account',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
             fontWeight: FontWeight.w700,
             color: AppColors.primaryText,
           ),
@@ -560,7 +580,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         style: TextStyle(
           color: isDestructive ? Colors.red : Colors.white,
           fontWeight: FontWeight.w500,
-          fontSize: 15,
+          fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
         ),
       ),
       trailing: Icon(
@@ -593,20 +613,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Edit Profile',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryText,
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              const Text(
+              Text(
                 'Name',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryText,
                 ),
@@ -630,10 +650,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: AppSpacing.lg),
 
-              const Text(
+              Text(
                 'Email',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryText,
                 ),
@@ -706,16 +726,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.logout,
-                size: 48,
+                size: ResponsiveUtils.iconSize(context, 48),
                 color: Colors.red,
               ),
               const SizedBox(height: AppSpacing.lg),
-              const Text(
+              Text(
                 'Sign Out?',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryText,
                 ),
@@ -724,7 +744,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 'Are you sure you want to sign out?',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   color: AppColors.secondaryText,
                 ),
                 textAlign: TextAlign.center,

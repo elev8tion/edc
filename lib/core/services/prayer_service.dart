@@ -1,41 +1,92 @@
 import 'package:uuid/uuid.dart';
 import '../models/prayer_request.dart';
 import 'database_service.dart';
+import '../error/error_handler.dart';
+import '../logging/app_logger.dart';
 
 class PrayerService {
   final DatabaseService _database;
   final Uuid _uuid = const Uuid();
+  final AppLogger _logger = AppLogger.instance;
 
   PrayerService(this._database);
 
-  Future<List<PrayerRequest>> getActivePrayers() async {
-    final db = await _database.database;
-    final maps = await db.query(
-      'prayer_requests',
-      where: 'is_answered = ?',
-      whereArgs: [0],
-      orderBy: 'date_created DESC',
-    );
+  Future<List<PrayerRequest>> getActivePrayers({String? categoryFilter}) async {
+    return await ErrorHandler.handleAsync(
+      () async {
+        final db = await _database.database;
 
-    return maps.map((map) => _prayerRequestFromMap(map)).toList();
+        String? where = 'is_answered = ?';
+        List<dynamic> whereArgs = [0];
+
+        if (categoryFilter != null && categoryFilter.isNotEmpty) {
+          where = 'is_answered = ? AND category = ?';
+          whereArgs = [0, categoryFilter];
+        }
+
+        final maps = await db.query(
+          'prayer_requests',
+          where: where,
+          whereArgs: whereArgs,
+          orderBy: 'date_created DESC',
+        );
+
+        _logger.debug('Retrieved ${maps.length} active prayers', context: 'PrayerService');
+        return maps.map((map) => _prayerRequestFromMap(map)).toList();
+      },
+      context: 'PrayerService.getActivePrayers',
+      fallbackValue: <PrayerRequest>[],
+    );
   }
 
-  Future<List<PrayerRequest>> getAnsweredPrayers() async {
+  Future<List<PrayerRequest>> getAnsweredPrayers({String? categoryFilter}) async {
     final db = await _database.database;
+
+    String? where = 'is_answered = ?';
+    List<dynamic> whereArgs = [1];
+
+    if (categoryFilter != null && categoryFilter.isNotEmpty) {
+      where = 'is_answered = ? AND category = ?';
+      whereArgs = [1, categoryFilter];
+    }
+
     final maps = await db.query(
       'prayer_requests',
-      where: 'is_answered = ?',
-      whereArgs: [1],
+      where: where,
+      whereArgs: whereArgs,
       orderBy: 'date_answered DESC',
     );
 
     return maps.map((map) => _prayerRequestFromMap(map)).toList();
   }
 
-  Future<List<PrayerRequest>> getAllPrayers() async {
+  Future<List<PrayerRequest>> getAllPrayers({String? categoryFilter}) async {
+    final db = await _database.database;
+
+    String? where;
+    List<dynamic>? whereArgs;
+
+    if (categoryFilter != null && categoryFilter.isNotEmpty) {
+      where = 'category = ?';
+      whereArgs = [categoryFilter];
+    }
+
+    final maps = await db.query(
+      'prayer_requests',
+      where: where,
+      whereArgs: whereArgs,
+      orderBy: 'date_created DESC',
+    );
+
+    return maps.map((map) => _prayerRequestFromMap(map)).toList();
+  }
+
+  Future<List<PrayerRequest>> getPrayersByCategory(String categoryName) async {
     final db = await _database.database;
     final maps = await db.query(
       'prayer_requests',
+      where: 'category = ?',
+      whereArgs: [categoryName],
       orderBy: 'date_created DESC',
     );
 
@@ -43,8 +94,14 @@ class PrayerService {
   }
 
   Future<void> addPrayer(PrayerRequest prayer) async {
-    final db = await _database.database;
-    await db.insert('prayer_requests', _prayerRequestToMap(prayer));
+    return await ErrorHandler.handleAsync(
+      () async {
+        final db = await _database.database;
+        await db.insert('prayer_requests', _prayerRequestToMap(prayer));
+        _logger.info('Added new prayer: ${prayer.title}', context: 'PrayerService');
+      },
+      context: 'PrayerService.addPrayer',
+    );
   }
 
   Future<void> updatePrayer(PrayerRequest prayer) async {
@@ -58,11 +115,17 @@ class PrayerService {
   }
 
   Future<void> deletePrayer(String id) async {
-    final db = await _database.database;
-    await db.delete(
-      'prayer_requests',
-      where: 'id = ?',
-      whereArgs: [id],
+    return await ErrorHandler.handleAsync(
+      () async {
+        final db = await _database.database;
+        await db.delete(
+          'prayer_requests',
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+        _logger.info('Deleted prayer: $id', context: 'PrayerService');
+      },
+      context: 'PrayerService.deletePrayer',
     );
   }
 
@@ -86,13 +149,13 @@ class PrayerService {
   Future<PrayerRequest> createPrayer({
     required String title,
     required String description,
-    required PrayerCategory category,
+    required String categoryId,
   }) async {
     final prayer = PrayerRequest(
       id: _uuid.v4(),
       title: title,
       description: description,
-      category: category,
+      categoryId: categoryId,
       dateCreated: DateTime.now(),
     );
 
@@ -119,10 +182,7 @@ class PrayerService {
       id: map['id'],
       title: map['title'],
       description: map['description'],
-      category: PrayerCategory.values.firstWhere(
-        (e) => e.name == map['category'],
-        orElse: () => PrayerCategory.general,
-      ),
+      categoryId: map['category'] ?? 'cat_general',
       dateCreated: DateTime.fromMillisecondsSinceEpoch(map['date_created']),
       isAnswered: map['is_answered'] == 1,
       dateAnswered: map['date_answered'] != null
@@ -137,7 +197,7 @@ class PrayerService {
       'id': prayer.id,
       'title': prayer.title,
       'description': prayer.description,
-      'category': prayer.category.name,
+      'category': prayer.categoryId,
       'date_created': prayer.dateCreated.millisecondsSinceEpoch,
       'is_answered': prayer.isAnswered ? 1 : 0,
       'date_answered': prayer.dateAnswered?.millisecondsSinceEpoch,

@@ -255,6 +255,36 @@ final planStreakProvider = FutureProvider.family<int, String>((ref, planId) asyn
   return await progressService.getStreak(planId);
 });
 
+/// Provider for getting calendar heatmap data for a plan
+final planHeatmapDataProvider = FutureProvider.family<Map<DateTime, int>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getCalendarHeatmapData(planId);
+});
+
+/// Provider for getting completion statistics for a plan
+final planCompletionStatsProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getCompletionStats(planId);
+});
+
+/// Provider for getting missed days for a plan
+final planMissedDaysProvider = FutureProvider.family<List<DateTime>, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getMissedDays(planId);
+});
+
+/// Provider for getting weekly completion rate for a plan
+final planWeeklyCompletionRateProvider = FutureProvider.family<double, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getWeeklyCompletionRate(planId);
+});
+
+/// Provider for getting estimated completion date for a plan
+final planEstimatedCompletionDateProvider = FutureProvider.family<DateTime?, String>((ref, planId) async {
+  final progressService = ref.watch(readingPlanProgressServiceProvider);
+  return await progressService.getEstimatedCompletionDate(planId);
+});
+
 // Prayer Streak Providers
 
 /// Provider for getting the current prayer streak

@@ -12,6 +12,7 @@ import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 import '../models/bible_verse.dart';
 import '../core/providers/app_providers.dart';
+import '../utils/responsive_utils.dart';
 
 // State provider for search query
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -125,10 +126,10 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Verse Library',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: AppColors.primaryText,
                   ),
@@ -137,7 +138,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 Text(
                   'Find comfort in God\'s word',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
@@ -161,15 +162,15 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           onChanged: (value) {
             ref.read(searchQueryProvider.notifier).state = value;
           },
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.primaryText,
-            fontSize: 16,
+            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
           ),
           decoration: InputDecoration(
             hintText: 'Search verses or references...',
             hintStyle: TextStyle(
               color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 16,
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
             ),
             filled: true,
             fillColor: Colors.transparent,
@@ -261,9 +262,9 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           dividerColor: Colors.transparent,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
-          labelStyle: const TextStyle(
+          labelStyle: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
           ),
           tabs: [
             Tab(text: 'All Verses ($allCount)'),
@@ -355,15 +356,15 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               padding: AppSpacing.screenPaddingLarge,
               child: Icon(
                 icon,
-                size: 48,
+                size: ResponsiveUtils.iconSize(context, 48),
                 color: AppColors.tertiaryText,
               ),
             ).animate().fadeIn(duration: AppAnimations.slow).scale(begin: const Offset(0.8, 0.8)),
             const SizedBox(height: AppSpacing.xxl),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
               ),
@@ -373,7 +374,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             Text(
               subtitle,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 color: AppColors.secondaryText,
                 height: 1.4,
               ),
@@ -394,14 +395,14 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           children: [
             Icon(
               Icons.error_outline,
-              size: 48,
+              size: ResponsiveUtils.iconSize(context, 48),
               color: Colors.red.withValues(alpha: 0.7),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'Something went wrong',
-              style: const TextStyle(
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
               ),
@@ -411,7 +412,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             Text(
               error,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 color: AppColors.secondaryText,
                 height: 1.4,
               ),
@@ -440,7 +441,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 CategoryBadge(
                   text: primaryTheme.substring(0, 1).toUpperCase() + primaryTheme.substring(1),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  fontSize: 12,
+                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                 ),
                 const Spacer(),
                 Row(
@@ -451,7 +452,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Icon(
                           verse.isFavorite ? Icons.favorite : Icons.favorite_outline,
-                          size: 20,
+                          size: ResponsiveUtils.iconSize(context, 20),
                           color: verse.isFavorite ? Colors.red : Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
@@ -462,7 +463,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                         padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Icon(
                           Icons.share,
-                          size: 20,
+                          size: ResponsiveUtils.iconSize(context, 20),
                           color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
@@ -474,8 +475,8 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             const SizedBox(height: AppSpacing.lg),
             Text(
               '"${verse.text}"',
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                 color: AppColors.primaryText,
                 height: 1.5,
                 fontWeight: FontWeight.w500,
@@ -487,14 +488,14 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               children: [
                 Icon(
                   Icons.book,
-                  size: 16,
+                  size: ResponsiveUtils.iconSize(context, 16),
                   color: AppTheme.goldColor.withValues(alpha: 0.8),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
                   verse.reference,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: Colors.white.withValues(alpha: 0.9),
                     fontWeight: FontWeight.w600,
                   ),
@@ -503,7 +504,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 Text(
                   '(${verse.translation})',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                     color: Colors.white.withValues(alpha: 0.6),
                     fontWeight: FontWeight.w500,
                   ),
@@ -528,7 +529,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                     child: Text(
                       theme.substring(0, 1).toUpperCase() + theme.substring(1),
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
                         color: Colors.white.withValues(alpha: 0.7),
                         fontWeight: FontWeight.w500,
                       ),

@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Privacy Permissions -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>We need notification permissions to send you daily verses and prayer reminders.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to share verses and content.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to capture and share content.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use Face ID to secure your prayer journal and personal content.</string>
+
+	<!-- App Configuration -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

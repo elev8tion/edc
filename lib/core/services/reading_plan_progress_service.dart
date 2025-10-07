@@ -295,6 +295,271 @@ class ReadingPlanProgressService {
     }
   }
 
+  /// Get calendar heatmap data for a plan (last 90 days)
+  /// Returns a map of dates to completion counts for that date
+  Future<Map<DateTime, int>> getCalendarHeatmapData(String planId, {int days = 90}) async {
+    try {
+      final db = await _database.database;
+      final now = DateTime.now();
+      final startDate = now.subtract(Duration(days: days));
+
+      final readings = await db.query(
+        'daily_readings',
+        where: 'plan_id = ? AND completed_date >= ?',
+        whereArgs: [planId, startDate.millisecondsSinceEpoch],
+      );
+
+      final Map<DateTime, int> heatmapData = {};
+
+      for (final reading in readings) {
+        if (reading['completed_date'] != null) {
+          final completedDate = DateTime.fromMillisecondsSinceEpoch(
+            reading['completed_date'] as int,
+          );
+          // Normalize to start of day
+          final normalizedDate = DateTime(
+            completedDate.year,
+            completedDate.month,
+            completedDate.day,
+          );
+
+          heatmapData[normalizedDate] = (heatmapData[normalizedDate] ?? 0) + 1;
+        }
+      }
+
+      return heatmapData;
+    } catch (e) {
+      throw Exception('Failed to get heatmap data: $e');
+    }
+  }
+
+  /// Get completion statistics for a plan
+  Future<Map<String, dynamic>> getCompletionStats(String planId) async {
+    try {
+      final db = await _database.database;
+
+      // Get total and completed readings
+      final totalResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ?',
+        [planId],
+      );
+      final total = totalResult.first['count'] as int;
+
+      final completedResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ? AND is_completed = 1',
+        [planId],
+      );
+      final completed = completedResult.first['count'] as int;
+
+      // Get current streak
+      final streak = await getStreak(planId);
+
+      // Get longest streak
+      final longestStreak = await _getLongestStreak(planId);
+
+      // Get total days active (days with at least one completion)
+      final heatmapData = await getCalendarHeatmapData(planId, days: 365);
+      final totalDaysActive = heatmapData.length;
+
+      // Calculate average completions per day (when active)
+      final averagePerDay = totalDaysActive > 0 ? completed / totalDaysActive : 0.0;
+
+      return {
+        'total_readings': total,
+        'completed_readings': completed,
+        'incomplete_readings': total - completed,
+        'progress_percentage': total > 0 ? (completed / total) * 100 : 0.0,
+        'current_streak': streak,
+        'longest_streak': longestStreak,
+        'total_days_active': totalDaysActive,
+        'average_per_day': averagePerDay,
+      };
+    } catch (e) {
+      throw Exception('Failed to get completion stats: $e');
+    }
+  }
+
+  /// Get the longest streak achieved for a plan
+  Future<int> _getLongestStreak(String planId) async {
+    try {
+      final db = await _database.database;
+      final readings = await db.query(
+        'daily_readings',
+        where: 'plan_id = ? AND is_completed = 1',
+        whereArgs: [planId],
+        orderBy: 'completed_date ASC',
+      );
+
+      if (readings.isEmpty) return 0;
+
+      int longestStreak = 0;
+      int currentStreak = 1;
+      DateTime? lastDate;
+
+      for (final reading in readings) {
+        final completedDate = DateTime.fromMillisecondsSinceEpoch(
+          reading['completed_date'] as int,
+        );
+
+        if (lastDate == null) {
+          lastDate = completedDate;
+        } else {
+          final daysDifference = completedDate.difference(lastDate).inDays;
+          if (daysDifference == 1) {
+            currentStreak++;
+          } else {
+            longestStreak = currentStreak > longestStreak ? currentStreak : longestStreak;
+            currentStreak = 1;
+          }
+          lastDate = completedDate;
+        }
+      }
+
+      // Check final streak
+      longestStreak = currentStreak > longestStreak ? currentStreak : longestStreak;
+
+      return longestStreak;
+    } catch (e) {
+      throw Exception('Failed to get longest streak: $e');
+    }
+  }
+
+  /// Get missed days (days between start and today where reading was scheduled but not completed)
+  Future<List<DateTime>> getMissedDays(String planId) async {
+    try {
+      final db = await _database.database;
+
+      // Get plan start date
+      final plans = await db.query(
+        'reading_plans',
+        where: 'id = ?',
+        whereArgs: [planId],
+      );
+
+      if (plans.isEmpty || plans.first['start_date'] == null) return [];
+
+      final startDate = DateTime.fromMillisecondsSinceEpoch(
+        plans.first['start_date'] as int,
+      );
+      final today = DateTime.now();
+
+      // Get all readings scheduled before today
+      final readings = await db.query(
+        'daily_readings',
+        where: 'plan_id = ? AND date < ?',
+        whereArgs: [planId, today.millisecondsSinceEpoch],
+        orderBy: 'date ASC',
+      );
+
+      final missedDays = <DateTime>[];
+
+      for (final reading in readings) {
+        final scheduledDate = DateTime.fromMillisecondsSinceEpoch(
+          reading['date'] as int,
+        );
+        final isCompleted = reading['is_completed'] == 1;
+
+        // If scheduled date is in the past and not completed, it's missed
+        if (!isCompleted && scheduledDate.isBefore(today)) {
+          missedDays.add(DateTime(
+            scheduledDate.year,
+            scheduledDate.month,
+            scheduledDate.day,
+          ));
+        }
+      }
+
+      return missedDays;
+    } catch (e) {
+      throw Exception('Failed to get missed days: $e');
+    }
+  }
+
+  /// Get weekly completion rate (last 7 days)
+  Future<double> getWeeklyCompletionRate(String planId) async {
+    try {
+      final db = await _database.database;
+      final now = DateTime.now();
+      final weekAgo = now.subtract(const Duration(days: 7));
+
+      // Get readings scheduled in the last 7 days
+      final scheduledResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ? AND date >= ?',
+        [planId, weekAgo.millisecondsSinceEpoch],
+      );
+      final scheduled = scheduledResult.first['count'] as int;
+
+      if (scheduled == 0) return 0.0;
+
+      // Get completed readings in the last 7 days
+      final completedResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ? AND date >= ? AND is_completed = 1',
+        [planId, weekAgo.millisecondsSinceEpoch],
+      );
+      final completed = completedResult.first['count'] as int;
+
+      return (completed / scheduled) * 100;
+    } catch (e) {
+      throw Exception('Failed to get weekly completion rate: $e');
+    }
+  }
+
+  /// Get estimated completion date based on current pace
+  Future<DateTime?> getEstimatedCompletionDate(String planId) async {
+    try {
+      final db = await _database.database;
+
+      // Get plan start date
+      final plans = await db.query(
+        'reading_plans',
+        where: 'id = ?',
+        whereArgs: [planId],
+      );
+
+      if (plans.isEmpty || plans.first['start_date'] == null) return null;
+
+      final startDate = DateTime.fromMillisecondsSinceEpoch(
+        plans.first['start_date'] as int,
+      );
+
+      // Get total readings
+      final totalReadings = plans.first['total_readings'] as int;
+
+      // Get completed readings count
+      final completedResult = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM daily_readings WHERE plan_id = ? AND is_completed = 1',
+        [planId],
+      );
+      final completed = completedResult.first['count'] as int;
+
+      if (completed == 0) {
+        // No progress yet, can't estimate
+        return null;
+      }
+
+      final now = DateTime.now();
+      final daysSinceStart = now.difference(startDate).inDays;
+
+      if (daysSinceStart == 0) {
+        // Started today, can't estimate pace yet
+        return null;
+      }
+
+      // Calculate average readings per day
+      final averagePerDay = completed / daysSinceStart;
+
+      if (averagePerDay == 0) return null;
+
+      // Calculate remaining readings and days needed
+      final remainingReadings = totalReadings - completed;
+      final daysNeeded = (remainingReadings / averagePerDay).ceil();
+
+      return now.add(Duration(days: daysNeeded));
+    } catch (e) {
+      throw Exception('Failed to get estimated completion date: $e');
+    }
+  }
+
   /// Internal method to update plan progress
   Future<void> _updatePlanProgress(String planId) async {
     final db = await _database.database;

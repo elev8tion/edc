@@ -9,6 +9,7 @@ import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/widgets/app_initializer.dart';
 import '../hooks/animation_hooks.dart';
+import '../utils/responsive_utils.dart';
 
 class SplashScreen extends HookConsumerWidget {
   const SplashScreen({super.key});
@@ -121,9 +122,9 @@ class SplashScreen extends HookConsumerWidget {
                                           borderRadius: BorderRadius.circular(24),
                                           color: AppTheme.goldColor,
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.auto_stories,
-                                          size: 60,
+                                          size: ResponsiveUtils.iconSize(context, 60),
                                           color: AppColors.primaryText,
                                         ),
                                       );
@@ -135,19 +136,19 @@ class SplashScreen extends HookConsumerWidget {
                               const SizedBox(height: AppSpacing.xxl),
 
                               // App name
-                              const Text(
+                              Text(
                                 'EVERYDAY',
                                 style: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                                   fontWeight: FontWeight.w300,
                                   letterSpacing: 4,
                                   color: AppTheme.primaryColor,
                                 ),
                               ),
-                              const Text(
+                              Text(
                                 'CHRISTIAN',
                                 style: TextStyle(
-                                  fontSize: 32,
+                                  fontSize: ResponsiveUtils.fontSize(context, 32, minSize: 28, maxSize: 36),
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 2,
                                   color: AppColors.primaryText,
@@ -160,7 +161,7 @@ class SplashScreen extends HookConsumerWidget {
                               Text(
                                 'Faith-guided wisdom for life\'s moments',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                                   color: Colors.white.withValues(alpha: 0.7),
                                   fontStyle: FontStyle.italic,
                                 ),
@@ -190,7 +191,7 @@ class SplashScreen extends HookConsumerWidget {
                         Text(
                           'Preparing your spiritual journey...',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                             color: AppColors.secondaryText,
                           ),
                         ),
@@ -212,7 +213,7 @@ class SplashScreen extends HookConsumerWidget {
                       Text(
                         'Version 1.0.0',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                           color: Colors.white.withValues(alpha: 0.5),
                         ),
                       ),
@@ -220,7 +221,7 @@ class SplashScreen extends HookConsumerWidget {
                       Text(
                         'Built with ❤️ for faith',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                           color: Colors.white.withValues(alpha: 0.5),
                         ),
                       ),

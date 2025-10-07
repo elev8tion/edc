@@ -12,6 +12,7 @@ import '../components/category_badge.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/providers/app_providers.dart';
 import '../core/navigation/navigation_service.dart';
+import '../utils/responsive_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -95,8 +96,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Text(
                     '$greeting, $userName!',
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                       fontWeight: FontWeight.w800,
                       color: AppColors.primaryText,
                     ),
@@ -106,7 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Text(
                     'How can I encourage you today?',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                       color: AppColors.secondaryText,
                       fontWeight: FontWeight.w500,
                     ),
@@ -264,33 +265,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             child: Icon(
               icon,
-              size: 20,
+              size: ResponsiveUtils.iconSize(context, 20),
               color: color,
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: AppColors.primaryText,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  offset: const Offset(0, 2),
-                  blurRadius: 4,
+          // Value text with responsive sizing that scales down if needed
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Text(
+                value,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 16, maxSize: 22),
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryText,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      offset: const Offset(0, 2),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              );
+            },
           ),
           const SizedBox(height: 2),
+          // Label text with responsive sizing
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
                 fontWeight: FontWeight.w600,
                 color: Colors.white.withValues(alpha: 0.9),
                 shadows: [
@@ -355,14 +364,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             child: Icon(
               icon,
-              size: 20,
+              size: ResponsiveUtils.iconSize(context, 20),
               color: color,
             ),
           ),
           const SizedBox(height: 4),
           SizedBox(
-            width: 20,
-            height: 20,
+            width: ResponsiveUtils.scaleSize(context, 20, minScale: 0.9, maxScale: 1.2),
+            height: ResponsiveUtils.scaleSize(context, 20, minScale: 0.9, maxScale: 1.2),
             child: CircularProgressIndicator(
               strokeWidth: 2,
               color: Colors.white.withValues(alpha: 0.5),
@@ -374,7 +383,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
                 fontWeight: FontWeight.w600,
                 color: Colors.white.withValues(alpha: 0.9),
                 shadows: [
@@ -412,15 +421,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(10),
                       child: Icon(
                         Icons.chat_bubble_outline,
-                        size: 24,
+                        size: ResponsiveUtils.iconSize(context, 24),
                         color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       "AI Guidance",
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryText,
                       ),
@@ -431,7 +440,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       "Get biblical wisdom for any situation you're facing",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                         color: AppColors.secondaryText,
                         height: 1.3,
                       ),
@@ -453,15 +462,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(10),
                       child: Icon(
                         Icons.auto_stories,
-                        size: 24,
+                        size: ResponsiveUtils.iconSize(context, 24),
                         color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       "Daily Devotional",
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryText,
                       ),
@@ -472,7 +481,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       "Grow closer to God with daily reflections",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                         color: AppColors.secondaryText,
                         height: 1.3,
                       ),
@@ -498,15 +507,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(10),
                       child: Icon(
                         Icons.favorite_outline,
-                        size: 24,
+                        size: ResponsiveUtils.iconSize(context, 24),
                         color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       "Prayer Journal",
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryText,
                       ),
@@ -517,7 +526,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       "Track your prayers and see God's faithfulness",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                         color: AppColors.secondaryText,
                         height: 1.3,
                       ),
@@ -539,15 +548,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(10),
                       child: Icon(
                         Icons.library_books_outlined,
-                        size: 24,
+                        size: ResponsiveUtils.iconSize(context, 24),
                         color: AppColors.primaryText,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       "Reading Plans",
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryText,
                       ),
@@ -558,7 +567,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       "Structured Bible reading with daily guidance",
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                         color: AppColors.secondaryText,
                         height: 1.3,
                       ),
@@ -584,14 +593,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           padding: AppSpacing.horizontalXl,
           child: Text(
             'Quick Actions',
-            style: const TextStyle(
-              fontSize: 20,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
               fontWeight: FontWeight.w700,
               color: AppColors.primaryText,
               shadows: [
                 Shadow(
                   color: Colors.black26,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                   blurRadius: 4,
                 ),
               ],
@@ -700,7 +709,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: Icon(
                 icon,
-                size: 24,
+                size: ResponsiveUtils.iconSize(context, 24),
                 color: color,
               ),
             ),
@@ -709,7 +718,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
                   shadows: [
@@ -778,10 +787,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     width: 1,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.auto_awesome,
                   color: AppColors.primaryText,
-                  size: 20,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
               ),
               const SizedBox(width: AppSpacing.lg),
@@ -789,7 +798,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Text(
                   'Verse of the Day',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryText,
                     shadows: [
@@ -821,7 +830,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Text(
                   '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     color: AppColors.primaryText,
                     fontStyle: FontStyle.italic,
                     height: 1.6,
@@ -842,7 +851,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       'Psalm 23:1-2 ESV',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                         color: AppTheme.goldColor,
                         fontWeight: FontWeight.w700,
                         shadows: [

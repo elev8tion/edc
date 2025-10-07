@@ -152,6 +152,41 @@ class PreferencesService {
     }
   }
 
+  /// Alias for loadLanguage() - returns language code (e.g., 'en', 'es')
+  ///
+  /// Converts full language name to language code.
+  String getLanguage() {
+    final language = loadLanguage();
+    // Convert full language name to code
+    switch (language.toLowerCase()) {
+      case 'english':
+        return 'en';
+      case 'spanish':
+        return 'es';
+      default:
+        return language.length > 2 ? 'en' : language;
+    }
+  }
+
+  /// Alias for saveLanguage() - accepts language code (e.g., 'en', 'es')
+  ///
+  /// Converts language code to full language name before saving.
+  Future<bool> setLanguage(String languageCode) async {
+    // Convert code to full language name
+    String language;
+    switch (languageCode.toLowerCase()) {
+      case 'en':
+        language = 'English';
+        break;
+      case 'es':
+        language = 'Spanish';
+        break;
+      default:
+        language = languageCode;
+    }
+    return await saveLanguage(language);
+  }
+
   // ============================================================================
   // TEXT SIZE METHODS
   // ============================================================================

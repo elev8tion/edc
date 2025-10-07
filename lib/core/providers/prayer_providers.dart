@@ -2,12 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/prayer_request.dart';
 import '../error/error_handler.dart';
 import 'app_providers.dart';
+import 'category_providers.dart';
 
 // Prayer Lists
 final activePrayersProvider = FutureProvider<List<PrayerRequest>>((ref) async {
   try {
     final service = ref.read(prayerServiceProvider);
-    return await service.getActivePrayers();
+    final categoryFilter = ref.watch(selectedCategoryFilterProvider);
+    return await service.getActivePrayers(categoryFilter: categoryFilter);
   } catch (error) {
     throw ErrorHandler.handle(error);
   }
@@ -16,7 +18,8 @@ final activePrayersProvider = FutureProvider<List<PrayerRequest>>((ref) async {
 final answeredPrayersProvider = FutureProvider<List<PrayerRequest>>((ref) async {
   try {
     final service = ref.read(prayerServiceProvider);
-    return await service.getAnsweredPrayers();
+    final categoryFilter = ref.watch(selectedCategoryFilterProvider);
+    return await service.getAnsweredPrayers(categoryFilter: categoryFilter);
   } catch (error) {
     throw ErrorHandler.handle(error);
   }
@@ -45,12 +48,12 @@ final prayerActionsProvider = Provider<PrayerActions>((ref) {
   final streakService = ref.read(prayerStreakServiceProvider);
 
   return PrayerActions(
-    addPrayer: (title, description, category) async {
+    addPrayer: (title, description, categoryId) async {
       try {
         await service.createPrayer(
           title: title,
           description: description,
-          category: category,
+          categoryId: categoryId,
         );
         // Record prayer activity for streak tracking
         await streakService.recordPrayerActivity();
@@ -109,7 +112,7 @@ class PrayerStats {
 }
 
 class PrayerActions {
-  final Future<void> Function(String title, String description, PrayerCategory category) addPrayer;
+  final Future<void> Function(String title, String description, String categoryId) addPrayer;
   final Future<void> Function(String id, String answer) markAnswered;
   final Future<void> Function(String id) deletePrayer;
 

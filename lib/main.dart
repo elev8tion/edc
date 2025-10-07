@@ -62,8 +62,7 @@ void main() async {
   // Set up global error handling
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    final error = ErrorHandler.handle(details.exception);
-    ErrorHandler.logError(error, stackTrace: details.stack);
+    ErrorHandler.handle(details.exception, stackTrace: details.stack);
   };
 
   runApp(const ProviderScope(child: EverydayChristianApp()));

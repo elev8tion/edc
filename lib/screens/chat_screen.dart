@@ -12,6 +12,7 @@ import '../core/models/chat_message.dart';
 import '../core/providers/app_providers.dart';
 import '../hooks/animation_hooks.dart';
 import '../core/navigation/navigation_service.dart';
+import '../utils/responsive_utils.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -96,7 +97,7 @@ class ChatScreen extends HookConsumerWidget {
                 Expanded(
                   child: _buildMessagesList(scrollController, messages.value, isTyping.value),
                 ),
-                _buildMessageInput(messageController, sendMessage),
+                _buildMessageInput(context, messageController, sendMessage),
               ],
             ),
           ),
@@ -134,10 +135,10 @@ class ChatScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Biblical AI Guidance',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryText,
                     shadows: [
@@ -153,7 +154,7 @@ class ChatScreen extends HookConsumerWidget {
                 Text(
                   'Powered by local AI',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
@@ -176,10 +177,10 @@ class ChatScreen extends HookConsumerWidget {
                 width: 1,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.auto_awesome,
               color: AppColors.primaryText,
-              size: 20,
+              size: ResponsiveUtils.iconSize(context, 20),
             ),
           ),
         ],
@@ -195,12 +196,12 @@ class ChatScreen extends HookConsumerWidget {
       // Add keys for better performance with list updates
       itemBuilder: (context, index) {
         if (index == messages.length && isTyping) {
-          return _buildTypingIndicator();
+          return _buildTypingIndicator(context);
         }
         final message = messages[index];
         return KeyedSubtree(
           key: ValueKey(message.id),
-          child: _buildMessageBubble(message, index),
+          child: _buildMessageBubble(context, message, index),
         );
       },
       // Optimize for scrolling performance
@@ -209,7 +210,7 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message, int index) {
+  Widget _buildMessageBubble(BuildContext context, ChatMessage message, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -233,10 +234,10 @@ class ChatScreen extends HookConsumerWidget {
                   width: 1,
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome,
                 color: AppColors.primaryText,
-                size: 20,
+                size: ResponsiveUtils.iconSize(context, 20),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -282,7 +283,7 @@ class ChatScreen extends HookConsumerWidget {
                   Text(
                     message.content,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                       color: AppColors.primaryText,
                       height: 1.4,
                       fontWeight: FontWeight.w500,
@@ -299,7 +300,7 @@ class ChatScreen extends HookConsumerWidget {
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
                       color: Colors.white.withValues(alpha: 0.7),
                       fontWeight: FontWeight.w500,
                     ),
@@ -325,10 +326,10 @@ class ChatScreen extends HookConsumerWidget {
                   width: 1,
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person,
                 color: AppColors.primaryText,
-                size: 20,
+                size: ResponsiveUtils.iconSize(context, 20),
               ),
             ),
           ],
@@ -339,7 +340,7 @@ class ChatScreen extends HookConsumerWidget {
         );
   }
 
-  Widget _buildTypingIndicator() {
+  Widget _buildTypingIndicator(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -359,10 +360,10 @@ class ChatScreen extends HookConsumerWidget {
                 width: 1,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.auto_awesome,
               color: AppColors.primaryText,
-              size: 20,
+              size: ResponsiveUtils.iconSize(context, 20),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -416,7 +417,7 @@ class ChatScreen extends HookConsumerWidget {
         );
   }
 
-  Widget _buildMessageInput(TextEditingController messageController, void Function(String) sendMessage) {
+  Widget _buildMessageInput(BuildContext context, TextEditingController messageController, void Function(String) sendMessage) {
     return Container(
       padding: AppSpacing.screenPadding,
       child: Row(
@@ -438,15 +439,15 @@ class ChatScreen extends HookConsumerWidget {
               ),
               child: TextField(
                 controller: messageController,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primaryText,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                 ),
                 decoration: InputDecoration(
                   hintText: 'Ask for biblical guidance...',
                   hintStyle: TextStyle(
                     color: AppColors.tertiaryText,
-                    fontSize: 15,
+                    fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                   ),
                   border: InputBorder.none,
                   filled: true,
@@ -486,10 +487,10 @@ class ChatScreen extends HookConsumerWidget {
             ),
             child: IconButton(
               onPressed: () => sendMessage(messageController.text),
-              icon: const Icon(
+              icon: Icon(
                 Icons.send,
                 color: AppColors.primaryText,
-                size: 20,
+                size: ResponsiveUtils.iconSize(context, 20),
               ),
             ),
           ),

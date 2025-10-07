@@ -8,6 +8,9 @@ import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
 import 'migrations/v2_populate_verses.dart';
 import 'migrations/v5_update_chat_schema.dart';
+import '../error/error_handler.dart';
+import '../error/app_error.dart';
+import '../logging/app_logger.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
@@ -18,6 +21,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
   static Database? _database;
+  static final AppLogger _logger = AppLogger.instance;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -30,64 +34,129 @@ class DatabaseHelper {
 
   /// Get database instance
   Future<Database> get database async {
-    _database ??= await _initDatabase();
-    return _database!;
+    try {
+      _database ??= await _initDatabase();
+      return _database!;
+    } catch (e, stackTrace) {
+      _logger.fatal(
+        'Failed to get database instance',
+        context: 'DatabaseHelper',
+        stackTrace: stackTrace,
+      );
+      throw ErrorHandler.databaseError(
+        message: 'Failed to initialize database',
+        details: e.toString(),
+        severity: ErrorSeverity.fatal,
+      );
+    }
   }
 
   /// Initialize database
   Future<Database> _initDatabase() async {
-    String path;
+    try {
+      String path;
 
-    if (_testDatabasePath != null) {
-      // Use test path (e.g., inMemoryDatabasePath)
-      path = _testDatabasePath!;
-    } else {
-      // Use production path
-      Directory documentsDirectory = await getApplicationDocumentsDirectory();
-      path = join(documentsDirectory.path, _databaseName);
+      if (_testDatabasePath != null) {
+        // Use test path (e.g., inMemoryDatabasePath)
+        path = _testDatabasePath!;
+      } else {
+        // Use production path
+        Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        path = join(documentsDirectory.path, _databaseName);
+      }
+
+      _logger.info('Initializing database at: $path', context: 'DatabaseHelper');
+
+      return await openDatabase(
+        path,
+        version: _databaseVersion,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+        onOpen: _onOpen,
+      );
+    } catch (e, stackTrace) {
+      _logger.fatal(
+        'Database initialization failed',
+        context: 'DatabaseHelper',
+        stackTrace: stackTrace,
+      );
+      throw ErrorHandler.databaseError(
+        message: 'Failed to open database',
+        details: e.toString(),
+        severity: ErrorSeverity.fatal,
+      );
     }
-
-    return await openDatabase(
-      path,
-      version: _databaseVersion,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-      onOpen: _onOpen,
-    );
   }
 
   /// Create database tables
   Future<void> _onCreate(Database db, int version) async {
-    // Create all tables using migration scripts
-    await V1InitialSchema.up(db);
+    try {
+      _logger.info('Creating database schema v$version', context: 'DatabaseHelper');
 
-    if (version >= 2) {
-      await V15AddVerseColumns.migrate(db);
-      await V2AddIndexes.up(db);
-    }
+      // Create all tables using migration scripts
+      await V1InitialSchema.up(db);
 
-    if (version >= 3) {
-      await PopulateVersesMigration.migrate(db);
-    }
+      if (version >= 2) {
+        await V15AddVerseColumns.migrate(db);
+        await V2AddIndexes.up(db);
+      }
 
-    if (version >= 5) {
-      await V5UpdateChatSchema.up(db);
+      if (version >= 3) {
+        await PopulateVersesMigration.migrate(db);
+      }
+
+      if (version >= 5) {
+        await V5UpdateChatSchema.up(db);
+      }
+
+      _logger.info('Database schema created successfully', context: 'DatabaseHelper');
+    } catch (e, stackTrace) {
+      _logger.fatal(
+        'Failed to create database schema',
+        context: 'DatabaseHelper',
+        stackTrace: stackTrace,
+      );
+      throw ErrorHandler.databaseError(
+        message: 'Database schema creation failed',
+        details: e.toString(),
+        severity: ErrorSeverity.fatal,
+      );
     }
   }
 
   /// Handle database upgrades
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2 && newVersion >= 2) {
-      await V15AddVerseColumns.migrate(db);
-      await V2AddIndexes.up(db);
-    }
+    try {
+      _logger.info(
+        'Upgrading database from v$oldVersion to v$newVersion',
+        context: 'DatabaseHelper',
+      );
 
-    if (oldVersion < 3 && newVersion >= 3) {
-      await PopulateVersesMigration.migrate(db);
-    }
+      if (oldVersion < 2 && newVersion >= 2) {
+        await V15AddVerseColumns.migrate(db);
+        await V2AddIndexes.up(db);
+      }
 
-    if (oldVersion < 5 && newVersion >= 5) {
-      await V5UpdateChatSchema.up(db);
+      if (oldVersion < 3 && newVersion >= 3) {
+        await PopulateVersesMigration.migrate(db);
+      }
+
+      if (oldVersion < 5 && newVersion >= 5) {
+        await V5UpdateChatSchema.up(db);
+      }
+
+      _logger.info('Database upgrade completed successfully', context: 'DatabaseHelper');
+    } catch (e, stackTrace) {
+      _logger.fatal(
+        'Database migration failed from v$oldVersion to v$newVersion',
+        context: 'DatabaseHelper',
+        stackTrace: stackTrace,
+      );
+      throw ErrorHandler.databaseError(
+        message: 'Database upgrade failed',
+        details: e.toString(),
+        severity: ErrorSeverity.fatal,
+      );
     }
   }
 
@@ -120,8 +189,13 @@ class DatabaseHelper {
 
   /// Insert verse
   Future<int> insertVerse(Map<String, dynamic> verse) async {
-    final db = await database;
-    return await db.insert('verses', verse, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await ErrorHandler.handleAsync(
+      () async {
+        final db = await database;
+        return await db.insert('verses', verse, conflictAlgorithm: ConflictAlgorithm.replace);
+      },
+      context: 'DatabaseHelper.insertVerse',
+    );
   }
 
   /// Get verse by ID
@@ -142,7 +216,9 @@ class DatabaseHelper {
     String? translation,
     int? limit,
   }) async {
-    final db = await database;
+    return await ErrorHandler.handleAsync(
+      () async {
+        final db = await database;
 
     // If we have a FTS query, we need to join with verses_fts table
     if (query != null && query.isNotEmpty) {
@@ -197,6 +273,10 @@ class DatabaseHelper {
       whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
       orderBy: 'RANDOM()',
       limit: limit,
+    );
+      },
+      context: 'DatabaseHelper.searchVerses',
+      fallbackValue: <Map<String, dynamic>>[],
     );
   }
 

@@ -319,7 +319,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         child: DropdownButton<String>(
           value: _preferredVersion,
           isExpanded: true,
-          dropdownColor: AppTheme.darkBackground,
+          dropdownColor: const Color(0xFF121212), // Dark background color
           style: const TextStyle(
             color: Colors.white,
             fontSize: 16,

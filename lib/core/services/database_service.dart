@@ -5,11 +5,12 @@ import '../models/prayer_request.dart';
 import '../models/bible_verse.dart';
 import '../models/devotional.dart';
 import '../models/reading_plan.dart';
+import '../database/migrations/v6_add_prayer_categories.dart';
 
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 5;
+  static const int _databaseVersion = 6;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -198,6 +199,11 @@ class DatabaseService {
         'preference_value': 'KJV',
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       });
+    }
+
+    if (oldVersion < 6) {
+      // Add prayer categories
+      await V6AddPrayerCategories.up(db);
     }
   }
 
@@ -409,6 +415,9 @@ class DatabaseService {
         updated_at INTEGER NOT NULL
       )
     ''');
+
+    // Prayer categories table (v6)
+    await V6AddPrayerCategories.up(db);
   }
 
   Future<void> _insertInitialData(Database db) async {

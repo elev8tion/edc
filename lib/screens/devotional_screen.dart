@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import '../core/providers/app_providers.dart';
 import '../core/models/devotional.dart';
 import '../core/navigation/navigation_service.dart';
+import '../utils/responsive_utils.dart';
 
 class DevotionalScreen extends ConsumerStatefulWidget {
   const DevotionalScreen({super.key});
@@ -111,10 +112,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Daily Devotional',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: AppColors.primaryText,
                   ),
@@ -128,13 +129,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                           Icon(
                             Icons.local_fire_department,
                             color: streak > 0 ? Colors.orange : Colors.white.withValues(alpha: 0.5),
-                            size: 16,
+                            size: ResponsiveUtils.iconSize(context, 16),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '$streak day streak',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                               color: AppColors.secondaryText,
                               fontWeight: FontWeight.w600,
                             ),
@@ -149,7 +150,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       data: (total) => Text(
                         '$total completed',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                           color: AppColors.secondaryText,
                           fontWeight: FontWeight.w500,
                         ),
@@ -166,10 +167,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Text(
               'Day ${_currentDay + 1}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.primaryText,
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
+                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
               ),
             ),
           ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
@@ -194,8 +195,8 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                   children: [
                     Text(
                       devotional.title,
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                         fontWeight: FontWeight.w800,
                         color: AppColors.primaryText,
                       ),
@@ -204,7 +205,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                     Text(
                       devotional.subtitle,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
                       ),
@@ -239,13 +240,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                     Icon(
                       Icons.format_quote,
                       color: AppTheme.primaryColor,
-                      size: 20,
+                      size: ResponsiveUtils.iconSize(context, 20),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    const Text(
+                    Text(
                       'Today\'s Verse',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryText,
                       ),
@@ -255,8 +256,8 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   '"${devotional.verse}"',
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     color: AppColors.primaryText,
                     height: 1.5,
                     fontStyle: FontStyle.italic,
@@ -266,8 +267,8 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   devotional.verseReference,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
@@ -278,10 +279,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
 
           const SizedBox(height: AppSpacing.xxl),
 
-          const Text(
+          Text(
             'Reflection',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
               fontWeight: FontWeight.w700,
               color: AppColors.primaryText,
             ),
@@ -291,7 +292,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           Text(
             devotional.content,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
               color: Colors.white.withValues(alpha: 0.9),
               height: 1.6,
               fontWeight: FontWeight.w400,
@@ -337,12 +338,12 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Devotional Completed',
                             style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                             ),
                           ),
                           if (devotional.completedDate != null)
@@ -350,7 +351,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                               _formatCompletedDate(devotional.completedDate!),
                               style: TextStyle(
                                 color: Colors.green.withValues(alpha: 0.8),
-                                fontSize: 12,
+                                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -461,10 +462,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Progress',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryText,
                 ),
@@ -472,7 +473,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               Text(
                 '${_currentDay + 1} of ${devotionals.length}',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   color: AppColors.secondaryText,
                   fontWeight: FontWeight.w500,
                 ),
@@ -487,17 +488,27 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             borderRadius: BorderRadius.circular(4),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: List.generate(devotionals.length, (index) {
-              final devotional = devotionals[index];
-              final isCompleted = devotional.isCompleted;
-              final isCurrent = index == _currentDay;
+          // Responsive 7-column grid using LayoutBuilder for precise sizing
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const columns = 7;
+              const spacing = 8.0;
+              const runSpacing = 8.0;
+              // Calculate item width based on available space and column count
+              final totalSpacing = spacing * (columns - 1);
+              final itemWidth = (constraints.maxWidth - totalSpacing) / columns;
 
-              return Container(
-                width: (MediaQuery.of(context).size.width - 80) / 7 - 8,
-                height: 40,
+              return Wrap(
+                spacing: spacing,
+                runSpacing: runSpacing,
+                children: List.generate(devotionals.length, (index) {
+                  final devotional = devotionals[index];
+                  final isCompleted = devotional.isCompleted;
+                  final isCurrent = index == _currentDay;
+
+                  return Container(
+                    width: itemWidth,
+                    height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.9, maxScale: 1.2),
                 decoration: BoxDecoration(
                   color: isCurrent
                       ? AppTheme.primaryColor.withValues(alpha: 0.3)
@@ -513,26 +524,28 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                             : Colors.white.withValues(alpha: 0.2),
                   ),
                 ),
-                child: Center(
-                  child: isCompleted
-                      ? const Icon(
-                          Icons.check,
-                          color: Colors.green,
-                          size: 20,
-                        )
-                      : Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            color: isCurrent
-                                ? AppTheme.primaryColor
-                                : Colors.white.withValues(alpha: 0.7),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                ),
+                    child: Center(
+                      child: isCompleted
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.green,
+                              size: ResponsiveUtils.iconSize(context, 20),
+                            )
+                          : Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                color: isCurrent
+                                    ? AppTheme.primaryColor
+                                    : Colors.white.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                              ),
+                            ),
+                    ),
+                  );
+                }),
               );
-            }),
+            },
           ),
         ],
       ),
@@ -549,13 +562,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             Icon(
               Icons.auto_stories,
               color: Colors.white.withValues(alpha: 0.5),
-              size: 64,
+              size: ResponsiveUtils.iconSize(context, 64),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'No Devotionals Available',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
               ),
@@ -564,7 +577,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             Text(
               'Check back later for daily devotionals',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 color: AppColors.secondaryText,
               ),
               textAlign: TextAlign.center,
@@ -585,13 +598,13 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             Icon(
               Icons.error_outline,
               color: Colors.red.withValues(alpha: 0.8),
-              size: 64,
+              size: ResponsiveUtils.iconSize(context, 64),
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
+            Text(
               'Error Loading Devotionals',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
               ),
@@ -600,7 +613,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             Text(
               error.toString(),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 color: AppColors.secondaryText,
               ),
               textAlign: TextAlign.center,
