@@ -108,6 +108,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollToBottom();
   }
 
+  /// Replace a message at a specific index (used for regeneration)
   Future<void> _replaceMessage(int index, ChatMessage newMessage) async {
     setState(() {
       _messages[index] = newMessage;
@@ -118,6 +119,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       await _conversationService.saveMessage(newMessage);
     } catch (e) {
       debugPrint('⚠️ Failed to update message: $e');
+      // Don't block UI on save failure
     }
   }
 
