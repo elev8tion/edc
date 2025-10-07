@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../components/gradient_background.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_card.dart';
@@ -14,89 +10,50 @@ import '../components/category_badge.dart';
 import '../components/base_bottom_sheet.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
+import '../models/bible_verse.dart';
+import '../core/providers/app_providers.dart';
 
-class VerseLibraryScreen extends StatefulWidget {
+// State provider for search query
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+// State provider for selected theme filter
+final selectedThemeProvider = StateProvider<String>((ref) => 'All');
+
+// Combined provider for filtered verses
+final filteredVersesProvider = FutureProvider.autoDispose<List<BibleVerse>>((ref) async {
+  final searchQuery = ref.watch(searchQueryProvider);
+  final selectedTheme = ref.watch(selectedThemeProvider);
+  final service = ref.watch(unifiedVerseServiceProvider);
+
+  // If searching, use search results
+  if (searchQuery.trim().isNotEmpty) {
+    return await service.searchVerses(searchQuery, limit: 50);
+  }
+
+  // If theme filter is applied
+  if (selectedTheme != 'All') {
+    return await service.searchByTheme(selectedTheme.toLowerCase(), limit: 50);
+  }
+
+  // Otherwise get all verses
+  return await service.getAllVerses(limit: 100);
+});
+
+class VerseLibraryScreen extends ConsumerStatefulWidget {
   const VerseLibraryScreen({super.key});
 
   @override
-  State<VerseLibraryScreen> createState() => _VerseLibraryScreenState();
+  ConsumerState<VerseLibraryScreen> createState() => _VerseLibraryScreenState();
 }
 
-class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProviderStateMixin {
+class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'All';
-  List<BibleVerse> _filteredVerses = [];
-  bool _isSearching = false;
-
-  final List<String> _categories = [
-    'All', 'Faith', 'Hope', 'Love', 'Peace', 'Strength', 'Comfort', 'Guidance', 'Wisdom', 'Forgiveness'
-  ];
-
-  final List<BibleVerse> _allVerses = [
-    BibleVerse(
-      id: '1',
-      text: 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
-      reference: 'Jeremiah 29:11',
-      category: 'Hope',
-      isFavorite: true,
-    ),
-    BibleVerse(
-      id: '2',
-      text: 'Trust in the Lord with all your heart, and do not lean on your own understanding.',
-      reference: 'Proverbs 3:5',
-      category: 'Faith',
-      isFavorite: false,
-    ),
-    BibleVerse(
-      id: '3',
-      text: 'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.',
-      reference: 'Romans 8:28',
-      category: 'Faith',
-      isFavorite: true,
-    ),
-    BibleVerse(
-      id: '4',
-      text: 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.',
-      reference: 'Joshua 1:9',
-      category: 'Strength',
-      isFavorite: false,
-    ),
-    BibleVerse(
-      id: '5',
-      text: 'Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.',
-      reference: 'John 14:27',
-      category: 'Peace',
-      isFavorite: true,
-    ),
-    BibleVerse(
-      id: '6',
-      text: 'The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters.',
-      reference: 'Psalm 23:1-2',
-      category: 'Comfort',
-      isFavorite: false,
-    ),
-    BibleVerse(
-      id: '7',
-      text: 'Love is patient, love is kind. It does not envy, it does not boast, it is not proud.',
-      reference: '1 Corinthians 13:4',
-      category: 'Love',
-      isFavorite: true,
-    ),
-    BibleVerse(
-      id: '8',
-      text: 'If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.',
-      reference: 'James 1:5',
-      category: 'Wisdom',
-      isFavorite: false,
-    ),
-  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _filteredVerses = _allVerses;
   }
 
   @override
@@ -106,28 +63,11 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     super.dispose();
   }
 
-  void _filterVerses() {
-    setState(() {
-      _filteredVerses = _allVerses.where((verse) {
-        final matchesSearch = _searchController.text.isEmpty ||
-            verse.text.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-            verse.reference.toLowerCase().contains(_searchController.text.toLowerCase());
-
-        final matchesCategory = _selectedCategory == 'All' || verse.category == _selectedCategory;
-
-        return matchesSearch && matchesCategory;
-      }).toList();
-    });
-  }
-
-  void _toggleFavorite(BibleVerse verse) {
-    setState(() {
-      verse.isFavorite = !verse.isFavorite;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themes = ref.watch(availableThemesProvider);
+    final selectedTheme = ref.watch(selectedThemeProvider);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -137,7 +77,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               children: [
                 _buildHeader(),
                 _buildSearchBar(),
-                _buildCategoryFilter(),
+                _buildThemeFilter(themes.value ?? [], selectedTheme),
                 _buildTabBar(),
                 Expanded(
                   child: TabBarView(
@@ -219,10 +159,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
         child: TextField(
           controller: _searchController,
           onChanged: (value) {
-            setState(() {
-              _isSearching = value.isNotEmpty;
-            });
-            _filterVerses();
+            ref.read(searchQueryProvider.notifier).state = value;
           },
           style: const TextStyle(
             color: AppColors.primaryText,
@@ -242,14 +179,11 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               Icons.search,
               color: AppColors.secondaryText,
             ),
-            suffixIcon: _isSearching
+            suffixIcon: _searchController.text.isNotEmpty
                 ? GestureDetector(
                     onTap: () {
                       _searchController.clear();
-                      setState(() {
-                        _isSearching = false;
-                      });
-                      _filterVerses();
+                      ref.read(searchQueryProvider.notifier).state = '';
                     },
                     child: Icon(
                       Icons.clear,
@@ -263,29 +197,28 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal);
   }
 
-  Widget _buildCategoryFilter() {
+  Widget _buildThemeFilter(List<String> themes, String selectedTheme) {
+    final displayThemes = ['All', ...themes.take(10)];
+
     return Container(
       height: 50,
       margin: AppSpacing.verticalLg,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: AppSpacing.horizontalXl,
-        itemCount: _categories.length,
+        itemCount: displayThemes.length,
         itemBuilder: (context, index) {
-          final category = _categories[index];
-          final isSelected = category == _selectedCategory;
+          final theme = displayThemes[index];
+          final isSelected = theme == selectedTheme;
 
           return Container(
             margin: const EdgeInsets.only(right: 12),
             child: GestureDetector(
               onTap: () {
-                setState(() {
-                  _selectedCategory = category;
-                });
-                _filterVerses();
+                ref.read(selectedThemeProvider.notifier).state = theme;
               },
               child: CategoryBadge(
-                text: category,
+                text: theme == 'All' ? theme : theme.substring(0, 1).toUpperCase() + theme.substring(1),
                 isSelected: isSelected,
               ),
             ),
@@ -296,7 +229,19 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
   }
 
   Widget _buildTabBar() {
-    final favoriteCount = _allVerses.where((v) => v.isFavorite).length;
+    final favorites = ref.watch(favoriteVersesProvider);
+    final favoriteCount = favorites.when(
+      data: (verses) => verses.length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
+
+    final allVerses = ref.watch(filteredVersesProvider);
+    final allCount = allVerses.when(
+      data: (verses) => verses.length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
 
     return Container(
       margin: AppSpacing.horizontalXl,
@@ -321,7 +266,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
             fontSize: 14,
           ),
           tabs: [
-            Tab(text: 'All Verses (${_filteredVerses.length})'),
+            Tab(text: 'All Verses ($allCount)'),
             Tab(text: 'Favorites ($favoriteCount)'),
           ],
         ),
@@ -330,48 +275,68 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
   }
 
   Widget _buildAllVerses() {
-    if (_filteredVerses.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.search_off,
-        title: 'No verses found',
-        subtitle: _isSearching
-            ? 'Try adjusting your search or category filter'
-            : 'No verses available in this category',
-      );
-    }
+    final versesAsync = ref.watch(filteredVersesProvider);
 
-    return ListView.builder(
-      padding: AppSpacing.screenPadding,
-      itemCount: _filteredVerses.length,
-      itemBuilder: (context, index) {
-        final verse = _filteredVerses[index];
-        return _buildVerseCard(verse, index).animate()
-            .fadeIn(duration: AppAnimations.slow, delay: (1000 + index * 100).ms)
-            .slideY(begin: 0.3);
+    return versesAsync.when(
+      data: (verses) {
+        if (verses.isEmpty) {
+          return _buildEmptyState(
+            icon: Icons.search_off,
+            title: 'No verses found',
+            subtitle: 'Try adjusting your search or filter',
+          );
+        }
+
+        return ListView.builder(
+          padding: AppSpacing.screenPadding,
+          itemCount: verses.length,
+          itemBuilder: (context, index) {
+            final verse = verses[index];
+            return _buildVerseCard(verse, index).animate()
+                .fadeIn(duration: AppAnimations.slow, delay: (100 + index * 50).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
+      loading: () => const Center(
+        child: CircularProgressIndicator(
+          color: AppTheme.primaryColor,
+        ),
+      ),
+      error: (error, stack) => _buildErrorState(error.toString()),
     );
   }
 
   Widget _buildFavoriteVerses() {
-    final favoriteVerses = _allVerses.where((v) => v.isFavorite).toList();
+    final favoritesAsync = ref.watch(favoriteVersesProvider);
 
-    if (favoriteVerses.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.favorite_outline,
-        title: 'No favorite verses yet',
-        subtitle: 'Tap the heart icon on any verse to add it to your favorites',
-      );
-    }
+    return favoritesAsync.when(
+      data: (verses) {
+        if (verses.isEmpty) {
+          return _buildEmptyState(
+            icon: Icons.favorite_outline,
+            title: 'No favorite verses yet',
+            subtitle: 'Tap the heart icon on any verse to add it to your favorites',
+          );
+        }
 
-    return ListView.builder(
-      padding: AppSpacing.screenPadding,
-      itemCount: favoriteVerses.length,
-      itemBuilder: (context, index) {
-        final verse = favoriteVerses[index];
-        return _buildVerseCard(verse, index).animate()
-            .fadeIn(duration: AppAnimations.slow, delay: (1000 + index * 100).ms)
-            .slideY(begin: 0.3);
+        return ListView.builder(
+          padding: AppSpacing.screenPadding,
+          itemCount: verses.length,
+          itemBuilder: (context, index) {
+            final verse = verses[index];
+            return _buildVerseCard(verse, index).animate()
+                .fadeIn(duration: AppAnimations.slow, delay: (100 + index * 50).ms)
+                .slideY(begin: 0.3);
+          },
+        );
       },
+      loading: () => const Center(
+        child: CircularProgressIndicator(
+          color: AppTheme.primaryColor,
+        ),
+      ),
+      error: (error, stack) => _buildErrorState(error.toString()),
     );
   }
 
@@ -420,7 +385,50 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
     );
   }
 
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red.withValues(alpha: 0.7),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'Something went wrong',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryText,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              error,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.secondaryText,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildVerseCard(BibleVerse verse, int index) {
+    // Get primary theme for display
+    final primaryTheme = verse.themes.isNotEmpty
+        ? verse.themes.first
+        : verse.category;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: FrostedGlassCard(
@@ -430,7 +438,7 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
             Row(
               children: [
                 CategoryBadge(
-                  text: verse.category,
+                  text: primaryTheme.substring(0, 1).toUpperCase() + primaryTheme.substring(1),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   fontSize: 12,
                 ),
@@ -491,12 +499,90 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  '(${verse.translation})',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
+            if (verse.themes.length > 1) ...[
+              const SizedBox(height: AppSpacing.md),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: verse.themes.skip(1).take(3).map((theme) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Text(
+                      theme.substring(0, 1).toUpperCase() + theme.substring(1),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _toggleFavorite(BibleVerse verse) async {
+    if (verse.id == null) return;
+
+    final service = ref.read(unifiedVerseServiceProvider);
+
+    try {
+      final newStatus = await service.toggleFavorite(verse.id!);
+
+      // Refresh both tabs
+      ref.invalidate(filteredVersesProvider);
+      ref.invalidate(favoriteVersesProvider);
+
+      // Show feedback
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              newStatus ? 'Added to favorites' : 'Removed from favorites',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error updating favorite: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red.withValues(alpha: 0.9),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   void _showShareOptions(BibleVerse verse) {
@@ -512,23 +598,23 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
               leading: const Icon(Icons.copy, color: Colors.white),
               title: const Text('Copy to Clipboard', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Copy verse to clipboard
+                final text = '"${verse.text}"\n\n${verse.reference} (${verse.translation})';
+                Clipboard.setData(ClipboardData(text: text));
                 NavigationService.pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Verse copied to clipboard'),
+                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.share, color: Colors.white),
               title: const Text('Share with Friends', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Share verse
-                NavigationService.pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.image, color: Colors.white),
-              title: const Text('Create Image Quote', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                // Create image quote
+                // TODO: Implement share functionality
                 NavigationService.pop();
               },
             ),
@@ -538,20 +624,4 @@ class _VerseLibraryScreenState extends State<VerseLibraryScreen> with TickerProv
       ),
     );
   }
-}
-
-class BibleVerse {
-  final String id;
-  final String text;
-  final String reference;
-  final String category;
-  bool isFavorite;
-
-  BibleVerse({
-    required this.id,
-    required this.text,
-    required this.reference,
-    required this.category,
-    required this.isFavorite,
-  });
 }

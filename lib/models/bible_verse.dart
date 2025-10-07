@@ -14,6 +14,7 @@ class BibleVerse {
   final DateTime? createdAt;
   final String? snippet; // For search results
   final double? relevanceScore; // For search ranking
+  final bool isFavorite; // For UI state
 
   const BibleVerse({
     this.id,
@@ -28,10 +29,11 @@ class BibleVerse {
     this.createdAt,
     this.snippet,
     this.relevanceScore,
+    this.isFavorite = false,
   });
 
   /// Create verse from database map
-  factory BibleVerse.fromMap(Map<String, dynamic> map) {
+  factory BibleVerse.fromMap(Map<String, dynamic> map, {bool isFavorite = false}) {
     List<String> themesList = [];
     if (map['themes'] != null) {
       try {
@@ -47,14 +49,20 @@ class BibleVerse {
       }
     }
 
+    // Construct reference if not provided
+    String reference = map['reference'] ?? '';
+    if (reference.isEmpty && map['book'] != null) {
+      reference = '${map['book']} ${map['chapter']}:${map['verse_number'] ?? map['verse'] ?? ''}';
+    }
+
     return BibleVerse(
       id: map['id']?.toInt(),
       book: map['book'] ?? '',
       chapter: map['chapter']?.toInt() ?? 0,
-      verseNumber: map['verse_number']?.toInt() ?? 0,
+      verseNumber: (map['verse_number'] ?? map['verse'])?.toInt() ?? 0,
       text: map['text'] ?? '',
       translation: map['translation'] ?? 'ESV',
-      reference: map['reference'] ?? '',
+      reference: reference,
       themes: themesList,
       category: map['category'] ?? 'general',
       createdAt: map['created_at'] != null
@@ -62,6 +70,7 @@ class BibleVerse {
         : null,
       snippet: map['snippet'],
       relevanceScore: map['relevance_score']?.toDouble() ?? map['rank']?.toDouble(),
+      isFavorite: isFavorite,
     );
   }
 
@@ -206,6 +215,7 @@ class BibleVerse {
     DateTime? createdAt,
     String? snippet,
     double? relevanceScore,
+    bool? isFavorite,
   }) {
     return BibleVerse(
       id: id ?? this.id,
@@ -220,6 +230,7 @@ class BibleVerse {
       createdAt: createdAt ?? this.createdAt,
       snippet: snippet ?? this.snippet,
       relevanceScore: relevanceScore ?? this.relevanceScore,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 

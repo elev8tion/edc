@@ -15,6 +15,8 @@ import '../services/devotional_content_loader.dart';
 import '../services/preferences_service.dart';
 import '../models/devotional.dart';
 import '../models/reading_plan.dart';
+import '../../services/unified_verse_service.dart';
+import '../../models/bible_verse.dart';
 
 // Core Services
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
@@ -42,6 +44,51 @@ final prayerServiceProvider = Provider<PrayerService>((ref) {
 final verseServiceProvider = Provider<VerseService>((ref) {
   final database = ref.watch(databaseServiceProvider);
   return VerseService(database);
+});
+
+// Unified Verse Service (for verse library and search)
+final unifiedVerseServiceProvider = Provider<UnifiedVerseService>((ref) {
+  return UnifiedVerseService();
+});
+
+// Verse Library Providers
+
+/// Provider for getting all verses
+final allVersesProvider = FutureProvider.autoDispose<List<BibleVerse>>((ref) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.getAllVerses(limit: 100);
+});
+
+/// Provider for getting favorite verses
+final favoriteVersesProvider = FutureProvider.autoDispose<List<BibleVerse>>((ref) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.getFavoriteVerses();
+});
+
+/// Provider for searching verses (family provider with query parameter)
+final searchVersesProvider = FutureProvider.autoDispose.family<List<BibleVerse>, String>((ref, query) async {
+  if (query.trim().isEmpty) return [];
+
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.searchVerses(query, limit: 50);
+});
+
+/// Provider for getting verses by theme
+final versesByThemeProvider = FutureProvider.autoDispose.family<List<BibleVerse>, String>((ref, theme) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.searchByTheme(theme, limit: 50);
+});
+
+/// Provider for getting all available themes
+final availableThemesProvider = FutureProvider<List<String>>((ref) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.getAllThemes();
+});
+
+/// Provider for verse statistics
+final verseStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  return await service.getVerseStats();
 });
 
 final devotionalServiceProvider = Provider<DevotionalService>((ref) {
