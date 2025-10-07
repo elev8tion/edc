@@ -41,6 +41,11 @@ void main() async {
     debugPrint('AI Service initialization failed: $e');
   });
 
+  // Initialize notification service
+  // This will request permissions and allow notifications to be scheduled
+  final container = ProviderContainer();
+  await container.read(initializeAppProvider.future);
+
   // 🔧 TEMPORARY: Reset database to fix schema migration issues
   // This ensures all new tables (prayer_streak_activity, etc.) are created
   // Remove this block after first successful launch

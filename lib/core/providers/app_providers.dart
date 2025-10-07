@@ -626,3 +626,49 @@ class NotificationTimeNotifier extends StateNotifier<String> {
     }
   }
 }
+
+// App Initialization Provider
+// Initializes notification service and schedules notifications on app startup
+final initializeAppProvider = FutureProvider<void>((ref) async {
+  // Initialize notification service
+  final notifications = ref.read(notificationServiceProvider);
+  await notifications.initialize();
+
+  // Wait for preferences to load
+  final preferencesAsync = ref.watch(preferencesServiceProvider);
+  await preferencesAsync.when(
+    data: (prefs) async {
+      // Schedule notifications if enabled
+      final notificationTime = prefs.loadNotificationTime();
+      final parts = notificationTime.split(':');
+      final hour = int.parse(parts[0]);
+      final minute = int.parse(parts[1]);
+
+      if (prefs.loadDailyNotificationsEnabled()) {
+        await notifications.scheduleDailyDevotional(
+          hour: hour,
+          minute: minute,
+        );
+      }
+
+      if (prefs.loadPrayerRemindersEnabled()) {
+        await notifications.schedulePrayerReminder(
+          hour: hour,
+          minute: minute,
+          title: 'Your Prayer Requests',
+        );
+      }
+
+      if (prefs.loadVerseOfTheDayEnabled()) {
+        await notifications.scheduleReadingPlanReminder(
+          hour: hour,
+          minute: minute,
+        );
+      }
+    },
+    loading: () => null,
+    error: (error, _) {
+      debugPrint('Failed to initialize notifications: $error');
+    },
+  );
+});
