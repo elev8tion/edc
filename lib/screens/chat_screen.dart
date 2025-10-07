@@ -192,12 +192,20 @@ class ChatScreen extends HookConsumerWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       itemCount: messages.length + (isTyping ? 1 : 0),
+      // Add keys for better performance with list updates
       itemBuilder: (context, index) {
         if (index == messages.length && isTyping) {
           return _buildTypingIndicator();
         }
-        return _buildMessageBubble(messages[index], index);
+        final message = messages[index];
+        return KeyedSubtree(
+          key: ValueKey(message.id),
+          child: _buildMessageBubble(message, index),
+        );
       },
+      // Optimize for scrolling performance
+      cacheExtent: 500, // Pre-render 500px of off-screen content
+      addAutomaticKeepAlives: true, // Keep messages alive when scrolling
     );
   }
 

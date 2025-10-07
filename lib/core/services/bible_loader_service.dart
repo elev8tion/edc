@@ -42,26 +42,46 @@ class BibleLoaderService {
     }
   }
 
-  /// Load WEB-style flat verses format
+  /// Load WEB-style flat verses format (optimized with batch insert)
   Future<void> _loadFlatVerses(Database db, String version, String language, List<dynamic> verses) async {
-    for (var verseData in verses) {
-      await db.insert(
-        'bible_verses',
-        {
-          'version': version,
-          'book': verseData['book_name'],
-          'chapter': verseData['chapter'],
-          'verse': verseData['verse'],
-          'text': verseData['text'],
-          'language': language,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+    const batchSize = 500; // Insert 500 verses at a time for optimal performance
+
+    for (int i = 0; i < verses.length; i += batchSize) {
+      final batch = db.batch();
+      final end = (i + batchSize < verses.length) ? i + batchSize : verses.length;
+
+      for (int j = i; j < end; j++) {
+        final verseData = verses[j];
+        batch.insert(
+          'bible_verses',
+          {
+            'version': version,
+            'book': verseData['book_name'],
+            'chapter': verseData['chapter'],
+            'verse': verseData['verse'],
+            'text': verseData['text'],
+            'language': language,
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+
+      await batch.commit(noResult: true);
+
+      // Optional: Report progress for large datasets
+      if ((i + batchSize) % 5000 == 0) {
+        print('📖 Loaded ${i + batchSize}/${verses.length} verses...');
+      }
     }
   }
 
-  /// Load KJV/RVR1909-style nested books format
+  /// Load KJV/RVR1909-style nested books format (optimized with batch insert)
   Future<void> _loadNestedBooks(Database db, String version, String language, List<dynamic> books) async {
+    const batchSize = 500; // Insert 500 verses at a time for optimal performance
+    final batch = db.batch();
+    int batchCount = 0;
+    int totalVerses = 0;
+
     for (var bookData in books) {
       final String abbrev = bookData['abbrev'] ?? '';
       final String bookName = _getBookName(abbrev);
@@ -76,8 +96,8 @@ class BibleLoaderService {
           final int verseNum = verseIndex + 1;
           final String verseText = verses[verseIndex];
 
-          // Insert verse into database
-          await db.insert(
+          // Add verse to batch
+          batch.insert(
             'bible_verses',
             {
               'version': version,
@@ -89,9 +109,30 @@ class BibleLoaderService {
             },
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
+
+          batchCount++;
+          totalVerses++;
+
+          // Commit batch when it reaches the batch size
+          if (batchCount >= batchSize) {
+            await batch.commit(noResult: true);
+            batchCount = 0;
+
+            // Report progress for large datasets
+            if (totalVerses % 5000 == 0) {
+              print('📖 Loaded $totalVerses verses...');
+            }
+          }
         }
       }
     }
+
+    // Commit any remaining verses in the batch
+    if (batchCount > 0) {
+      await batch.commit(noResult: true);
+    }
+
+    print('📖 Total verses loaded: $totalVerses');
   }
 
   /// Convert book abbreviation to full name

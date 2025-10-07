@@ -55,6 +55,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.only(top: AppSpacing.xl),
+              // Optimize scrolling performance
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -147,6 +149,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: AppSpacing.horizontalXl,
+        // Optimize horizontal scrolling performance
+        physics: const BouncingScrollPhysics(),
+        cacheExtent: 300,
         children: [
           streakAsync.when(
             data: (streak) => _buildStatCard(
@@ -599,6 +604,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: AppSpacing.horizontalXl,
+            // Optimize horizontal scrolling performance
+            physics: const BouncingScrollPhysics(),
+            cacheExtent: 200,
             children: [
               _buildQuickActionCard(
                 label: "Bible Library",
