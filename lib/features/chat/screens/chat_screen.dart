@@ -8,6 +8,7 @@ import '../../../components/glass_card.dart';
 import '../../../models/chat_message.dart';
 import '../../../models/bible_verse.dart';
 import '../../../providers/ai_provider.dart';
+import '../../../services/conversation_service.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -21,10 +22,13 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen>
     with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
+  final ConversationService _conversationService = ConversationService();
   final List<ChatMessage> _messages = [];
 
   bool _isTyping = false;
   bool _showScrollToBottom = false;
+  bool _isLoadingHistory = true;
+  String? _currentSessionId;
 
   @override
   void initState() {
@@ -39,12 +43,44 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     super.dispose();
   }
 
-  void _initializeChat() {
-    // Add welcome message with beautiful animation
-    _addMessage(ChatMessage.system(
-      content: '🙏 Welcome! I\'m here to provide biblical guidance and encouragement. Share what\'s on your heart, and I\'ll help you find relevant Scripture and wisdom for your situation.',
-      sessionId: widget.sessionId,
-    ));
+  Future<void> _initializeChat() async {
+    try {
+      // Get or create session ID
+      _currentSessionId = widget.sessionId ?? await _conversationService.createSession();
+
+      // Load conversation history if session exists
+      if (widget.sessionId != null) {
+        final history = await _conversationService.getMessages(widget.sessionId!);
+
+        setState(() {
+          _messages.addAll(history);
+          _isLoadingHistory = false;
+        });
+
+        if (history.isNotEmpty) {
+          _scrollToBottom(animated: false);
+          return;
+        }
+      }
+
+      // Add welcome message for new conversations
+      final welcomeMessage = ChatMessage.system(
+        content: '🙏 Welcome! I\'m here to provide biblical guidance and encouragement. Share what\'s on your heart, and I\'ll help you find relevant Scripture and wisdom for your situation.',
+        sessionId: _currentSessionId,
+      );
+
+      _addMessage(welcomeMessage);
+      await _conversationService.saveMessage(welcomeMessage);
+
+      setState(() {
+        _isLoadingHistory = false;
+      });
+    } catch (e) {
+      debugPrint('❌ Failed to initialize chat: $e');
+      setState(() {
+        _isLoadingHistory = false;
+      });
+    }
   }
 
   void _onScrollChanged() {
@@ -56,17 +92,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     }
   }
 
-  void _addMessage(ChatMessage message) {
+  Future<void> _addMessage(ChatMessage message) async {
     setState(() {
       _messages.add(message);
     });
+
+    // Save to database
+    try {
+      await _conversationService.saveMessage(message);
+    } catch (e) {
+      debugPrint('⚠️ Failed to save message: $e');
+      // Don't block UI on save failure
+    }
+
     _scrollToBottom();
   }
 
-  void _replaceMessage(int index, ChatMessage newMessage) {
+  Future<void> _replaceMessage(int index, ChatMessage newMessage) async {
     setState(() {
       _messages[index] = newMessage;
     });
+
+    // Update in database
+    try {
+      await _conversationService.saveMessage(newMessage);
+    } catch (e) {
+      debugPrint('⚠️ Failed to update message: $e');
+    }
   }
 
   void _scrollToBottom({bool animated = true}) {
@@ -91,9 +143,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     // Add user message
     final userMessage = ChatMessage.user(
       content: content,
-      sessionId: widget.sessionId,
+      sessionId: _currentSessionId,
     );
-    _addMessage(userMessage);
+    await _addMessage(userMessage);
 
     // Show typing indicator
     setState(() {
@@ -103,11 +155,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     try {
       // Generate AI response
       final response = await _generateAIResponse(content);
-      _addMessage(response);
+      await _addMessage(response);
     } catch (e) {
-      _addMessage(ChatMessage.ai(
+      await _addMessage(ChatMessage.ai(
         content: 'I apologize, but I\'m having trouble processing your request right now. Please try again in a moment.',
-        sessionId: widget.sessionId,
+        sessionId: _currentSessionId,
       ));
     } finally {
       setState(() {
@@ -128,7 +180,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       return ChatMessage.ai(
         content: response.content,
         verses: response.verses,
-        sessionId: widget.sessionId,
+        sessionId: _currentSessionId,
         metadata: response.metadata,
       );
     } catch (e) {
@@ -141,7 +193,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         verses: (responseData['verses'] as List<Map<String, dynamic>>)
             .map((v) => BibleVerse.fromJson(v))
             .toList(),
-        sessionId: widget.sessionId,
+        sessionId: _currentSessionId,
       );
     }
   }
@@ -525,13 +577,62 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _initializeChat();
   }
 
-  void _shareConversation() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Conversation sharing coming soon'),
-        backgroundColor: AppTheme.primaryColor,
-      ),
-    );
+  Future<void> _shareConversation() async {
+    if (_currentSessionId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No conversation to share'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Export conversation as text
+      final exportText = await _conversationService.exportConversation(_currentSessionId!);
+
+      if (exportText.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No messages to share'),
+          ),
+        );
+        return;
+      }
+
+      // Share using system share sheet
+      // Note: You'll need to add share_plus package
+      // For now, we'll show a dialog with the export
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Export Conversation'),
+          content: SingleChildScrollView(
+            child: SelectableText(exportText),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Conversation exported'),
+          backgroundColor: AppTheme.primaryColor,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to export conversation: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _saveConversation() {

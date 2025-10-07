@@ -7,10 +7,11 @@ import 'migrations/v1_initial_schema.dart';
 import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
 import 'migrations/v2_populate_verses.dart';
+import 'migrations/v5_update_chat_schema.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 4;
+  static const int _databaseVersion = 5;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -68,6 +69,10 @@ class DatabaseHelper {
     if (version >= 3) {
       await PopulateVersesMigration.migrate(db);
     }
+
+    if (version >= 5) {
+      await V5UpdateChatSchema.up(db);
+    }
   }
 
   /// Handle database upgrades
@@ -79,6 +84,10 @@ class DatabaseHelper {
 
     if (oldVersion < 3 && newVersion >= 3) {
       await PopulateVersesMigration.migrate(db);
+    }
+
+    if (oldVersion < 5 && newVersion >= 5) {
+      await V5UpdateChatSchema.up(db);
     }
   }
 
