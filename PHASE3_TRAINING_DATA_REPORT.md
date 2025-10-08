@@ -11,7 +11,7 @@
 ✅ **100% scripture citation rate** - Every response includes WEB Bible verse
 ✅ **Zero harmful theology detected** - No prosperity gospel, spiritual bypassing, or toxic positivity
 ✅ **Natural user language** - Extracted from 73 themes with real user phrases
-✅ **OpenAI fine-tuning format** - Ready for GPT-3.5/4 fine-tuning
+✅ **TensorFlow LSTM training format** - Ready for local on-device model training
 
 ---
 
@@ -108,7 +108,8 @@ you in this struggle, even when it doesn't feel like it.
 
 | File | Size | Purpose |
 |------|------|---------|
-| `training_19750_final.jsonl` | 13.4 MB | OpenAI fine-tuning format |
+| `training_19750_final.jsonl` | 13.4 MB | Structured training data (JSONL) |
+| `lstm_training_data.txt` | 6.5 MB | TensorFlow LSTM training format |
 | `theme_verse_mappings.json` | 541 KB | Theme-to-verse mappings |
 | `training_data.jsonl` | 2.4 MB | MVP baseline (3,792 examples) |
 | `training_data_full.json` | 2.7 MB | MVP with metadata |
@@ -126,25 +127,28 @@ you in this struggle, even when it doesn't feel like it.
 
 ## 🎓 Training Data Format
 
-### OpenAI Fine-Tuning Format (JSONL)
+### TensorFlow LSTM Training Format
+
+Training data is converted to simple text format for local LSTM model training:
+
+```
+USER: I'm struggling with anxiety and can't sleep
+RESPONSE: I hear the weight of what you're experiencing. Philippians 4:6-7 says: "In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your thoughts in Christ Jesus." You're not alone in this, and there is hope for healing and peace.
+
+USER: I feel so alone and have no friends
+RESPONSE: Thank you for sharing something so personal. Psalm 68:6 says: "God sets the lonely in families. He brings out the prisoners with singing, but the rebellious dwell in a sun-scorched land." God is with you in this struggle, even when it doesn't feel like it.
+```
+
+### Structured JSONL Format (for analysis)
 
 Each line is a JSON object with this structure:
 
 ```json
 {
   "messages": [
-    {
-      "role": "system",
-      "content": "You are a compassionate Christian pastoral guide providing biblically-grounded encouragement and wisdom. You acknowledge real struggles, provide scriptural truth, offer practical guidance, and point toward hope—without toxic positivity or spiritual bypassing."
-    },
-    {
-      "role": "user",
-      "content": "I'm struggling with anxiety and can't sleep"
-    },
-    {
-      "role": "assistant",
-      "content": "I hear the weight of what you're experiencing. Philippians 4:6-7 says: \"In nothing be anxious, but in everything, by prayer and petition with thanksgiving, let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your thoughts in Christ Jesus.\" You're not alone in this, and there is hope for healing and peace."
-    }
+    {"role": "system", "content": "System prompt"},
+    {"role": "user", "content": "User input"},
+    {"role": "assistant", "content": "AI response"}
   ]
 }
 ```
@@ -191,39 +195,44 @@ Response quality: ✓ Acknowledges bondage, points to freedom
 
 ## 🚀 Next Steps
 
-### Phase 4: Model Fine-Tuning
+### Phase 4: Local LSTM Model Training
 
-1. **Prepare dataset** for OpenAI fine-tuning
-   - ✅ Already in correct JSONL format
-   - ✅ System prompts consistent
-   - ✅ User/assistant pairs validated
+1. **Prepare dataset** for TensorFlow training
+   - ✅ Converted to text format: `lstm_training_data.txt` (6.5 MB)
+   - ✅ 19,750 user/response pairs
+   - ✅ Ready for character-level LSTM training
 
-2. **Upload to OpenAI**
-   - Use `training_19750_final.jsonl`
-   - Estimated training time: 2-4 hours
-   - Estimated cost: $150-200 (GPT-3.5-turbo)
+2. **Train TensorFlow Lite LSTM model**
+   ```bash
+   cd training
+   python train_text_generator.py
+   ```
+   - Input: `lstm_training_data.txt`
+   - Output: `text_generator.tflite` (~25 MB)
+   - Training time: 1-2 hours on CPU
+   - 100% local, no cloud dependency
 
-3. **Validation dataset**
+3. **Model configuration**
+   ```python
+   # training/train_text_generator.py
+   RNN_UNITS = 1024  # Medium size (~25MB model)
+   EMBEDDING_DIM = 256
+   BATCH_SIZE = 64
+   EPOCHS = 50
+   SEQUENCE_LENGTH = 100
+   ```
+
+4. **Validation**
    - Split off 10% (1,975 examples) for validation
    - Test model accuracy on held-out examples
-
-4. **Fine-tuning parameters**
-   ```python
-   {
-     "model": "gpt-3.5-turbo",
-     "training_file": "training_19750_final.jsonl",
-     "n_epochs": 3,
-     "batch_size": 8,
-     "learning_rate_multiplier": 0.3
-   }
-   ```
+   - Measure inference speed (<5s for 200 chars)
 
 ### Phase 5: Integration
 
 1. **Update TextGenService.dart**
-   - Replace TensorFlow Lite model with OpenAI fine-tuned model
-   - Add API key configuration
-   - Implement response caching
+   - Load trained `text_generator.tflite` model
+   - Integrate with existing theme classifier
+   - Implement response caching for speed
 
 2. **Add Professional Referrals**
    - Integrate ReferralService for mental health themes
@@ -266,7 +275,7 @@ All Phase 1 safeguards remain active:
 - ✅ All 5 tiers covered (Spiritual, Life, Cultural, Foundational, Extra)
 
 ### Format Compliance
-- ✅ OpenAI fine-tuning format
+- ✅ TensorFlow LSTM training format
 - ✅ UTF-8 encoding
 - ✅ Valid JSON on every line
 - ✅ Consistent system prompts
@@ -304,7 +313,7 @@ All Phase 1 safeguards remain active:
 - [x] Create pastoral responses with 4-part structure
 - [x] Validate 100% scripture citation
 - [x] Check for harmful theology (0 found)
-- [x] Format as OpenAI JSONL
+- [x] Convert to TensorFlow text format
 - [x] Generate 19,750 total examples
 - [x] Create quality validation report
 - [x] Document limitations and next steps
