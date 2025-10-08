@@ -13,11 +13,11 @@ import os
 # Configuration
 MODEL_DIR = '../assets/models'
 SEQ_LENGTH = 100
-BATCH_SIZE = 64
+BATCH_SIZE = 128  # Optimized: Up from 64 for faster training
 BUFFER_SIZE = 10000
 EMBEDDING_DIM = 256
 RNN_UNITS = 1024
-EPOCHS = 30
+EPOCHS = 5
 
 # Create model directory if it doesn't exist
 os.makedirs(MODEL_DIR, exist_ok=True)
@@ -66,7 +66,7 @@ def create_character_mappings(text):
 
 
 def create_training_sequences(text, char2idx, seq_length):
-    """Create training sequences"""
+    """Create training sequences with optimized data pipeline"""
     text_as_int = np.array([char2idx[c] for c in text])
 
     # Create sequences
@@ -81,6 +81,10 @@ def create_training_sequences(text, char2idx, seq_length):
         return input_text, target_text
 
     dataset = sequences.map(split_input_target)
+
+    # Optimizations: cache, prefetch for faster data loading
+    dataset = dataset.cache()  # Cache preprocessed data in memory
+    dataset = dataset.prefetch(tf.data.AUTOTUNE)  # Prefetch next batch while training
 
     return dataset
 
@@ -147,17 +151,10 @@ def train_model():
     )
 
     # Callbacks
-    checkpoint_dir = './training_checkpoints'
-    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
-
-    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_prefix,
-        save_weights_only=True
-    )
-
     early_stopping = tf.keras.callbacks.EarlyStopping(
         monitor='loss',
-        patience=3,
+        patience=2,  # Optimized: Down from 3 for faster convergence
+        min_delta=0.001,  # Stop if improvement < 0.001
         restore_best_weights=True
     )
 
@@ -166,13 +163,14 @@ def train_model():
     history = model.fit(
         dataset,
         epochs=EPOCHS,
-        callbacks=[checkpoint_callback, early_stopping]
+        callbacks=[early_stopping]
     )
 
     # Rebuild model for inference (batch_size=1)
     print("🔄 Rebuilding model for inference...")
     inference_model = build_model(vocab_size, EMBEDDING_DIM, RNN_UNITS, batch_size=1)
-    inference_model.load_weights(tf.train.latest_checkpoint(checkpoint_dir))
+    # Transfer weights from trained model (early stopping already restored best weights)
+    inference_model.set_weights(model.get_weights())
     inference_model.build(tf.TensorShape([1, None]))
 
     # Save as Keras model
