@@ -19,7 +19,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   // Local state for non-persisted settings
   bool _offlineMode = false;
-  String _selectedBibleVersion = 'KJV';
+  String _selectedBibleVersion = 'WEB';
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +155,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Bible Version',
                 'Choose your preferred translation',
                 _selectedBibleVersion,
-                ['KJV', 'WEB'],
+                ['WEB', 'WEB'],
                 (value) => setState(() => _selectedBibleVersion = value!),
               ),
             ],

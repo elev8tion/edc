@@ -136,7 +136,7 @@ class VerseService {
     final preferences = await _getVersePreferences();
     final preferredThemes = preferences['preferred_themes']?.split(',') ?? ['faith', 'hope', 'love'];
     final avoidRecentDays = int.tryParse(preferences['avoid_recent_days'] ?? '30') ?? 30;
-    final preferredVersion = preferences['preferred_version'] ?? 'KJV';
+    final preferredVersion = preferences['preferred_version'] ?? 'WEB';
 
     // Get recently shown verses to avoid
     final recentVerseIds = await _getRecentVerseIds(avoidRecentDays);
@@ -240,7 +240,7 @@ class VerseService {
   Future<BibleVerse?> _findVerseByThemeExcluding({
     required String theme,
     required List<int> excludeIds,
-    String version = 'KJV',
+    String version = 'WEB',
   }) async {
     // Use FTS5 search for theme
     final verses = await searchByTheme(theme, version: version, limit: 100);
@@ -260,7 +260,7 @@ class VerseService {
   /// Get random verse excluding recent IDs
   Future<BibleVerse?> _getRandomVerseExcluding({
     required List<int> excludeIds,
-    String version = 'KJV',
+    String version = 'WEB',
   }) async {
     final db = await _database.database;
 
@@ -309,7 +309,7 @@ class VerseService {
     required String book,
     required int chapter,
     required int verse,
-    String version = 'KJV',
+    String version = 'WEB',
   }) async {
     final db = await _database.database;
     final maps = await db.query(
@@ -333,7 +333,7 @@ class VerseService {
   }
 
   /// Search Bible verses by text content
-  Future<List<BibleVerse>> searchBibleText(String query, {String version = 'KJV'}) async {
+  Future<List<BibleVerse>> searchBibleText(String query, {String version = 'WEB'}) async {
     final db = await _database.database;
     final maps = await db.query(
       'bible_verses',
@@ -357,7 +357,7 @@ class VerseService {
   Future<List<BibleVerse>> getChapter({
     required String book,
     required int chapter,
-    String version = 'KJV',
+    String version = 'WEB',
   }) async {
     final db = await _database.database;
     final maps = await db.query(

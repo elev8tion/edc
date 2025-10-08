@@ -90,7 +90,7 @@ def create_training_sequences(text, char2idx, seq_length):
 
 
 def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
-    """Build the LSTM model"""
+    """Build the LSTM model - TFLite compatible (non-stateful)"""
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(
             vocab_size,
@@ -100,14 +100,14 @@ def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
         tf.keras.layers.LSTM(
             rnn_units,
             return_sequences=True,
-            stateful=True,
+            stateful=False,  # FIXED: stateful=False for TFLite compatibility
             recurrent_initializer='glorot_uniform'
         ),
         tf.keras.layers.Dropout(0.2),
         tf.keras.layers.LSTM(
             rnn_units // 2,
             return_sequences=True,
-            stateful=True,
+            stateful=False,  # FIXED: stateful=False for TFLite compatibility
             recurrent_initializer='glorot_uniform'
         ),
         tf.keras.layers.Dropout(0.2),

@@ -196,7 +196,7 @@ class DatabaseService {
 
       await db.insert('verse_preferences', {
         'preference_key': 'preferred_version',
-        'preference_value': 'KJV',
+        'preference_value': 'WEB',
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       });
     }
@@ -479,7 +479,7 @@ class DatabaseService {
       },
       {
         'preference_key': 'preferred_version',
-        'preference_value': 'KJV',
+        'preference_value': 'WEB',
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       },
     ];

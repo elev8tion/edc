@@ -19,6 +19,7 @@ import 'screens/verse_library_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/devotional_screen.dart';
 import 'screens/reading_plan_screen.dart';
+import 'screens/test_text_generator_screen.dart';
 import 'services/local_ai_service.dart';
 
 void main() async {
@@ -95,7 +96,7 @@ class EverydayChristianApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: kDevelopmentMode ? AppRoutes.onboarding : AppRoutes.splash,
+      initialRoute: kDevelopmentMode ? '/test-text-generator' : AppRoutes.splash,
       onGenerateRoute: _generateRoute,
       builder: (context, child) {
         return MediaQuery(
@@ -170,6 +171,9 @@ class EverydayChristianApp extends StatelessWidget {
         break;
       case AppRoutes.readingPlan:
         page = const ReadingPlanScreen();
+        break;
+      case '/test-text-generator':
+        page = const TestTextGeneratorScreen();
         break;
       default:
         page = const SplashScreen();

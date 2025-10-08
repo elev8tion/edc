@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'migrations/v1_initial_schema.dart';
 import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
-import 'migrations/v2_populate_verses.dart';
+// import 'migrations/v2_populate_verses.dart'; // REMOVED - file deleted
 import 'migrations/v5_update_chat_schema.dart';
 import '../error/error_handler.dart';
 import '../error/app_error.dart';
@@ -101,9 +101,7 @@ class DatabaseHelper {
         await V2AddIndexes.up(db);
       }
 
-      if (version >= 3) {
-        await PopulateVersesMigration.migrate(db);
-      }
+      // Version 3 migration removed - PopulateVersesMigration file deleted
 
       if (version >= 5) {
         await V5UpdateChatSchema.up(db);
@@ -137,9 +135,7 @@ class DatabaseHelper {
         await V2AddIndexes.up(db);
       }
 
-      if (oldVersion < 3 && newVersion >= 3) {
-        await PopulateVersesMigration.migrate(db);
-      }
+      // Version 3 migration removed - PopulateVersesMigration file deleted
 
       if (oldVersion < 5 && newVersion >= 5) {
         await V5UpdateChatSchema.up(db);

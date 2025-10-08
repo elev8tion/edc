@@ -15,7 +15,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
   late VerseService _verseService;
   List<String> _selectedThemes = [];
   int _avoidRecentDays = 30;
-  String _preferredVersion = 'KJV';
+  String _preferredVersion = 'WEB';
   bool _isLoading = true;
 
   final List<String> _availableThemes = [
@@ -34,7 +34,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
   ];
 
   final List<String> _availableVersions = [
-    'KJV',
+    'WEB',
     'ESV',
     'NIV',
     'NKJV',

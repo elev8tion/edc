@@ -225,7 +225,7 @@ class BibleTranslations {
   static const String esv = 'ESV';
   static const String niv = 'NIV';
   static const String nasb = 'NASB';
-  static const String kjv = 'KJV';
+  static const String kjv = 'WEB';
   static const String nlt = 'NLT';
   static const String csb = 'CSB';
   static const String msg = 'MSG';

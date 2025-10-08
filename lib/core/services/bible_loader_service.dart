@@ -11,7 +11,6 @@ class BibleLoaderService {
 
   /// Load all Bible versions into the database
   Future<void> loadAllBibles() async {
-    await loadBible('KJV', 'assets/bible/kjv.json', 'en');
     await loadBible('WEB', 'assets/bible/web.json', 'en');
   }
 
@@ -29,7 +28,7 @@ class BibleLoaderService {
         // WEB format: flat list of verses with metadata
         await _loadFlatVerses(db, version, language, jsonData['verses']);
       } else if (jsonData is List) {
-        // KJV/RVR1909 format: nested books/chapters/verses
+        // RVR1909 format: nested books/chapters/verses
         await _loadNestedBooks(db, version, language, jsonData);
       } else {
         throw Exception('Unknown Bible JSON format for $version');
@@ -75,7 +74,7 @@ class BibleLoaderService {
     }
   }
 
-  /// Load KJV/RVR1909-style nested books format (optimized with batch insert)
+  /// Load RVR1909-style nested books format (optimized with batch insert)
   Future<void> _loadNestedBooks(Database db, String version, String language, List<dynamic> books) async {
     const batchSize = 500; // Insert 500 verses at a time for optimal performance
     final batch = db.batch();
@@ -230,7 +229,7 @@ class BibleLoaderService {
     final kjvCount = await db.query(
       'bible_verses',
       where: 'version = ?',
-      whereArgs: ['KJV'],
+      whereArgs: ['WEB'],
     );
 
     final webCount = await db.query(
@@ -246,7 +245,7 @@ class BibleLoaderService {
     );
 
     return {
-      'KJV': kjvCount.length,
+      'WEB': kjvCount.length,
       'WEB': webCount.length,
       'RVR1909': rvrCount.length,
       'total': kjvCount.length + webCount.length + rvrCount.length,
