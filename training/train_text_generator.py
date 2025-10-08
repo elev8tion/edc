@@ -9,7 +9,6 @@ and converts it to TFLite for use in the everyday-christian Flutter app.
 import tensorflow as tf
 import numpy as np
 import os
-import requests
 
 # Configuration
 MODEL_DIR = '../assets/models'
@@ -24,42 +23,22 @@ EPOCHS = 30
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 
-def download_bible_text():
-    """Download KJV Bible text"""
-    url = 'https://raw.githubusercontent.com/scrollmapper/bible_databases/master/kjv.txt'
-    response = requests.get(url)
-    return response.text
-
-
-def download_devotional_text():
-    """Download additional Christian devotional text"""
-    # You can add more sources here
-    urls = [
-        'https://www.gutenberg.org/files/84/84-0.txt',  # Frankenstein (replace with Christian text)
-    ]
-
-    text = ""
-    for url in urls:
-        try:
-            response = requests.get(url)
-            text += "\n" + response.text
-        except:
-            pass
-
-    return text
-
-
 def load_training_data():
-    """Load and combine training data"""
-    print("📖 Downloading training data...")
+    """Load training data from local file"""
+    print("📖 Loading training data from local file...")
 
-    # Download Bible
-    bible_text = download_bible_text()
+    # Load our 19,750 training examples
+    training_file = '../assets/training_data/lstm_training_data.txt'
 
-    # Combine texts
-    full_text = bible_text
+    if not os.path.exists(training_file):
+        print(f"❌ Training file not found: {training_file}")
+        print("   Run: cd scripts && python convert_to_tensorflow_format.py")
+        exit(1)
 
-    print(f"✅ Loaded {len(full_text)} characters")
+    with open(training_file, 'r', encoding='utf-8') as f:
+        full_text = f.read()
+
+    print(f"✅ Loaded {len(full_text)} characters from 19,750 training examples")
     return full_text
 
 
