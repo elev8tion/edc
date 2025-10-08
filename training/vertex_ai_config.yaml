@@ -1,0 +1,18 @@
+# Vertex AI Custom Job Configuration - Full Power
+
+workerPoolSpecs:
+  - machineSpec:
+      machineType: n1-standard-8  # 8 vCPUs, 30GB RAM
+      acceleratorType: NVIDIA_TESLA_T4  # T4 GPU (available now, no quota issues)
+      acceleratorCount: 1
+    replicaCount: 1
+    pythonPackageSpec:
+      executorImageUri: us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-13.py310:latest
+      packageUris:
+        - gs://everyday-christian-models/training/trainer.tar.gz
+      pythonModule: train_vertex_ai
+      args:
+        - "--epochs=50"
+        - "--batch-size=256"
+        - "--learning-rate=0.001"
+        - "--bucket-name=everyday-christian-models"

@@ -20,7 +20,7 @@ class LocalAIService implements AIService {
 
   bool _isInitialized = false;
   bool _isModelLoaded = false;
-  bool _useAIGeneration = false; // Toggle between AI and template responses
+  bool _useAIGeneration = true; // Toggle between AI and template responses - SET TO TRUE TO USE LSTM MODEL
 
   // Simulated model state for fallback
   static const Duration _processingDelay = Duration(milliseconds: 1500);
@@ -44,9 +44,13 @@ class LocalAIService implements AIService {
         try {
           await _textGenerator.initialize();
           _useAIGeneration = _textGenerator.isReady;
-          _logger.info('Text generator initialized', context: 'LocalAIService');
+          if (_useAIGeneration) {
+            _logger.info('✅ Text generator (LSTM) initialized successfully - AI responses enabled!', context: 'LocalAIService');
+          } else {
+            _logger.warning('⚠️ Text generator loaded but not ready', context: 'LocalAIService');
+          }
         } catch (e) {
-          _logger.warning('Text generator not available, using templates: $e', context: 'LocalAIService');
+          _logger.error('❌ Text generator initialization failed: $e', context: 'LocalAIService');
           _useAIGeneration = false;
         }
 
@@ -171,6 +175,8 @@ class LocalAIService implements AIService {
     if (_useAIGeneration) {
       try {
         final theme = themes.isNotEmpty ? themes.first : 'general';
+        _logger.info('🤖 Generating LSTM response for theme: $theme', context: 'LocalAIService');
+        
         final aiResponse = await _textGenerator.generateResponse(
           userInput: userInput,
           theme: theme,
@@ -179,11 +185,17 @@ class LocalAIService implements AIService {
 
         // If AI generation succeeds, return it
         if (aiResponse.isNotEmpty) {
+          _logger.info('✅ LSTM generated response (${aiResponse.length} chars)', context: 'LocalAIService');
           return aiResponse;
+        } else {
+          _logger.warning('⚠️ LSTM returned empty response, using template', context: 'LocalAIService');
         }
       } catch (e) {
-        _logger.warning('AI generation failed, using template: $e', context: 'LocalAIService');
+        _logger.error('❌ LSTM generation failed: $e', context: 'LocalAIService');
+        _logger.info('Falling back to template response', context: 'LocalAIService');
       }
+    } else {
+      _logger.info('ℹ️ LSTM disabled, using template response', context: 'LocalAIService');
     }
 
     // Fallback to template-based response

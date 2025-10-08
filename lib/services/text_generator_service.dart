@@ -45,18 +45,18 @@ class TextGeneratorService {
   Future<void> _loadModel() async {
     final options = InterpreterOptions();
 
+    // 🔧 FIX: LSTM operations not supported by iOS GPU delegate
+    // Use CPU interpreter for iOS, XNNPack for Android
     if (Platform.isAndroid) {
       options.addDelegate(XNNPackDelegate());
     }
-    if (Platform.isIOS) {
-      options.addDelegate(GpuDelegate());
-    }
+    // iOS: No delegate = CPU interpreter (supports LSTM)
 
     try {
       _interpreter = await Interpreter.fromAsset(_modelFile, options: options);
-      debugPrint('Model loaded successfully');
+      debugPrint('✅ Model loaded successfully (iOS: CPU, Android: XNNPack)');
     } catch (e) {
-      debugPrint('Error loading model: $e');
+      debugPrint('❌ Error loading model: $e');
       rethrow;
     }
   }
@@ -83,7 +83,7 @@ class TextGeneratorService {
   Future<String> generateText({
     required String prompt,
     int maxLength = 200,
-    double temperature = 0.7,
+    double temperature = 0.3,  // 🔧 LOWERED: From 0.7 for less random output
   }) async {
     if (!_isInitialized) await initialize();
 
@@ -116,18 +116,27 @@ class TextGeneratorService {
       // Prepare input tensor
       final input = _prepareInput(inputSequence);
 
-      // Prepare output tensor
+      // Prepare output tensor - shape is [1, sequence_length, vocab_size]
       final outputShape = _interpreter.getOutputTensor(0).shape;
+      debugPrint('Output shape: $outputShape');
+
+      // Create 3D output tensor [batch, seq_len, vocab_size]
       final output = List.generate(
-        outputShape[0],
-        (_) => List<double>.filled(outputShape[1], 0),
+        outputShape[0], // batch size
+        (_) => List.generate(
+          outputShape[1], // sequence length
+          (_) => List<double>.filled(outputShape[2], 0), // vocab size
+        ),
       );
 
       // Run inference
       _interpreter.run(input, output);
 
+      // Get last timestep prediction [batch=0, last_timestep, all_chars]
+      final lastTimestep = output[0][outputShape[1] - 1];
+
       // Apply temperature sampling
-      final probabilities = _applySoftmax(output[0], temperature);
+      final probabilities = _applySoftmax(lastTimestep, temperature);
       final predictedIdx = _sampleFromDistribution(probabilities);
 
       return _idx2char[predictedIdx];
@@ -195,7 +204,7 @@ class TextGeneratorService {
     final response = await generateText(
       prompt: prompt,
       maxLength: maxLength,
-      temperature: 0.8,
+      temperature: 0.3,  // 🔧 LOWERED: From 0.8 for more coherent output
     );
 
     // Extract just the generated part (after prompt)
