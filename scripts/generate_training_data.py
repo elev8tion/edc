@@ -230,7 +230,7 @@ def save_training_data(examples, output_dir):
     jsonl_path = output_dir / "training_data.jsonl"
     with open(jsonl_path, 'w', encoding='utf-8') as f:
         for example in examples:
-            # OpenAI fine-tuning format
+            # Structured JSONL format for training data analysis
             training_row = {
                 'messages': [
                     {'role': 'system', 'content': 'You are a compassionate Christian pastoral guide providing biblically-grounded encouragement and wisdom.'},
