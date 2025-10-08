@@ -25,17 +25,17 @@
     }
   },
   "themes_covered": [
-    "loneliness",
-    "love",
-    "hope",
-    "strength",
-    "anger",
-    "comfort",
-    "provision",
-    "anxiety",
     "forgiveness",
+    "provision",
+    "jealousy",
+    "anxiety",
+    "love",
+    "strength",
+    "hope",
+    "loneliness",
+    "anger",
     "grief",
-    "jealousy"
+    "comfort"
   ],
   "total_themes": 11
 }
