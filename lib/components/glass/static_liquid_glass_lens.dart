@@ -27,7 +27,7 @@ class StaticLiquidGlassLens extends StatefulWidget {
     this.blurIntensity = 0.0,
     this.dispersionStrength = 0.4,
     this.backgroundKey,
-    this.captureInterval = const Duration(milliseconds: 16), // 60fps
+    this.captureInterval = const Duration(milliseconds: 100), // 10fps - reduced to prevent iOS crashes
   });
 
   @override

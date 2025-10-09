@@ -26,5 +26,6 @@ class ShaderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(ShaderPainter oldDelegate) =>
+      shader != oldDelegate.shader;
 }

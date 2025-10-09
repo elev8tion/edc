@@ -147,15 +147,12 @@ class TextGeneratorService {
   }
 
   /// Prepare input tensor for the model
+  /// Model expects [1, 1] - send ONLY the last character
   List<List<double>> _prepareInput(List<int> sequence) {
-    final paddedSeq = List<double>.filled(_maxSeqLength, 0.0);
-
-    final startIdx = max(0, sequence.length - _maxSeqLength);
-    for (int i = startIdx; i < sequence.length; i++) {
-      paddedSeq[i - startIdx] = sequence[i].toDouble();
-    }
-
-    return [paddedSeq];
+    // Fix: Model expects [1, 1] tensor (one character at a time)
+    // Not [1, 100] (full sequence)
+    final lastChar = sequence.isNotEmpty ? sequence.last : 0;
+    return [[lastChar.toDouble()]];  // Returns [1, 1] shape
   }
 
   /// Encode text to character indices

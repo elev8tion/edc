@@ -14,7 +14,7 @@ class BackgroundCaptureWidget extends StatefulWidget {
     required this.height,
     required this.shader,
     this.initialPosition,
-    this.captureInterval = const Duration(milliseconds: 8),
+    this.captureInterval = const Duration(milliseconds: 100), // 10fps - reduced from 125fps to prevent iOS crashes
     this.backgroundKey,
   });
 

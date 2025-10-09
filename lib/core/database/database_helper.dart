@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'migrations/v1_initial_schema.dart';
 import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
-// import 'migrations/v2_populate_verses.dart'; // REMOVED - file deleted
+// // v2_populate_verses.dart migration removed (verses loaded from bible.db asset) // REMOVED - file deleted
 import 'migrations/v5_update_chat_schema.dart';
 import '../error/error_handler.dart';
 import '../error/app_error.dart';

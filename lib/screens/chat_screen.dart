@@ -13,6 +13,7 @@ import '../core/providers/app_providers.dart';
 import '../hooks/animation_hooks.dart';
 import '../core/navigation/navigation_service.dart';
 import '../utils/responsive_utils.dart';
+import '../services/local_ai_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -54,7 +55,7 @@ class ChatScreen extends HookConsumerWidget {
       });
     }
 
-    void sendMessage(String text) {
+    Future<void> sendMessage(String text) async {
       if (text.trim().isEmpty) return;
 
       final userMessage = ChatMessage(
@@ -70,9 +71,15 @@ class ChatScreen extends HookConsumerWidget {
 
       scrollToBottom();
 
-      // Simulate AI response
-      Future.delayed(const Duration(seconds: 2), () {
-        final response = _getContextualResponse(text.trim().toLowerCase());
+      // Generate AI response using LocalAIService
+      try {
+        final aiService = LocalAIService.instance;
+        final response = await aiService.generateResponse(
+          userInput: text.trim(),
+          maxLength: 300,
+          conversationContext: messages.value.take(10).map((m) => m.content).toList(),
+        );
+
         final aiMessage = ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           content: response,
@@ -83,7 +90,22 @@ class ChatScreen extends HookConsumerWidget {
         isTyping.value = false;
         messages.value = [...messages.value, aiMessage];
         scrollToBottom();
-      });
+      } catch (e) {
+        // Fallback to template response if AI fails
+        final fallbackResponse = _getContextualResponse(text.trim().toLowerCase());
+        final aiMessage = ChatMessage(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          content: fallbackResponse,
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
+
+        isTyping.value = false;
+        messages.value = [...messages.value, aiMessage];
+        scrollToBottom();
+
+        debugPrint('AI Service error: $e');
+      }
     }
 
     return Scaffold(
@@ -499,6 +521,8 @@ class ChatScreen extends HookConsumerWidget {
     ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3);
   }
 
+  // TODO: Remove this function once AI service is fully trained and deployed
+  // This is a fallback for when the AI service fails or is unavailable
   String _getContextualResponse(String message) {
     if (message.contains('prayer') || message.contains('pray')) {
       return 'Prayer is our direct line to God. As it says in Philippians 4:6-7: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."\n\nWhat specific area would you like prayer for?';

@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "generated": "2025-10-08",
+  "datasets": {
+    "response_generation": {
+      "file": "response_generation.jsonl",
+      "total_examples": 1120,
+      "pastoral_voice": 330,
+      "bible_verses": 790,
+      "pastoral_percentage": 29.5,
+      "bible_percentage": 70.5
+    },
+    "theme_classification": {
+      "file": "theme_classification.jsonl",
+      "examples": 56,
+      "themes": [
+        "anxiety",
+        "grief",
+        "anger",
+        "jealousy",
+        "forgiveness",
+        "loneliness",
+        "provision"
+      ]
+    }
+  },
+  "themes_covered": [
+    "forgiveness",
+    "provision",
+    "jealousy",
+    "anxiety",
+    "love",
+    "strength",
+    "hope",
+    "loneliness",
+    "anger",
+    "grief",
+    "comfort"
+  ],
+  "total_themes": 11
+}

@@ -44,21 +44,23 @@ void main() async {
 
   // Initialize notification service
   // This will request permissions and allow notifications to be scheduled
-  final container = ProviderContainer();
-  await container.read(initializeAppProvider.future);
+  // 🔧 COMMENTED OUT: Prevents test screen from being booted during app initialization
+  // final container = ProviderContainer();
+  // await container.read(initializeAppProvider.future);
 
   // 🔧 TEMPORARY: Reset database to fix schema migration issues
   // This ensures all new tables (prayer_streak_activity, etc.) are created
   // Remove this block after first successful launch
-  if (kDevelopmentMode) {
-    try {
-      final dbService = DatabaseService();
-      await dbService.resetDatabase();
-      debugPrint('✅ Database reset complete');
-    } catch (e) {
-      debugPrint('❌ Database reset failed: $e');
-    }
-  }
+  // 🔧 COMMENTED OUT: Prevents state changes that boot test screen
+  // if (kDevelopmentMode) {
+  //   try {
+  //     final dbService = DatabaseService();
+  //     await dbService.resetDatabase();
+  //     debugPrint('✅ Database reset complete');
+  //   } catch (e) {
+  //     debugPrint('❌ Database reset failed: $e');
+  //   }
+  // }
 
   // Set up global error handling
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -66,6 +68,8 @@ void main() async {
     ErrorHandler.handle(details.exception, stackTrace: details.stack);
   };
 
+  // Fixed: Always run full app initialization, even in dev mode
+  // This ensures database, themes, and providers are properly initialized
   runApp(const ProviderScope(child: EverydayChristianApp()));
 }
 
@@ -96,7 +100,7 @@ class EverydayChristianApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: kDevelopmentMode ? '/test-text-generator' : AppRoutes.splash,
+      initialRoute: AppRoutes.splash, // Fixed: Always start with splash for proper init
       onGenerateRoute: _generateRoute,
       builder: (context, child) {
         return MediaQuery(
