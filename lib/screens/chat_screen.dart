@@ -172,7 +172,7 @@ class ChatScreen extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Powered by local AI',
+                  'Powered by Cloudflare AI',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                     color: AppColors.secondaryText,

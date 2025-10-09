@@ -5,29 +5,39 @@ import 'package:flutter/foundation.dart';
 import 'ai_service.dart';
 import 'verse_service.dart';
 import 'theme_classifier_service.dart';
-import 'text_generator_service.dart';
+import 'cloudflare_ai_service.dart';
+import 'ai_style_learning_service.dart';
+import 'template_guidance_service.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 
-/// Local AI service implementation using TFLite theme classification + text generation
+/// Local AI service implementation using Cloudflare Workers AI
+///
+/// This service combines:
+/// - Cloudflare Workers AI (cloud-hosted LLM inference)
+/// - Theme detection (keyword-based classification)
+/// - Style learning (extracts patterns from 233 templates)
+/// - Verse integration (Bible database queries)
+/// - Template fallback (when Cloudflare unavailable)
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
   final ThemeClassifierService _themeClassifier = ThemeClassifierService.instance;
-  final TextGeneratorService _textGenerator = TextGeneratorService.instance;
+  final AIStyleLearningService _styleService = AIStyleLearningService.instance;
   final AppLogger _logger = AppLogger.instance;
 
   bool _isInitialized = false;
-  bool _isModelLoaded = false;
-  bool _useAIGeneration = true; // Toggle between AI and template responses - SET TO TRUE TO USE LSTM MODEL
+  bool _cloudflareAvailable = false;
 
-  // Simulated model state for fallback
+  // Fallback delays for template mode
   static const Duration _processingDelay = Duration(milliseconds: 1500);
   static const Duration _streamDelay = Duration(milliseconds: 50);
 
   @override
-  bool get isReady => _isInitialized && _isModelLoaded;
+  bool get isReady => _isInitialized;
+
+  bool get useCloudflareAI => _cloudflareAvailable;
 
   @override
   Future<void> initialize() async {
@@ -35,40 +45,36 @@ class LocalAIService implements AIService {
 
     return await ErrorHandler.handleAsync(
       () async {
-        _logger.info('Initializing Local AI Service with TFLite', context: 'LocalAIService');
+        _logger.info('Initializing AI Service with Cloudflare Workers AI', context: 'LocalAIService');
 
-        // Initialize theme classifier
+        // Initialize theme classifier (keyword-based, always works)
         await _themeClassifier.initialize();
+        _logger.info('✅ Theme classifier initialized', context: 'LocalAIService');
 
-        // Try to initialize text generator
+        // Initialize style learning service (extracts patterns from 233 templates)
+        await _styleService.initialize();
+        _logger.info('✅ Style learning service initialized (233 templates analyzed)', context: 'LocalAIService');
+
+        // Check if Cloudflare is available
         try {
-          await _textGenerator.initialize();
-          _useAIGeneration = _textGenerator.isReady;
-          if (_useAIGeneration) {
-            _logger.info('✅ Text generator (LSTM) initialized successfully - AI responses enabled!', context: 'LocalAIService');
+          _cloudflareAvailable = await CloudflareAIService.instance.healthCheck();
+          if (_cloudflareAvailable) {
+            _logger.info('✅ Cloudflare Workers AI connected', context: 'LocalAIService');
           } else {
-            _logger.warning('⚠️ Text generator loaded but not ready', context: 'LocalAIService');
+            _logger.warning('⚠️ Cloudflare Workers AI unavailable - using template mode', context: 'LocalAIService');
           }
         } catch (e) {
-          _logger.error('❌ Text generator initialization failed: $e', context: 'LocalAIService');
-          _useAIGeneration = false;
+          _logger.error('❌ Cloudflare check failed: $e', context: 'LocalAIService');
+          _logger.info('   Using template fallback mode', context: 'LocalAIService');
+          _cloudflareAvailable = false;
         }
 
-        _isModelLoaded = _themeClassifier.isReady;
         _isInitialized = true;
-
-        if (_isModelLoaded && _useAIGeneration) {
-          _logger.info('AI Service initialized with theme classifier + text generation', context: 'LocalAIService');
-        } else if (_isModelLoaded) {
-          _logger.info('AI Service initialized with theme classifier only', context: 'LocalAIService');
-        } else {
-          _logger.warning('AI Service initialized with keyword-based fallback', context: 'LocalAIService');
-        }
+        _logger.info('✅ AI Service ready (Mode: ${_cloudflareAvailable ? "Cloud AI" : "Template Fallback"})', context: 'LocalAIService');
       },
       context: 'LocalAIService.initialize',
     );
   }
-
 
   @override
   Future<AIResponse> generateResponse({
@@ -85,15 +91,16 @@ class LocalAIService implements AIService {
           return _getFallbackResponse(userInput);
         }
 
-        // Detect themes using TFLite classifier
+        // Detect theme using keyword classifier
         final primaryTheme = await _themeClassifier.getPrimaryTheme(userInput);
         final themes = [primaryTheme];
         _logger.debug('Detected primary theme: $primaryTheme', context: 'LocalAIService');
 
-        // Get relevant verses
+        // Get relevant Bible verses from database
         final verses = await _getRelevantVersesForInput(userInput, themes);
+        _logger.debug('Found ${verses.length} relevant verses', context: 'LocalAIService');
 
-        // Generate AI response
+        // Generate AI response (Cloudflare or template fallback)
         final response = await _generateAIResponse(
           userInput: userInput,
           themes: themes,
@@ -114,8 +121,9 @@ class LocalAIService implements AIService {
           confidence: 0.85 + (Random().nextDouble() * 0.1),
           metadata: {
             'themes': themes,
-            'model': 'tflite-theme-classifier',
-            'processing_method': 'theme_classification',
+            'model': _cloudflareAvailable ? 'cloudflare-llama-3.1-8b' : 'template-fallback',
+            'processing_method': _cloudflareAvailable ? 'cloud_ai' : 'template_selection',
+            'verse_count': verses.length,
           },
         );
       },
@@ -165,85 +173,121 @@ class LocalAIService implements AIService {
     }
   }
 
+  /// Generate AI response using Cloudflare or template fallback
   Future<String> _generateAIResponse({
     required String userInput,
     required List<String> themes,
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    // Use AI text generation if available, otherwise fall back to templates
-    if (_useAIGeneration) {
+    if (_cloudflareAvailable) {
       try {
-        final theme = themes.isNotEmpty ? themes.first : 'general';
-        _logger.info('🤖 Generating LSTM response for theme: $theme', context: 'LocalAIService');
-        
-        final aiResponse = await _textGenerator.generateResponse(
+        return await _generateCloudflareResponse(
           userInput: userInput,
-          theme: theme,
-          maxLength: 250,
+          themes: themes,
+          verses: verses,
+          conversationHistory: conversationHistory,
         );
-
-        // If AI generation succeeds, return it
-        if (aiResponse.isNotEmpty) {
-          _logger.info('✅ LSTM generated response (${aiResponse.length} chars)', context: 'LocalAIService');
-          return aiResponse;
-        } else {
-          _logger.warning('⚠️ LSTM returned empty response, using template', context: 'LocalAIService');
-        }
       } catch (e) {
-        _logger.error('❌ LSTM generation failed: $e', context: 'LocalAIService');
-        _logger.info('Falling back to template response', context: 'LocalAIService');
+        _logger.error('❌ Cloudflare generation failed: $e', context: 'LocalAIService');
+        _logger.info('   Falling back to templates', context: 'LocalAIService');
+        _cloudflareAvailable = false; // Disable for this session
       }
-    } else {
-      _logger.info('ℹ️ LSTM disabled, using template response', context: 'LocalAIService');
     }
 
     // Fallback to template-based response
-    await Future.delayed(_processingDelay);
-    return _buildContextualResponse(userInput, themes, verses);
+    return await _generateTemplateResponse(userInput, themes, verses);
   }
 
-  String _buildContextualResponse(
+  /// Generate response using Cloudflare Workers AI with style learning
+  Future<String> _generateCloudflareResponse({
+    required String userInput,
+    required List<String> themes,
+    required List<BibleVerse> verses,
+    List<ChatMessage> conversationHistory = const [],
+  }) async {
+    final theme = themes.isNotEmpty ? themes.first : 'general';
+    _logger.info('🤖 Generating Cloudflare AI response for theme: $theme', context: 'LocalAIService');
+
+    // Get style patterns from our 233 templates
+    final stylePatterns = _styleService.getStylePatterns();
+
+    // Build system prompt using learned pastoral style
+    final systemPrompt = _buildPastoralSystemPrompt(theme, stylePatterns);
+
+    // Convert conversation history to Cloudflare format
+    final messages = conversationHistory.map((msg) {
+      return {
+        'role': msg.isUser ? 'user' : 'assistant',
+        'content': msg.content,
+      };
+    }).toList();
+
+    // Call Cloudflare AI
+    final response = await CloudflareAIService.instance.generatePastoralGuidance(
+      userInput: userInput,
+      systemPrompt: systemPrompt,
+      conversationHistory: messages,
+      verses: verses,
+      maxTokens: 300,
+    );
+
+    _logger.info('✅ Cloudflare AI generated response (${response.length} chars)', context: 'LocalAIService');
+    return response;
+  }
+
+  /// Build system prompt using learned pastoral style patterns
+  String _buildPastoralSystemPrompt(String theme, PastoralStylePatterns stylePatterns) {
+    final introStyle = stylePatterns.getIntroPattern(theme);
+    final closingStyle = stylePatterns.getClosingPattern(theme);
+    final verseStyle = stylePatterns.getVerseIntegrationPattern();
+
+    return '''
+You are a compassionate pastoral counselor providing biblical guidance.
+
+RESPONSE STYLE (learned from 233 templates):
+
+Opening Style: $introStyle
+- Acknowledge the person's situation with empathy
+- Validate their feelings
+- Connect to their specific concern
+
+Scripture Integration: $verseStyle
+- Weave Bible verses naturally into your response
+- Don't just list verses - explain how they apply
+- Connect verses to their situation
+
+Closing Style: $closingStyle
+- End with hope and encouragement
+- Remind them of God's presence
+- Offer practical next steps
+
+IMPORTANT:
+- Keep responses under 300 tokens
+- Be warm, compassionate, and Christ-centered
+- Use the Bible verses provided in context
+- Speak directly to their specific situation
+''';
+  }
+
+  /// Generate template-based response (fallback when Cloudflare unavailable)
+  Future<String> _generateTemplateResponse(
     String userInput,
     List<String> themes,
     List<BibleVerse> verses,
-  ) {
-    final responses = _getContextualResponses();
-    final themeKey = themes.isNotEmpty ? themes.first : 'general';
-    final responseTemplates = responses[themeKey] ?? responses['general']!;
+  ) async {
+    await Future.delayed(_processingDelay);
 
-    final template = responseTemplates[Random().nextInt(responseTemplates.length)];
+    final theme = themes.isNotEmpty ? themes.first : 'general';
+    _logger.info('ℹ️ Using template response for theme: $theme', context: 'LocalAIService');
 
-    // Personalize the response based on user input
-    return template
-        .replaceAll('{situation}', _extractSituation(userInput))
-        .replaceAll('{theme}', _getThemeDescription(themeKey))
-        .replaceAll('{verse_count}', '${verses.length}');
-  }
-
-  String _extractSituation(String userInput) {
-    // Simple extraction - in production would use more sophisticated NLP
-    if (userInput.length > 50) {
-      return '${userInput.substring(0, 47)}...';
-    }
-    return userInput;
-  }
-
-  String _getThemeDescription(String theme) {
-    const descriptions = {
-      'anxiety': 'feelings of worry and stress',
-      'depression': 'feelings of sadness and discouragement',
-      'strength': 'need for spiritual strength',
-      'guidance': 'seeking God\'s direction',
-      'forgiveness': 'questions about forgiveness',
-      'purpose': 'searching for life\'s purpose',
-      'relationships': 'relationship challenges',
-      'fear': 'feelings of fear and uncertainty',
-      'doubt': 'spiritual doubts and questions',
-      'gratitude': 'expressions of thankfulness',
-      'general': 'your spiritual journey',
-    };
-    return descriptions[theme] ?? descriptions['general']!;
+    // Use template service to generate response
+    return await TemplateGuidanceService.instance.generateTemplateResponse(
+      userInput: userInput,
+      theme: theme,
+      understanding: null,
+      additionalVerses: verses.map((v) => '${v.text} - ${v.reference}').toList(),
+    );
   }
 
   @override
@@ -300,43 +344,9 @@ class LocalAIService implements AIService {
   @override
   Future<void> dispose() async {
     await _themeClassifier.dispose();
-    if (_useAIGeneration) {
-      await _textGenerator.dispose();
-    }
+    CloudflareAIService.instance.dispose();
     _isInitialized = false;
-    _isModelLoaded = false;
     debugPrint('🤖 Local AI Service disposed');
-  }
-
-  /// Get contextual response templates
-  Map<String, List<String>> _getContextualResponses() {
-    return {
-      'anxiety': [
-        'I can sense the weight of worry in your words about {situation}. It\'s completely natural to feel anxious, and God understands these feelings. He invites you to cast all your anxieties on Him because He cares for you deeply. Take comfort in knowing that His peace, which surpasses all understanding, is available to guard your heart and mind.',
-        'Your concerns about {situation} are valid, and it\'s okay to feel overwhelmed. Remember that God is bigger than any anxiety you\'re facing. He promises to be your refuge and strength, a very present help in trouble. These verses speak to His care for you in moments of worry.',
-        'I hear the anxiety in your heart regarding {situation}. Please know that you don\'re alone in this feeling. God sees your struggle and wants to comfort you. His perfect love casts out fear, and His presence brings peace that the world cannot give.',
-      ],
-      'depression': [
-        'I can feel the heaviness in your words about {situation}, and I want you to know that your feelings are valid. Even in the darkest moments, God\'s love for you remains constant and unwavering. He is close to the brokenhearted and promises that weeping may endure for a night, but joy comes in the morning.',
-        'Thank you for sharing your heart about {situation}. Depression can feel isolating, but remember that God is with you in the valley. His plans for you are good, to give you a future and a hope. These verses remind us of His faithfulness even in difficult seasons.',
-        'Your struggle with {situation} doesn\'t define you or diminish your worth in God\'s eyes. He sees your pain and wants to bring healing and hope. Remember that His strength is made perfect in weakness, and He can bring beauty from ashes.',
-      ],
-      'strength': [
-        'When facing {situation}, it\'s natural to feel like our own strength isn\'t enough - and that\'s exactly where God wants us to be. His power is made perfect in our weakness, and when we can\'t, He can. These verses remind us that divine strength is available in our weakest moments.',
-        'I understand you\'re going through {situation} and feeling overwhelmed. Remember that those who wait on the Lord will renew their strength. God doesn\'t promise the journey will be easy, but He promises to be with you every step of the way.',
-        'Your situation with {situation} requires strength beyond what you feel you have, and that\'s okay. God specializes in doing the impossible through ordinary people who rely on Him. His strength is limitless and always available to those who call on His name.',
-      ],
-      'guidance': [
-        'Seeking direction regarding {situation} shows wisdom and humility. God promises to guide those who acknowledge Him in all their ways. Trust that He will make your paths straight as you commit your decisions to Him in prayer.',
-        'Your question about {situation} shows a heart that wants to follow God\'s will. He promises that if any of us lacks wisdom, we can ask Him, and He gives generously to all without finding fault. These verses will encourage you as you seek His guidance.',
-        'Navigating {situation} can feel overwhelming when the path isn\'t clear. Remember that God\'s word is a lamp to your feet and a light to your path. He will guide you step by step as you trust in Him.',
-      ],
-      'general': [
-        'Thank you for sharing about {situation}. God sees your heart and understands exactly what you\'re going through. His love for you is constant, and His grace is sufficient for every challenge you face. These verses speak to His faithfulness in all circumstances.',
-        'I appreciate you opening your heart about {situation}. Remember that God is working all things together for good for those who love Him. Even when we can\'t see the bigger picture, we can trust in His character and His promises.',
-        'Your experience with {situation} matters to God, and so do you. He has plans for your life that are good, and His presence goes with you wherever you go. Take comfort in these truths from His word.',
-      ],
-    };
   }
 }
 

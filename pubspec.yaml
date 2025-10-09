@@ -36,10 +36,11 @@ dependencies:
   flutter_hooks: ^0.20.5
 
   # AI & Machine Learning
-  tflite_flutter: ^0.11.0
+  flutter_gemma: ^0.11.3
 
   # Utilities
   crypto: ^3.0.3
+  convert: ^3.1.1
   intl: ^0.20.2
   image: ^4.0.17
   share_plus: ^12.0.0
