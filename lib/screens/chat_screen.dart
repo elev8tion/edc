@@ -73,16 +73,15 @@ class ChatScreen extends HookConsumerWidget {
 
       // Generate AI response using LocalAIService with trained model
       try {
-        final aiService = LocalAIService.instance;
-        final response = await aiService.generateResponse(
+        final aiService = AIServiceFactory.instance;
+        final aiResponse = await aiService.generateResponse(
           userInput: text.trim(),
-          maxLength: 300,
-          conversationContext: messages.value.take(10).map((m) => m.content).toList(),
+          conversationHistory: [], // TODO: Map core ChatMessage to service ChatMessage
         );
 
         final aiMessage = ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: response,
+          content: aiResponse.content,
           isUser: false,
           timestamp: DateTime.now(),
         );

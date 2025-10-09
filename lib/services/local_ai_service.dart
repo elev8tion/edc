@@ -357,6 +357,15 @@ class AIServiceFactory {
     await _instance?.dispose();
     _instance = null;
   }
+
+  // Helper methods for creating ChatMessage instances
+  static ChatMessage createUserMessage({required String content}) {
+    return ChatMessage.user(content: content);
+  }
+
+  static ChatMessage createAIMessage({required String content}) {
+    return ChatMessage.ai(content: content);
+  }
 }
 
 /// Performance monitoring for AI service
