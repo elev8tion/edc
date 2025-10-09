@@ -71,7 +71,7 @@ class ChatScreen extends HookConsumerWidget {
 
       scrollToBottom();
 
-      // Generate AI response using LocalAIService
+      // Generate AI response using LocalAIService with trained model
       try {
         final aiService = LocalAIService.instance;
         final response = await aiService.generateResponse(
@@ -91,17 +91,16 @@ class ChatScreen extends HookConsumerWidget {
         messages.value = [...messages.value, aiMessage];
         scrollToBottom();
       } catch (e) {
-        // Fallback to template response if AI fails
-        final fallbackResponse = _getContextualResponse(text.trim().toLowerCase());
-        final aiMessage = ChatMessage(
+        // Show error message if AI service fails
+        final errorMessage = ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: fallbackResponse,
+          content: 'I apologize, but I\'m having trouble processing your message right now. Please try again in a moment. If this continues, please restart the app.',
           isUser: false,
           timestamp: DateTime.now(),
         );
 
         isTyping.value = false;
-        messages.value = [...messages.value, aiMessage];
+        messages.value = [...messages.value, errorMessage];
         scrollToBottom();
 
         debugPrint('AI Service error: $e');
@@ -519,24 +518,6 @@ class ChatScreen extends HookConsumerWidget {
         ],
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3);
-  }
-
-  // TODO: Remove this function once AI service is fully trained and deployed
-  // This is a fallback for when the AI service fails or is unavailable
-  String _getContextualResponse(String message) {
-    if (message.contains('prayer') || message.contains('pray')) {
-      return 'Prayer is our direct line to God. As it says in Philippians 4:6-7: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."\n\nWhat specific area would you like prayer for?';
-    } else if (message.contains('fear') || message.contains('afraid') || message.contains('worry')) {
-      return 'I understand you\'re feeling fearful. Remember what God says in Isaiah 41:10: "Fear not, for I am with you; be not dismayed, for I am your God; I will strengthen you, I will help you, I will uphold you with my righteous right hand."\n\nGod is always with you, even in your darkest moments. What is causing you to feel this way?';
-    } else if (message.contains('love') || message.contains('relationship')) {
-      return 'Love is at the heart of the Christian faith. 1 John 4:19 tells us "We love because he first loved us." God\'s love for us is unconditional and eternal.\n\nIn our relationships with others, we\'re called to love as Christ loved us - with patience, kindness, and forgiveness. How can I help you apply God\'s love in your situation?';
-    } else if (message.contains('forgive') || message.contains('forgiveness')) {
-      return 'Forgiveness is one of God\'s greatest gifts to us. As Jesus taught us in Matthew 6:14-15: "If you forgive other people when they sin against you, your heavenly Father will also forgive you."\n\nForgiveness doesn\'t mean forgetting or excusing wrong behavior, but it frees us from the burden of resentment. What situation are you struggling to forgive?';
-    } else if (message.contains('purpose') || message.contains('calling')) {
-      return 'God has a unique purpose for your life! Jeremiah 29:11 reminds us: "For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, to give you hope and a future."\n\nYour purpose is found in loving God and serving others. What gifts and passions has God given you that you could use to serve Him?';
-    } else {
-      return 'Thank you for sharing with me. God cares deeply about every aspect of your life, both big and small. As it says in 1 Peter 5:7: "Cast all your anxiety on him because he cares for you."\n\nRemember that you are loved, valued, and never alone. God is always listening and ready to help. Would you like to explore a specific Bible verse or topic related to your question?';
-    }
   }
 
   String _formatTime(DateTime dateTime) {
