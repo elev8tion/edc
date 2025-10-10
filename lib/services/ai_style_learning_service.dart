@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gemma/flutter_gemma.dart';
-import '../models/bible_verse.dart';
 import 'template_guidance_service.dart' show TemplateGuidanceService, ResponseTemplate;
 
-/// AI Service that LEARNS from your 233 templates' style
-/// Rather than just selecting templates, it generates NEW responses in your pastoral tone
+/// AI Style Learning Service
+///
+/// Extracts pastoral style patterns from 233 template responses
+/// These patterns are used to build system prompts for Cloudflare AI
+///
+/// This service does NOT generate responses itself - it provides style
+/// guidance that Cloudflare AI uses to generate new responses in the
+/// learned pastoral tone.
 class AIStyleLearningService {
   static AIStyleLearningService? _instance;
-  InferenceModel? _model;
   bool _isInitialized = false;
 
-  // Your pastoral style patterns extracted from 233 templates
+  // Extracted style patterns from 233 templates
   late final PastoralStylePatterns _stylePatterns;
 
   static AIStyleLearningService get instance {
@@ -21,111 +24,37 @@ class AIStyleLearningService {
 
   AIStyleLearningService._internal();
 
-  /// Initialize and learn from your 233 templates
+  /// Initialize and extract style patterns from 233 templates
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // Extract style patterns from your templates
+      // Extract style patterns from templates
       _stylePatterns = await _extractStylePatterns();
 
-      // Initialize AI model (Qwen or Gemma)
-      _model = await FlutterGemmaPlugin.instance.createModel(
-        modelType: ModelType.gemmaIt,
-        preferredBackend: PreferredBackend.gpu,
-        maxTokens: 300, // Longer for style generation
-      );
-
       _isInitialized = true;
-      debugPrint('✅ AI Style Learning Service initialized');
+      debugPrint('✅ AI Style Learning Service initialized (233 templates analyzed)');
     } catch (e) {
-      debugPrint('⚠️ Style learning failed, using templates: $e');
+      debugPrint('⚠️ Style pattern extraction failed: $e');
       _isInitialized = false;
     }
   }
 
-  /// Generate a response in YOUR pastoral style (not just picking a template!)
-  Future<String> generateInPastoralStyle({
-    required String userInput,
-    required String understanding,
-    required String emotionalTone,
-    required String theme,
-    required List<BibleVerse> databaseVerses,
-  }) async {
-    if (!_isInitialized || _model == null) {
-      // Fallback to template selection
-      return TemplateGuidanceService.instance.generateTemplateResponse(
-        userInput: userInput,
-        theme: theme,
-        understanding: null,
-        additionalVerses: databaseVerses.map((v) => '${v.text} - ${v.reference}').toList(),
-      );
+  /// Get the extracted style patterns
+  /// Used by LocalAIService to build system prompts for Cloudflare AI
+  PastoralStylePatterns getStylePatterns() {
+    if (!_isInitialized) {
+      throw Exception('AIStyleLearningService not initialized. Call initialize() first.');
     }
-
-    try {
-      final session = await _model!.createSession();
-
-      try {
-        // This is the KEY difference - we're teaching the AI your style!
-        final stylePrompt = '''
-You are a compassionate pastoral counselor. Generate a response using this exact style:
-
-STYLE PATTERNS FROM 233 TRAINING EXAMPLES:
-${_stylePatterns.getIntroPattern(emotionalTone)}
-${_stylePatterns.getVerseIntegrationPattern()}
-${_stylePatterns.getApplicationPattern(theme)}
-${_stylePatterns.getClosingPattern(emotionalTone)}
-
-USER'S SITUATION:
-- Input: "$userInput"
-- Understanding: "$understanding"
-- Emotional State: $emotionalTone
-- Theme: $theme
-
-BIBLE VERSES FROM DATABASE TO USE:
-${databaseVerses.map((v) => '- "${v.text}" - ${v.reference}').join('\n')}
-
-Generate a pastoral response in the learned style that:
-1. Acknowledges their specific situation with compassion
-2. Naturally integrates the Bible verses (don't just list them)
-3. Provides practical application
-4. Ends with hope and encouragement
-
-Your response:''';
-
-        await session.addQueryChunk(Message.text(
-          text: stylePrompt,
-          isUser: true,
-        ));
-
-        final aiResponse = await session.getResponse();
-
-        if (aiResponse.isNotEmpty) {
-          debugPrint('✅ Generated new response in pastoral style');
-          return aiResponse;
-        }
-      } finally {
-        await session.close();
-      }
-    } catch (e) {
-      debugPrint('Style generation failed: $e');
-    }
-
-    // Fallback to template
-    return TemplateGuidanceService.instance.generateTemplateResponse(
-      userInput: userInput,
-      theme: theme,
-      understanding: null,
-      additionalVerses: databaseVerses.map((v) => '${v.text} - ${v.reference}').toList(),
-    );
+    return _stylePatterns;
   }
 
-  /// Extract style patterns from your 233 templates
+  /// Extract style patterns from 233 templates
   Future<PastoralStylePatterns> _extractStylePatterns() async {
-    // Analyze your 233 templates to extract patterns
+    // Analyze the 233 templates to extract patterns
     final templates = TemplateGuidanceService.templates;
 
-    // Extract common patterns for each emotional tone
+    // Extract common patterns for each theme
     final introPatterns = <String, List<String>>{};
     final closingPatterns = <String, List<String>>{};
 
@@ -156,6 +85,9 @@ Your response:''';
     if (intro.contains('I can sense')) return 'Empathetic recognition';
     if (intro.contains('Thank you for sharing')) return 'Grateful acknowledgment';
     if (intro.contains('Your concerns about')) return 'Direct validation';
+    if (intro.contains('Seeking direction')) return 'Wisdom affirmation';
+    if (intro.contains('Fear about')) return 'Fear acknowledgment';
+    if (intro.contains('darkness you\'re experiencing')) return 'Valley recognition';
     return 'Compassionate opening';
   }
 
@@ -164,34 +96,36 @@ Your response:''';
     if (closing.contains('Remember')) return 'Reminder of truth';
     if (closing.contains('May')) return 'Blessing format';
     if (closing.contains('You are')) return 'Identity affirmation';
+    if (closing.contains('Hold on')) return 'Perseverance encouragement';
+    if (closing.contains('Trust')) return 'Faith affirmation';
+    if (closing.contains('The One who is in you')) return 'Strength reminder';
     return 'Hopeful encouragement';
   }
 
   String _analyzeVerseIntegration() {
-    return '''
-    - Introduce verses naturally with transitions like "God's Word speaks to this..."
+    return '''Natural weaving with context
+    - Introduce verses with transitions like "God's Word speaks to this..."
     - Don't just list verses - weave them into the narrative
     - Connect verses to the specific situation
-    - Show how verses relate to each other
-    ''';
+    - Show how verses relate to each other''';
   }
 
   String _analyzeApplicationStyle() {
-    return '''
-    - Make it practical and actionable
+    return '''Practical and actionable
+    - Make it concrete and applicable to daily life
     - Start with "Consider..." or "You might..." or "Take a moment to..."
-    - Connect to daily life
-    - Offer specific steps, not just concepts
-    ''';
+    - Connect biblical truth to daily situations
+    - Offer specific steps, not just concepts''';
   }
 
   void dispose() {
-    _model = null;
     _isInitialized = false;
+    debugPrint('🔌 AI Style Learning Service disposed');
   }
 }
 
-/// Patterns extracted from your 233 training templates
+/// Patterns extracted from 233 pastoral training templates
+/// Used to build system prompts for Cloudflare AI
 class PastoralStylePatterns {
   final Map<String, List<String>> introPatterns;
   final Map<String, List<String>> closingPatterns;
@@ -209,7 +143,7 @@ class PastoralStylePatterns {
     final patterns = introPatterns[emotion] ?? introPatterns['general'] ?? [];
     if (patterns.isEmpty) return 'Acknowledge with compassion';
 
-    // Describe the pattern, not return a specific template
+    // Describe the pattern style, not return a specific template
     return 'Intro style: ${patterns.first}';
   }
 
@@ -228,5 +162,3 @@ class PastoralStylePatterns {
     return 'Application style: $applicationStyle';
   }
 }
-
-// ResponseTemplate is imported from template_guidance_service.dart

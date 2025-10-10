@@ -20,6 +20,7 @@ import 'screens/profile_screen.dart';
 import 'screens/devotional_screen.dart';
 import 'screens/reading_plan_screen.dart';
 import 'services/local_ai_service.dart';
+import 'services/cloudflare_ai_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,16 @@ void main() async {
       statusBarIconBrightness: Brightness.light,
       statusBarBrightness: Brightness.dark,
     ),
+  );
+
+  // Initialize Cloudflare AI Service
+  // Credentials are passed via --dart-define during build
+  CloudflareAIService.initialize(
+    accountId: const String.fromEnvironment('CLOUDFLARE_ACCOUNT_ID', defaultValue: ''),
+    apiToken: const String.fromEnvironment('CLOUDFLARE_API_TOKEN', defaultValue: ''),
+    gatewayName: const String.fromEnvironment('CLOUDFLARE_GATEWAY', defaultValue: ''),
+    useCache: true,
+    cacheTTL: 3600, // 1 hour cache
   );
 
   // Initialize AI services in background
