@@ -39,7 +39,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM verses
+      SELECT * FROM bible_verses
       WHERE text LIKE ? OR reference LIKE ? OR themes LIKE ?
       ORDER BY
         CASE
@@ -57,31 +57,32 @@ class VerseService {
     return results;
   }
 
-  /// Get verses by theme
+  /// Get verses by theme (searches text for theme keywords)
   Future<List<Map<String, dynamic>>> getVersesByTheme(String theme, {int limit = 10}) async {
     final database = await _db.database;
 
+    // Search verse text for theme-related keywords
     final results = await database.rawQuery('''
-      SELECT * FROM verses
-      WHERE themes LIKE ? OR category = ?
+      SELECT * FROM bible_verses
+      WHERE themes LIKE ?
       ORDER BY RANDOM()
       LIMIT ?
-    ''', ['%$theme%', theme, limit]);
+    ''', ['%$theme%', limit]);
 
     return results;
   }
 
-  /// Get verses by category
+  /// Get verses by category (searches text for category keywords)
   Future<List<Map<String, dynamic>>> getVersesByCategory(String category, {int limit = 10}) async {
     final database = await _db.database;
 
-    final results = await database.query(
-      'verses',
-      where: 'category = ?',
-      whereArgs: [category],
-      orderBy: 'RANDOM()',
-      limit: limit,
-    );
+    // Search verse text for category-related keywords
+    final results = await database.rawQuery('''
+      SELECT * FROM bible_verses
+      WHERE category = ?
+      ORDER BY RANDOM()
+      LIMIT ?
+    ''', [category, limit]);
 
     return results;
   }
@@ -90,7 +91,7 @@ class VerseService {
   Future<Map<String, dynamic>?> getDailyVerse({String? preferredTheme}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM verses';
+    String query = 'SELECT * FROM bible_verses';
     List<dynamic> args = [];
 
     if (preferredTheme != null && preferredTheme.isNotEmpty) {
@@ -147,7 +148,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.query(
-      'verses',
+      'bible_verses',
       where: 'reference = ?',
       whereArgs: [reference],
       limit: 1,
@@ -179,7 +180,7 @@ class VerseService {
           ).join(' ')}
           ELSE 0
         END as relevance_score
-      FROM verses
+      FROM bible_verses
       WHERE $themeClauses
       ORDER BY relevance_score DESC, RANDOM()
       LIMIT ?
@@ -193,7 +194,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT DISTINCT themes FROM verses WHERE themes IS NOT NULL
+      SELECT DISTINCT themes FROM bible_verses WHERE themes IS NOT NULL
     ''');
 
     final Set<String> allThemes = {};
@@ -220,7 +221,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT DISTINCT category FROM verses
+      SELECT DISTINCT category FROM bible_verses
       WHERE category IS NOT NULL
       ORDER BY category
     ''');
@@ -232,10 +233,10 @@ class VerseService {
   Future<Map<String, dynamic>> getVerseStats() async {
     final database = await _db.database;
 
-    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM verses');
+    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM bible_verses');
     final categoryStats = await database.rawQuery('''
       SELECT category, COUNT(*) as count
-      FROM verses
+      FROM bible_verses
       WHERE category IS NOT NULL
       GROUP BY category
       ORDER BY count DESC
@@ -243,7 +244,7 @@ class VerseService {
 
     final translationStats = await database.rawQuery('''
       SELECT translation, COUNT(*) as count
-      FROM verses
+      FROM bible_verses
       GROUP BY translation
       ORDER BY count DESC
     ''');
@@ -287,7 +288,7 @@ class VerseService {
 
     final results = await database.rawQuery('''
       SELECT v.*, b.created_at as bookmarked_at
-      FROM verses v
+      FROM bible_verses v
       JOIN bookmarks b ON v.id = b.verse_id
       WHERE b.user_id = ?
       ORDER BY b.created_at DESC

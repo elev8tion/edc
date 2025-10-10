@@ -35,8 +35,7 @@ dependencies:
   google_fonts: ^6.1.0
   flutter_hooks: ^0.20.5
 
-  # AI & Machine Learning
-  flutter_gemma: ^0.11.3
+  # AI & Machine Learning (using Cloudflare Workers AI via HTTP)
 
   # Utilities
   crypto: ^3.0.3

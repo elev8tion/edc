@@ -1,29 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-import '../components/gradient_background.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
-import '../core/models/chat_message.dart';
-import '../core/providers/app_providers.dart';
-import '../hooks/animation_hooks.dart';
 import '../core/navigation/navigation_service.dart';
-import '../utils/responsive_utils.dart';
-import '../services/local_ai_service.dart';
+import '../models/chat_message.dart';
+import '../providers/ai_provider.dart';
+import '../components/gradient_background.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
 
   ChatMessage _createWelcomeMessage() {
-    return ChatMessage(
-      id: '1',
+    return ChatMessage.system(
       content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
-      isUser: false,
-      timestamp: DateTime.now(),
     );
   }
 
@@ -41,7 +31,18 @@ class ChatScreen extends HookConsumerWidget {
     }, []);
 
     // Auto-scroll when messages change
-    useAutoScrollToBottom(scrollController, messages.value);
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+      return null;
+    }, [messages.value]);
 
     void scrollToBottom() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -58,11 +59,8 @@ class ChatScreen extends HookConsumerWidget {
     Future<void> sendMessage(String text) async {
       if (text.trim().isEmpty) return;
 
-      final userMessage = ChatMessage(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+      final userMessage = ChatMessage.user(
         content: text.trim(),
-        isUser: true,
-        timestamp: DateTime.now(),
       );
 
       messages.value = [...messages.value, userMessage];
@@ -71,38 +69,33 @@ class ChatScreen extends HookConsumerWidget {
 
       scrollToBottom();
 
-      // Generate AI response using LocalAIService with trained model
       try {
-        final aiService = AIServiceFactory.instance;
-        final aiResponse = await aiService.generateResponse(
+        // Use actual AI service
+        final aiService = ref.read(aiServiceProvider);
+        final response = await aiService.generateResponse(
           userInput: text.trim(),
-          conversationHistory: [], // TODO: Map core ChatMessage to service ChatMessage
+          conversationHistory: messages.value,
         );
 
-        final aiMessage = ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: aiResponse.content,
-          isUser: false,
-          timestamp: DateTime.now(),
+        final aiMessage = ChatMessage.ai(
+          content: response.content,
+          verses: response.verses,
+          metadata: response.metadata,
         );
 
         isTyping.value = false;
         messages.value = [...messages.value, aiMessage];
         scrollToBottom();
       } catch (e) {
-        // Show error message if AI service fails
-        final errorMessage = ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          content: 'I apologize, but I\'m having trouble processing your message right now. Please try again in a moment. If this continues, please restart the app.',
-          isUser: false,
-          timestamp: DateTime.now(),
+        // Fallback to contextual response if AI service fails
+        final response = _getContextualResponse(text.trim().toLowerCase());
+        final aiMessage = ChatMessage.ai(
+          content: response,
         );
 
         isTyping.value = false;
-        messages.value = [...messages.value, errorMessage];
+        messages.value = [...messages.value, aiMessage];
         scrollToBottom();
-
-        debugPrint('AI Service error: $e');
       }
     }
 
@@ -117,7 +110,7 @@ class ChatScreen extends HookConsumerWidget {
                 Expanded(
                   child: _buildMessagesList(scrollController, messages.value, isTyping.value),
                 ),
-                _buildMessageInput(context, messageController, sendMessage),
+                _buildMessageInput(messageController, sendMessage),
               ],
             ),
           ),
@@ -155,10 +148,10 @@ class ChatScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Biblical AI Guidance',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryText,
                     shadows: [
@@ -172,9 +165,9 @@ class ChatScreen extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Powered by Cloudflare AI',
+                  'Template-based AI',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                    fontSize: 12,
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
@@ -197,10 +190,10 @@ class ChatScreen extends HookConsumerWidget {
                 width: 1,
               ),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.auto_awesome,
               color: AppColors.primaryText,
-              size: ResponsiveUtils.iconSize(context, 20),
+              size: 20,
             ),
           ),
         ],
@@ -213,24 +206,16 @@ class ChatScreen extends HookConsumerWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       itemCount: messages.length + (isTyping ? 1 : 0),
-      // Add keys for better performance with list updates
       itemBuilder: (context, index) {
         if (index == messages.length && isTyping) {
-          return _buildTypingIndicator(context);
+          return _buildTypingIndicator();
         }
-        final message = messages[index];
-        return KeyedSubtree(
-          key: ValueKey(message.id),
-          child: _buildMessageBubble(context, message, index),
-        );
+        return _buildMessageBubble(messages[index], index);
       },
-      // Optimize for scrolling performance
-      cacheExtent: 500, // Pre-render 500px of off-screen content
-      addAutomaticKeepAlives: true, // Keep messages alive when scrolling
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, ChatMessage message, int index) {
+  Widget _buildMessageBubble(ChatMessage message, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -254,10 +239,10 @@ class ChatScreen extends HookConsumerWidget {
                   width: 1,
                 ),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.auto_awesome,
                 color: AppColors.primaryText,
-                size: ResponsiveUtils.iconSize(context, 20),
+                size: 20,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -303,7 +288,7 @@ class ChatScreen extends HookConsumerWidget {
                   Text(
                     message.content,
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                      fontSize: 15,
                       color: AppColors.primaryText,
                       height: 1.4,
                       fontWeight: FontWeight.w500,
@@ -320,7 +305,7 @@ class ChatScreen extends HookConsumerWidget {
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
+                      fontSize: 11,
                       color: Colors.white.withValues(alpha: 0.7),
                       fontWeight: FontWeight.w500,
                     ),
@@ -346,10 +331,10 @@ class ChatScreen extends HookConsumerWidget {
                   width: 1,
                 ),
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.person,
                 color: AppColors.primaryText,
-                size: ResponsiveUtils.iconSize(context, 20),
+                size: 20,
               ),
             ),
           ],
@@ -360,7 +345,7 @@ class ChatScreen extends HookConsumerWidget {
         );
   }
 
-  Widget _buildTypingIndicator(BuildContext context) {
+  Widget _buildTypingIndicator() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -380,10 +365,10 @@ class ChatScreen extends HookConsumerWidget {
                 width: 1,
               ),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.auto_awesome,
               color: AppColors.primaryText,
-              size: ResponsiveUtils.iconSize(context, 20),
+              size: 20,
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -437,7 +422,7 @@ class ChatScreen extends HookConsumerWidget {
         );
   }
 
-  Widget _buildMessageInput(BuildContext context, TextEditingController messageController, void Function(String) sendMessage) {
+  Widget _buildMessageInput(TextEditingController messageController, void Function(String) sendMessage) {
     return Container(
       padding: AppSpacing.screenPadding,
       child: Row(
@@ -459,15 +444,15 @@ class ChatScreen extends HookConsumerWidget {
               ),
               child: TextField(
                 controller: messageController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.primaryText,
-                  fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                  fontSize: 15,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Ask for biblical guidance...',
                   hintStyle: TextStyle(
                     color: AppColors.tertiaryText,
-                    fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                    fontSize: 15,
                   ),
                   border: InputBorder.none,
                   filled: true,
@@ -507,16 +492,32 @@ class ChatScreen extends HookConsumerWidget {
             ),
             child: IconButton(
               onPressed: () => sendMessage(messageController.text),
-              icon: Icon(
+              icon: const Icon(
                 Icons.send,
                 color: AppColors.primaryText,
-                size: ResponsiveUtils.iconSize(context, 20),
+                size: 20,
               ),
             ),
           ),
         ],
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3);
+  }
+
+  String _getContextualResponse(String message) {
+    if (message.contains('prayer') || message.contains('pray')) {
+      return 'Prayer is our direct line to God. As it says in Philippians 4:6-7: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."\n\nWhat specific area would you like prayer for?';
+    } else if (message.contains('fear') || message.contains('afraid') || message.contains('worry')) {
+      return 'I understand you\'re feeling fearful. Remember what God says in Isaiah 41:10: "Fear not, for I am with you; be not dismayed, for I am your God; I will strengthen you, I will help you, I will uphold you with my righteous right hand."\n\nGod is always with you, even in your darkest moments. What is causing you to feel this way?';
+    } else if (message.contains('love') || message.contains('relationship')) {
+      return 'Love is at the heart of the Christian faith. 1 John 4:19 tells us "We love because he first loved us." God\'s love for us is unconditional and eternal.\n\nIn our relationships with others, we\'re called to love as Christ loved us - with patience, kindness, and forgiveness. How can I help you apply God\'s love in your situation?';
+    } else if (message.contains('forgive') || message.contains('forgiveness')) {
+      return 'Forgiveness is one of God\'s greatest gifts to us. As Jesus taught us in Matthew 6:14-15: "If you forgive other people when they sin against you, your heavenly Father will also forgive you."\n\nForgiveness doesn\'t mean forgetting or excusing wrong behavior, but it frees us from the burden of resentment. What situation are you struggling to forgive?';
+    } else if (message.contains('purpose') || message.contains('calling')) {
+      return 'God has a unique purpose for your life! Jeremiah 29:11 reminds us: "For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, to give you hope and a future."\n\nYour purpose is found in loving God and serving others. What gifts and passions has God given you that you could use to serve Him?';
+    } else {
+      return 'Thank you for sharing with me. God cares deeply about every aspect of your life, both big and small. As it says in 1 Peter 5:7: "Cast all your anxiety on him because he cares for you."\n\nRemember that you are loved, valued, and never alone. God is always listening and ready to help. Would you like to explore a specific Bible verse or topic related to your question?';
+    }
   }
 
   String _formatTime(DateTime dateTime) {

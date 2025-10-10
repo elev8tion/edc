@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'ai_service.dart';
 import 'verse_service.dart';
 import 'theme_classifier_service.dart';
-import 'cloudflare_ai_service.dart';
 import 'ai_style_learning_service.dart';
 import 'template_guidance_service.dart';
 import '../models/chat_message.dart';
@@ -13,14 +12,13 @@ import '../models/bible_verse.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 
-/// Local AI service implementation using Cloudflare Workers AI
+/// Local AI service implementation using template-based responses
 ///
 /// This service combines:
-/// - Cloudflare Workers AI (cloud-hosted LLM inference)
 /// - Theme detection (keyword-based classification)
 /// - Style learning (extracts patterns from 233 templates)
 /// - Verse integration (Bible database queries)
-/// - Template fallback (when Cloudflare unavailable)
+/// - Template responses (empathetic, contextual guidance)
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
   final ThemeClassifierService _themeClassifier = ThemeClassifierService.instance;
@@ -28,16 +26,13 @@ class LocalAIService implements AIService {
   final AppLogger _logger = AppLogger.instance;
 
   bool _isInitialized = false;
-  bool _cloudflareAvailable = false;
 
-  // Fallback delays for template mode
+  // Delays for realistic response timing
   static const Duration _processingDelay = Duration(milliseconds: 1500);
   static const Duration _streamDelay = Duration(milliseconds: 50);
 
   @override
   bool get isReady => _isInitialized;
-
-  bool get useCloudflareAI => _cloudflareAvailable;
 
   @override
   Future<void> initialize() async {
@@ -45,9 +40,9 @@ class LocalAIService implements AIService {
 
     return await ErrorHandler.handleAsync(
       () async {
-        _logger.info('Initializing AI Service with Cloudflare Workers AI', context: 'LocalAIService');
+        _logger.info('Initializing AI Service (Template Mode)', context: 'LocalAIService');
 
-        // Initialize theme classifier (keyword-based, always works)
+        // Initialize theme classifier (keyword-based)
         await _themeClassifier.initialize();
         _logger.info('✅ Theme classifier initialized', context: 'LocalAIService');
 
@@ -55,22 +50,8 @@ class LocalAIService implements AIService {
         await _styleService.initialize();
         _logger.info('✅ Style learning service initialized (233 templates analyzed)', context: 'LocalAIService');
 
-        // Check if Cloudflare is available
-        try {
-          _cloudflareAvailable = await CloudflareAIService.instance.healthCheck();
-          if (_cloudflareAvailable) {
-            _logger.info('✅ Cloudflare Workers AI connected', context: 'LocalAIService');
-          } else {
-            _logger.warning('⚠️ Cloudflare Workers AI unavailable - using template mode', context: 'LocalAIService');
-          }
-        } catch (e) {
-          _logger.error('❌ Cloudflare check failed: $e', context: 'LocalAIService');
-          _logger.info('   Using template fallback mode', context: 'LocalAIService');
-          _cloudflareAvailable = false;
-        }
-
         _isInitialized = true;
-        _logger.info('✅ AI Service ready (Mode: ${_cloudflareAvailable ? "Cloud AI" : "Template Fallback"})', context: 'LocalAIService');
+        _logger.info('✅ AI Service ready (Mode: Template-based)', context: 'LocalAIService');
       },
       context: 'LocalAIService.initialize',
     );
@@ -121,8 +102,8 @@ class LocalAIService implements AIService {
           confidence: 0.85 + (Random().nextDouble() * 0.1),
           metadata: {
             'themes': themes,
-            'model': _cloudflareAvailable ? 'cloudflare-llama-3.1-8b' : 'template-fallback',
-            'processing_method': _cloudflareAvailable ? 'cloud_ai' : 'template_selection',
+            'model': 'template-based',
+            'processing_method': 'template_selection',
             'verse_count': verses.length,
           },
         );
@@ -173,104 +154,18 @@ class LocalAIService implements AIService {
     }
   }
 
-  /// Generate AI response using Cloudflare or template fallback
+  /// Generate AI response using template-based system
   Future<String> _generateAIResponse({
     required String userInput,
     required List<String> themes,
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    if (_cloudflareAvailable) {
-      try {
-        return await _generateCloudflareResponse(
-          userInput: userInput,
-          themes: themes,
-          verses: verses,
-          conversationHistory: conversationHistory,
-        );
-      } catch (e) {
-        _logger.error('❌ Cloudflare generation failed: $e', context: 'LocalAIService');
-        _logger.info('   Falling back to templates', context: 'LocalAIService');
-        _cloudflareAvailable = false; // Disable for this session
-      }
-    }
-
-    // Fallback to template-based response
+    // Use template-based response generation
     return await _generateTemplateResponse(userInput, themes, verses);
   }
 
-  /// Generate response using Cloudflare Workers AI with style learning
-  Future<String> _generateCloudflareResponse({
-    required String userInput,
-    required List<String> themes,
-    required List<BibleVerse> verses,
-    List<ChatMessage> conversationHistory = const [],
-  }) async {
-    final theme = themes.isNotEmpty ? themes.first : 'general';
-    _logger.info('🤖 Generating Cloudflare AI response for theme: $theme', context: 'LocalAIService');
-
-    // Get style patterns from our 233 templates
-    final stylePatterns = _styleService.getStylePatterns();
-
-    // Build system prompt using learned pastoral style
-    final systemPrompt = _buildPastoralSystemPrompt(theme, stylePatterns);
-
-    // Convert conversation history to Cloudflare format
-    final messages = conversationHistory.map((msg) {
-      return {
-        'role': msg.isUser ? 'user' : 'assistant',
-        'content': msg.content,
-      };
-    }).toList();
-
-    // Call Cloudflare AI
-    final response = await CloudflareAIService.instance.generatePastoralGuidance(
-      userInput: userInput,
-      systemPrompt: systemPrompt,
-      conversationHistory: messages,
-      verses: verses,
-      maxTokens: 300,
-    );
-
-    _logger.info('✅ Cloudflare AI generated response (${response.length} chars)', context: 'LocalAIService');
-    return response;
-  }
-
-  /// Build system prompt using learned pastoral style patterns
-  String _buildPastoralSystemPrompt(String theme, PastoralStylePatterns stylePatterns) {
-    final introStyle = stylePatterns.getIntroPattern(theme);
-    final closingStyle = stylePatterns.getClosingPattern(theme);
-    final verseStyle = stylePatterns.getVerseIntegrationPattern();
-
-    return '''
-You are a compassionate pastoral counselor providing biblical guidance.
-
-RESPONSE STYLE (learned from 233 templates):
-
-Opening Style: $introStyle
-- Acknowledge the person's situation with empathy
-- Validate their feelings
-- Connect to their specific concern
-
-Scripture Integration: $verseStyle
-- Weave Bible verses naturally into your response
-- Don't just list verses - explain how they apply
-- Connect verses to their situation
-
-Closing Style: $closingStyle
-- End with hope and encouragement
-- Remind them of God's presence
-- Offer practical next steps
-
-IMPORTANT:
-- Keep responses under 300 tokens
-- Be warm, compassionate, and Christ-centered
-- Use the Bible verses provided in context
-- Speak directly to their specific situation
-''';
-  }
-
-  /// Generate template-based response (fallback when Cloudflare unavailable)
+  /// Generate template-based response
   Future<String> _generateTemplateResponse(
     String userInput,
     List<String> themes,

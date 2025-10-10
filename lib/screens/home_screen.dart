@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
-import '../features/chat/screens/chat_screen.dart';
+import 'chat_screen.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/feature_card.dart';

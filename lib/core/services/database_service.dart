@@ -10,7 +10,7 @@ import '../database/migrations/v6_add_prayer_categories.dart';
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 6;
+  static const int _databaseVersion = 7;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -205,6 +205,25 @@ class DatabaseService {
       // Add prayer categories
       await V6AddPrayerCategories.up(db);
     }
+
+    if (oldVersion < 7) {
+      // Add themes, category, and reference columns to bible_verses table
+      await db.execute('ALTER TABLE bible_verses ADD COLUMN themes TEXT');
+      await db.execute('ALTER TABLE bible_verses ADD COLUMN category TEXT');
+      await db.execute('ALTER TABLE bible_verses ADD COLUMN reference TEXT');
+
+      // Build reference column for existing verses (Book Chapter:Verse format)
+      final verses = await db.query('bible_verses');
+      for (final verse in verses) {
+        final ref = '${verse['book']} ${verse['chapter']}:${verse['verse']}';
+        await db.update('bible_verses',
+          {'reference': ref},
+          where: 'id = ?',
+          whereArgs: [verse['id']]
+        );
+      }
+      print('✅ Added themes, category, and reference columns to bible_verses table');
+    }
   }
 
   Future<void> _createTables(Database db) async {
@@ -231,7 +250,10 @@ class DatabaseService {
         chapter INTEGER NOT NULL,
         verse INTEGER NOT NULL,
         text TEXT NOT NULL,
-        language TEXT NOT NULL
+        language TEXT NOT NULL,
+        themes TEXT,
+        category TEXT,
+        reference TEXT
       )
     ''');
 
