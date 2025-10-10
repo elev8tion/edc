@@ -239,7 +239,6 @@ class LocalAIService implements AIService {
   @override
   Future<void> dispose() async {
     await _themeClassifier.dispose();
-    CloudflareAIService.instance.dispose();
     _isInitialized = false;
     debugPrint('🤖 Local AI Service disposed');
   }
