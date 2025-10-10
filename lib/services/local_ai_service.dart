@@ -170,7 +170,7 @@ class LocalAIService implements AIService {
     // Use Gemini AI for intelligent response - NO FALLBACKS
     final theme = themes.isNotEmpty ? themes.first : 'general';
     final conversationStrings = conversationHistory
-        .take(3)
+        .take(10)
         .map((msg) => '${msg.isUser ? "USER" : "ASSISTANT"}: ${msg.content}')
         .toList();
 

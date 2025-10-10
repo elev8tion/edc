@@ -7,6 +7,7 @@ import '../core/navigation/navigation_service.dart';
 import '../models/chat_message.dart';
 import '../providers/ai_provider.dart';
 import '../components/gradient_background.dart';
+import '../services/conversation_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -23,10 +24,34 @@ class ChatScreen extends HookConsumerWidget {
     final scrollController = useScrollController();
     final messages = useState<List<ChatMessage>>([]);
     final isTyping = useState(false);
+    final sessionId = useState<String?>(null);
+    final conversationService = useMemoized(() => ConversationService());
 
-    // Initialize with welcome message
+    // Initialize session and load messages from database
     useEffect(() {
-      messages.value = [_createWelcomeMessage()];
+      Future<void> initializeSession() async {
+        try {
+          // Create new session
+          final newSessionId = await conversationService.createSession(
+            title: 'New Conversation',
+          );
+          sessionId.value = newSessionId;
+
+          // Add welcome message
+          final welcomeMessage = _createWelcomeMessage();
+          await conversationService.saveMessage(welcomeMessage);
+
+          // Load all messages from database
+          final loadedMessages = await conversationService.getMessages(newSessionId);
+          messages.value = loadedMessages;
+        } catch (e) {
+          debugPrint('Failed to initialize session: $e');
+          // Fallback to in-memory
+          messages.value = [_createWelcomeMessage()];
+        }
+      }
+
+      initializeSession();
       return null;
     }, []);
 
@@ -61,11 +86,17 @@ class ChatScreen extends HookConsumerWidget {
 
       final userMessage = ChatMessage.user(
         content: text.trim(),
+        sessionId: sessionId.value,
       );
 
       messages.value = [...messages.value, userMessage];
       isTyping.value = true;
       messageController.clear();
+
+      // Save user message to database
+      if (sessionId.value != null) {
+        await conversationService.saveMessage(userMessage);
+      }
 
       scrollToBottom();
 
@@ -81,20 +112,34 @@ class ChatScreen extends HookConsumerWidget {
           content: response.content,
           verses: response.verses,
           metadata: response.metadata,
+          sessionId: sessionId.value,
         );
 
         isTyping.value = false;
         messages.value = [...messages.value, aiMessage];
+
+        // Save AI message to database
+        if (sessionId.value != null) {
+          await conversationService.saveMessage(aiMessage);
+        }
+
         scrollToBottom();
       } catch (e) {
         // Fallback to contextual response if AI service fails
         final response = _getContextualResponse(text.trim().toLowerCase());
         final aiMessage = ChatMessage.ai(
           content: response,
+          sessionId: sessionId.value,
         );
 
         isTyping.value = false;
         messages.value = [...messages.value, aiMessage];
+
+        // Save fallback AI message to database
+        if (sessionId.value != null) {
+          await conversationService.saveMessage(aiMessage);
+        }
+
         scrollToBottom();
       }
     }
