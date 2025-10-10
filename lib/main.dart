@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'theme/app_theme.dart';
 import 'core/navigation/navigation_service.dart';
@@ -23,6 +24,15 @@ import 'services/local_ai_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables from .env file
+  try {
+    await dotenv.load(fileName: ".env");
+    debugPrint('✅ Environment variables loaded successfully');
+  } catch (e) {
+    debugPrint('⚠️  Could not load .env file: $e');
+    debugPrint('Make sure .env file exists with GEMINI_API_KEY');
+  }
 
   // Initialize timezone data
   tz.initializeTimeZones();

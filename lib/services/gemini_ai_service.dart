@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/bible_verse.dart';
 import '../core/logging/app_logger.dart';
+import 'ai_service.dart';
 
 class TrainingExample {
   final String userInput;
@@ -27,11 +29,14 @@ class GeminiAIService {
   // Your 19,750 training examples loaded in memory
   List<TrainingExample> _trainingExamples = [];
 
-  // API key from environment variable (passed via --dart-define)
-  static const String _apiKey = String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: '',
-  );
+  // API key from .env file (loaded at runtime)
+  String get _apiKey {
+    final key = dotenv.env['GEMINI_API_KEY'];
+    if (key == null || key.isEmpty) {
+      throw Exception('GEMINI_API_KEY not found in .env file');
+    }
+    return key;
+  }
 
   bool get isReady => _isInitialized && _model != null && _trainingExamples.isNotEmpty;
 
@@ -151,7 +156,7 @@ class GeminiAIService {
   }
 
   /// Generate response using Gemini + your 19,750 training examples
-  Future<String> generateResponse({
+  Future<AIResponse> generateResponse({
     required String userInput,
     required String theme,
     required List<BibleVerse> verses,
@@ -184,7 +189,19 @@ class GeminiAIService {
       }
 
       _logger.info('✅ Generated intelligent response from Gemini', context: 'GeminiAIService');
-      return response.text!;
+      
+      return AIResponse(
+        content: response.text!,
+        verses: verses,
+        processingTime: Duration.zero, // Will be set by calling service
+        confidence: 0.9,
+        metadata: {
+          'model': 'gemini-2.0-flash',
+          'theme': theme,
+          'training_examples_used': relevantExamples.length,
+          'conversation_history_length': conversationHistory?.length ?? 0,
+        },
+      );
     } catch (e) {
       _logger.error('Gemini generation error: $e', context: 'GeminiAIService');
       rethrow; // NO FALLBACKS

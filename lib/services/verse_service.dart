@@ -18,8 +18,8 @@ class VerseService {
         SELECT v.*,
                snippet(verses_fts, 0, '<mark>', '</mark>', '...', 32) as snippet,
                rank
-        FROM bible_verses_fts
-        JOIN bible_verses v ON verses_fts.rowid = v.id
+        FROM verses_fts
+        JOIN verses v ON verses_fts.rowid = v.id
         WHERE verses_fts MATCH ?
         ORDER BY rank
         LIMIT ?
@@ -39,7 +39,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE text LIKE ? OR reference LIKE ? OR themes LIKE ?
       ORDER BY
         CASE
@@ -63,7 +63,7 @@ class VerseService {
 
     // Search verse text for theme-related keywords
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE themes LIKE ?
       ORDER BY RANDOM()
       LIMIT ?
@@ -78,7 +78,7 @@ class VerseService {
 
     // Search verse text for category-related keywords
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE category = ?
       ORDER BY RANDOM()
       LIMIT ?
@@ -91,7 +91,7 @@ class VerseService {
   Future<Map<String, dynamic>?> getDailyVerse({String? preferredTheme}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM bible_verses';
+    String query = 'SELECT * FROM verses';
     List<dynamic> args = [];
 
     if (preferredTheme != null && preferredTheme.isNotEmpty) {
@@ -134,7 +134,7 @@ class VerseService {
     final args = themes.expand((theme) => ['%$theme%', theme]).toList();
 
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE $themeClauses
       ORDER BY RANDOM()
       LIMIT ?
@@ -148,7 +148,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.query(
-      'bible_verses',
+      'verses',
       where: 'reference = ?',
       whereArgs: [reference],
       limit: 1,
@@ -180,7 +180,7 @@ class VerseService {
           ).join(' ')}
           ELSE 0
         END as relevance_score
-      FROM bible_verses
+      FROM verses
       WHERE $themeClauses
       ORDER BY relevance_score DESC, RANDOM()
       LIMIT ?
@@ -194,7 +194,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT DISTINCT themes FROM bible_verses WHERE themes IS NOT NULL
+      SELECT DISTINCT themes FROM verses WHERE themes IS NOT NULL
     ''');
 
     final Set<String> allThemes = {};
@@ -221,7 +221,7 @@ class VerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT DISTINCT category FROM bible_verses
+      SELECT DISTINCT category FROM verses
       WHERE category IS NOT NULL
       ORDER BY category
     ''');
@@ -233,10 +233,10 @@ class VerseService {
   Future<Map<String, dynamic>> getVerseStats() async {
     final database = await _db.database;
 
-    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM bible_verses');
+    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM verses');
     final categoryStats = await database.rawQuery('''
       SELECT category, COUNT(*) as count
-      FROM bible_verses
+      FROM verses
       WHERE category IS NOT NULL
       GROUP BY category
       ORDER BY count DESC
@@ -244,7 +244,7 @@ class VerseService {
 
     final translationStats = await database.rawQuery('''
       SELECT translation, COUNT(*) as count
-      FROM bible_verses
+      FROM verses
       GROUP BY translation
       ORDER BY count DESC
     ''');
@@ -288,7 +288,7 @@ class VerseService {
 
     final results = await database.rawQuery('''
       SELECT v.*, b.created_at as bookmarked_at
-      FROM bible_verses v
+      FROM verses v
       JOIN bookmarks b ON v.id = b.verse_id
       WHERE b.user_id = ?
       ORDER BY b.created_at DESC

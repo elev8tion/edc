@@ -87,13 +87,15 @@ class LocalAIService implements AIService {
         final verses = await _getRelevantVersesForInput(userInput, themes);
         _logger.debug('Found ${verses.length} relevant verses', context: 'LocalAIService');
 
-        // Generate AI response (Cloudflare or template fallback)
+        // Generate AI response (Gemini AI)
+        _logger.info('🚀 Starting AI response generation for: "$userInput"', context: 'LocalAIService');
         final response = await _generateAIResponse(
           userInput: userInput,
           themes: themes,
           verses: verses,
           conversationHistory: conversationHistory,
         );
+        _logger.info('✅ AI response generated successfully', context: 'LocalAIService');
 
         stopwatch.stop();
         _logger.info(
@@ -176,12 +178,15 @@ class LocalAIService implements AIService {
 
     _logger.info('🤖 Generating Gemini AI response for theme: $theme', context: 'LocalAIService');
 
-    return await _geminiService.generateResponse(
+    final geminiResponse = await _geminiService.generateResponse(
       userInput: userInput,
       theme: theme,
       verses: verses,
       conversationHistory: conversationStrings,
     );
+    
+    _logger.info('✅ Gemini response received: ${geminiResponse.content.substring(0, 100)}...', context: 'LocalAIService');
+    return geminiResponse.content;
   }
 
   /// Generate template-based response

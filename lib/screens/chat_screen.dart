@@ -109,10 +109,19 @@ class ChatScreen extends HookConsumerWidget {
       try {
         // Use actual AI service
         final aiService = ref.read(aiServiceProvider);
+        debugPrint('🔍 AI Service ready: ${aiService.isReady}');
+        
+        if (!aiService.isReady) {
+          debugPrint('⚠️ AI Service not ready, using fallback');
+          throw Exception('AI Service not ready');
+        }
+        
+        debugPrint('🚀 Calling AI service with: "${text.trim()}"');
         final response = await aiService.generateResponse(
           userInput: text.trim(),
           conversationHistory: messages.value,
         );
+        debugPrint('✅ AI service returned response: ${response.content.substring(0, 100)}...');
 
         final aiMessage = ChatMessage.ai(
           content: response.content,
@@ -132,6 +141,8 @@ class ChatScreen extends HookConsumerWidget {
         scrollToBottom();
       } catch (e) {
         // Fallback to contextual response if AI service fails
+        debugPrint('❌ AI Service error: $e');
+        debugPrint('❌ Stack trace: ${StackTrace.current}');
         final response = _getContextualResponse(text.trim().toLowerCase());
         final aiMessage = ChatMessage.ai(
           content: response,
