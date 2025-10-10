@@ -3,6 +3,18 @@ import 'package:sqflite/sqflite.dart';
 /// Migration to update chat_messages table to support new ChatMessage model
 class V5UpdateChatSchema {
   static Future<void> up(Database db) async {
+    // Ensure chat_sessions table exists (in case of database corruption or upgrade issues)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS chat_sessions (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        is_archived INTEGER DEFAULT 0,
+        message_count INTEGER DEFAULT 0
+      )
+    ''');
+
     // Drop old chat_messages table
     await db.execute('DROP TABLE IF EXISTS chat_messages');
 

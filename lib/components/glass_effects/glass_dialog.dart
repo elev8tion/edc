@@ -18,7 +18,7 @@ Future<T?> showGlassDialog<T>({
     barrierColor: barrierColor ?? Colors.black.withOpacity(0.5),
     transitionDuration: transitionDuration,
     pageBuilder: (context, animation, secondaryAnimation) {
-      return Container(); // Will be replaced by transitionBuilder
+      return child;
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(

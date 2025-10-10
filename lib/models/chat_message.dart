@@ -122,6 +122,7 @@ class ChatMessage {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'session_id': sessionId ?? '',  // Always include session_id (required by database schema)
       'content': content,
       'type': type.name,
       'timestamp': timestamp.millisecondsSinceEpoch,
@@ -129,7 +130,6 @@ class ChatMessage {
       'verse_references': verses.isNotEmpty ? jsonEncode(verses.map((v) => v.toJson()).toList()) : null,
       'metadata': metadata != null ? jsonEncode(metadata) : null,
       if (userId != null) 'user_id': userId,
-      if (sessionId != null) 'session_id': sessionId,
     };
   }
 

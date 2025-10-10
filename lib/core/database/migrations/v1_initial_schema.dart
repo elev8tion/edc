@@ -12,7 +12,7 @@ class V1InitialSchema {
         text TEXT NOT NULL,
         translation TEXT NOT NULL DEFAULT 'ESV',
         themes TEXT, -- JSON array of theme tags
-        created_at INTEGER DEFAULT (strftime('%s', 'now') * 1000),
+        created_at INTEGER,
         UNIQUE(book, chapter, verse_number, translation)
       )
     ''');
@@ -60,7 +60,7 @@ class V1InitialSchema {
         user_input TEXT NOT NULL,
         ai_response TEXT NOT NULL,
         verse_references TEXT, -- JSON array of verse IDs
-        timestamp INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
+        timestamp INTEGER NOT NULL,
         is_favorite INTEGER DEFAULT 0,
         shared INTEGER DEFAULT 0
       )
@@ -74,7 +74,7 @@ class V1InitialSchema {
         content TEXT NOT NULL,
         category TEXT, -- personal, family, work, health, etc.
         status TEXT DEFAULT 'active', -- active, answered, archived
-        date_created INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
+        date_created INTEGER NOT NULL,
         date_answered INTEGER,
         testimony TEXT, -- testimony of answered prayer
         is_private INTEGER DEFAULT 1,
@@ -88,7 +88,7 @@ class V1InitialSchema {
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL,
         type TEXT NOT NULL, -- bool, int, double, String
-        updated_at INTEGER DEFAULT (strftime('%s', 'now') * 1000)
+        updated_at INTEGER
       )
     ''');
 
@@ -110,8 +110,8 @@ class V1InitialSchema {
       CREATE TABLE chat_sessions (
         id TEXT PRIMARY KEY,
         title TEXT,
-        created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
-        updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
         is_archived INTEGER DEFAULT 0,
         message_count INTEGER DEFAULT 0
       )
@@ -124,7 +124,7 @@ class V1InitialSchema {
         verse_id INTEGER NOT NULL,
         note TEXT, -- personal note about the verse
         tags TEXT, -- personal tags JSON array
-        date_added INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
+        date_added INTEGER NOT NULL,
         FOREIGN KEY (verse_id) REFERENCES verses (id) ON DELETE CASCADE,
         UNIQUE(verse_id)
       )

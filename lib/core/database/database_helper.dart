@@ -14,7 +14,7 @@ import '../logging/app_logger.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 5;
+  static const int _databaseVersion = 9;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -107,6 +107,8 @@ class DatabaseHelper {
         await V5UpdateChatSchema.up(db);
       }
 
+      // Version 6: Ensures chat_sessions table exists (handled by v5 migration)
+
       _logger.info('Database schema created successfully', context: 'DatabaseHelper');
     } catch (e, stackTrace) {
       _logger.fatal(
@@ -139,6 +141,50 @@ class DatabaseHelper {
 
       if (oldVersion < 5 && newVersion >= 5) {
         await V5UpdateChatSchema.up(db);
+      }
+
+      if (oldVersion < 6 && newVersion >= 6) {
+        // Run V5 migration again to ensure chat_sessions table exists
+        await V5UpdateChatSchema.up(db);
+      }
+
+      if (oldVersion < 7 && newVersion >= 7) {
+        // Run V5 migration with fixed SQL (removed DEFAULT with complex expressions)
+        await V5UpdateChatSchema.up(db);
+      }
+
+      if (oldVersion < 8 && newVersion >= 8) {
+        // Version 8: Fixed all invalid DEFAULT expressions in V1InitialSchema
+        // CRITICAL FIX: Check if chat_sessions exists (DatabaseService vs DatabaseHelper conflict)
+        final chatSessionsCheck = await db.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='chat_sessions'"
+        );
+
+        if (chatSessionsCheck.isEmpty) {
+          _logger.warning(
+            'Chat tables missing (DatabaseService conflict), creating from v5 migration',
+            context: 'DatabaseHelper',
+          );
+          await V5UpdateChatSchema.up(db);
+        }
+      }
+
+      if (oldVersion < 9 && newVersion >= 9) {
+        // Version 9: Ensure chat tables exist (fixes broken v8 upgrades)
+        // Check if chat_sessions table exists
+        final chatSessionsCheck = await db.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='chat_sessions'"
+        );
+
+        if (chatSessionsCheck.isEmpty) {
+          _logger.warning(
+            'Chat tables missing at v9 upgrade, creating from v5 migration',
+            context: 'DatabaseHelper',
+          );
+          await V5UpdateChatSchema.up(db);
+        } else {
+          _logger.info('Chat tables already exist at v9 upgrade', context: 'DatabaseHelper');
+        }
       }
 
       _logger.info('Database upgrade completed successfully', context: 'DatabaseHelper');

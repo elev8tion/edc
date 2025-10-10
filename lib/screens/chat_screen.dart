@@ -7,6 +7,9 @@ import '../core/navigation/navigation_service.dart';
 import '../models/chat_message.dart';
 import '../providers/ai_provider.dart';
 import '../components/gradient_background.dart';
+import '../components/base_bottom_sheet.dart';
+import '../components/glass_effects/glass_dialog.dart';
+import '../components/glass_card.dart';
 import '../services/conversation_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
@@ -37,8 +40,11 @@ class ChatScreen extends HookConsumerWidget {
           );
           sessionId.value = newSessionId;
 
-          // Add welcome message
-          final welcomeMessage = _createWelcomeMessage();
+          // Add welcome message with sessionId
+          final welcomeMessage = ChatMessage.system(
+            content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+            sessionId: newSessionId,
+          );
           await conversationService.saveMessage(welcomeMessage);
 
           // Load all messages from database
@@ -151,7 +157,7 @@ class ChatScreen extends HookConsumerWidget {
           SafeArea(
             child: Column(
               children: [
-                _buildAppBar(context),
+                _buildAppBar(context, messages, sessionId, conversationService),
                 Expanded(
                   child: _buildMessagesList(scrollController, messages.value, isTyping.value),
                 ),
@@ -164,7 +170,12 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(
+    BuildContext context,
+    ValueNotifier<List<ChatMessage>> messages,
+    ValueNotifier<String?> sessionId,
+    ConversationService conversationService,
+  ) {
     return Container(
       padding: AppSpacing.screenPadding,
       child: Row(
@@ -210,7 +221,7 @@ class ChatScreen extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Template-based AI',
+                  'Gemini AI',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.secondaryText,
@@ -221,7 +232,27 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.history, color: Colors.white, size: 20),
+              onPressed: () => _showConversationHistory(context, messages, sessionId, conversationService),
+              tooltip: 'Conversation History',
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -229,16 +260,16 @@ class ChatScreen extends HookConsumerWidget {
                   AppTheme.goldColor.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: AppTheme.goldColor.withValues(alpha: 0.4),
                 width: 1,
               ),
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: AppColors.primaryText,
-              size: 20,
+            child: IconButton(
+              icon: const Icon(Icons.add, color: AppColors.primaryText, size: 20),
+              onPressed: () => _startNewConversation(context, messages, sessionId, conversationService),
+              tooltip: 'New Conversation',
             ),
           ),
         ],
@@ -562,6 +593,232 @@ class ChatScreen extends HookConsumerWidget {
       return 'God has a unique purpose for your life! Jeremiah 29:11 reminds us: "For I know the plans I have for you," declares the Lord, "plans to prosper you and not to harm you, to give you hope and a future."\n\nYour purpose is found in loving God and serving others. What gifts and passions has God given you that you could use to serve Him?';
     } else {
       return 'Thank you for sharing with me. God cares deeply about every aspect of your life, both big and small. As it says in 1 Peter 5:7: "Cast all your anxiety on him because he cares for you."\n\nRemember that you are loved, valued, and never alone. God is always listening and ready to help. Would you like to explore a specific Bible verse or topic related to your question?';
+    }
+  }
+
+  void _showConversationHistory(
+    BuildContext context,
+    ValueNotifier<List<ChatMessage>> messages,
+    ValueNotifier<String?> sessionId,
+    ConversationService conversationService,
+  ) async {
+    final sessions = await conversationService.getSessions();
+
+    if (!context.mounted) return;
+
+    showCustomBottomSheet(
+      context: context,
+      title: 'Conversation History',
+      height: MediaQuery.of(context).size.height * 0.75,
+      child: sessions.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.history,
+                    size: 64,
+                    color: Colors.white.withValues(alpha: 0.3),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'No conversation history yet',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.secondaryText,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              itemCount: sessions.length > 20 ? 20 : sessions.length,
+              itemBuilder: (context, index) {
+                final session = sessions[index];
+                final createdAt = DateTime.fromMillisecondsSinceEpoch(
+                  session['created_at'] as int,
+                );
+                final messageCount = session['message_count'] as int? ?? 0;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withValues(alpha: 0.15),
+                        Colors.white.withValues(alpha: 0.05),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(AppSpacing.md),
+                    leading: Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.goldColor.withValues(alpha: 0.3),
+                            AppTheme.goldColor.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.goldColor.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.chat_bubble_outline,
+                        color: AppColors.primaryText,
+                        size: 20,
+                      ),
+                    ),
+                    title: Text(
+                      session['title'] as String? ?? 'Conversation',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryText,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      '${_formatDate(createdAt)} • $messageCount messages',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.secondaryText,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: AppColors.secondaryText,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _loadConversation(
+                        session['id'] as String,
+                        messages,
+                        sessionId,
+                        conversationService,
+                      );
+                    },
+                  ),
+                ).animate().fadeIn(duration: AppAnimations.fast).slideX(begin: 0.2);
+              },
+            ),
+    );
+  }
+
+  void _startNewConversation(
+    BuildContext context,
+    ValueNotifier<List<ChatMessage>> messages,
+    ValueNotifier<String?> sessionId,
+    ConversationService conversationService,
+  ) async {
+    // Show confirmation dialog using your glass dialog component
+    showGlassDialog(
+      context: context,
+      child: GlassContainer(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Start New Conversation?',
+              style: TextStyle(
+                color: AppColors.primaryText,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Current conversation will be saved. Start fresh?',
+              style: TextStyle(
+                color: AppColors.secondaryText,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GlassDialogButton(
+                  text: 'Cancel',
+                  onTap: () => Navigator.pop(context),
+                ),
+                GlassDialogButton(
+                  text: 'New Chat',
+                  isPrimary: true,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    // Create new session
+                    final newSessionId = await conversationService.createSession(
+                      title: 'New Conversation',
+                    );
+                    sessionId.value = newSessionId;
+
+                    // Reset messages with welcome message (with sessionId)
+                    final welcomeMessage = ChatMessage.system(
+                      content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+                      sessionId: newSessionId,
+                    );
+                    await conversationService.saveMessage(welcomeMessage);
+                    messages.value = [welcomeMessage];
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _loadConversation(
+    String conversationSessionId,
+    ValueNotifier<List<ChatMessage>> messages,
+    ValueNotifier<String?> sessionId,
+    ConversationService conversationService,
+  ) async {
+    try {
+      // Load messages from database
+      final loadedMessages = await conversationService.getMessages(conversationSessionId);
+
+      // Update session ID
+      sessionId.value = conversationSessionId;
+
+      // Update messages list
+      messages.value = loadedMessages;
+
+      debugPrint('✅ Loaded conversation: $conversationSessionId with ${loadedMessages.length} messages');
+    } catch (e) {
+      debugPrint('❌ Failed to load conversation: $e');
+    }
+  }
+
+  String _formatDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else {
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     }
   }
 
