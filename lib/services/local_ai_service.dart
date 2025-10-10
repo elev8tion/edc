@@ -7,22 +7,24 @@ import 'verse_service.dart';
 import 'theme_classifier_service.dart';
 import 'ai_style_learning_service.dart';
 import 'template_guidance_service.dart';
+import 'gemini_ai_service.dart';
 import '../models/chat_message.dart';
 import '../models/bible_verse.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 
-/// Local AI service implementation using template-based responses
+/// Local AI service implementation using Google Gemini AI
 ///
 /// This service combines:
 /// - Theme detection (keyword-based classification)
 /// - Style learning (extracts patterns from 233 templates)
 /// - Verse integration (Bible database queries)
-/// - Template responses (empathetic, contextual guidance)
+/// - Gemini AI (intelligent responses using templates as few-shot examples)
 class LocalAIService implements AIService {
   final VerseService _verseService = VerseService();
   final ThemeClassifierService _themeClassifier = ThemeClassifierService.instance;
   final AIStyleLearningService _styleService = AIStyleLearningService.instance;
+  final GeminiAIService _geminiService = GeminiAIService.instance;
   final AppLogger _logger = AppLogger.instance;
 
   bool _isInitialized = false;
@@ -40,7 +42,11 @@ class LocalAIService implements AIService {
 
     return await ErrorHandler.handleAsync(
       () async {
-        _logger.info('Initializing AI Service (Template Mode)', context: 'LocalAIService');
+        _logger.info('Initializing AI Service (Gemini AI Mode)', context: 'LocalAIService');
+
+        // Initialize Gemini AI
+        await _geminiService.initialize();
+        _logger.info('✅ Gemini AI initialized (gemini-1.5-flash)', context: 'LocalAIService');
 
         // Initialize theme classifier (keyword-based)
         await _themeClassifier.initialize();
@@ -48,10 +54,10 @@ class LocalAIService implements AIService {
 
         // Initialize style learning service (extracts patterns from 233 templates)
         await _styleService.initialize();
-        _logger.info('✅ Style learning service initialized (233 templates analyzed)', context: 'LocalAIService');
+        _logger.info('✅ Style learning service initialized (233 templates)', context: 'LocalAIService');
 
         _isInitialized = true;
-        _logger.info('✅ AI Service ready (Mode: Template-based)', context: 'LocalAIService');
+        _logger.info('✅ AI Service ready (Mode: Gemini AI with template guidance)', context: 'LocalAIService');
       },
       context: 'LocalAIService.initialize',
     );
@@ -102,8 +108,8 @@ class LocalAIService implements AIService {
           confidence: 0.85 + (Random().nextDouble() * 0.1),
           metadata: {
             'themes': themes,
-            'model': 'template-based',
-            'processing_method': 'template_selection',
+            'model': 'gemini-1.5-flash',
+            'processing_method': 'ai_generation',
             'verse_count': verses.length,
           },
         );
@@ -154,15 +160,28 @@ class LocalAIService implements AIService {
     }
   }
 
-  /// Generate AI response using template-based system
+  /// Generate AI response using Gemini AI (NO FALLBACKS)
   Future<String> _generateAIResponse({
     required String userInput,
     required List<String> themes,
     required List<BibleVerse> verses,
     List<ChatMessage> conversationHistory = const [],
   }) async {
-    // Use template-based response generation
-    return await _generateTemplateResponse(userInput, themes, verses);
+    // Use Gemini AI for intelligent response - NO FALLBACKS
+    final theme = themes.isNotEmpty ? themes.first : 'general';
+    final conversationStrings = conversationHistory
+        .take(3)
+        .map((msg) => '${msg.isUser ? "USER" : "ASSISTANT"}: ${msg.content}')
+        .toList();
+
+    _logger.info('🤖 Generating Gemini AI response for theme: $theme', context: 'LocalAIService');
+
+    return await _geminiService.generateResponse(
+      userInput: userInput,
+      theme: theme,
+      verses: verses,
+      conversationHistory: conversationStrings,
+    );
   }
 
   /// Generate template-based response
