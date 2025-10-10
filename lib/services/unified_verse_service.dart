@@ -23,8 +23,8 @@ class UnifiedVerseService {
         SELECT v.*,
                snippet(verses_fts, 0, '<mark>', '</mark>', '...', 32) as snippet,
                rank
-        FROM verses_fts
-        JOIN verses v ON verses_fts.rowid = v.id
+        FROM bible_verses_fts
+        JOIN bible_verses v ON verses_fts.rowid = v.id
         WHERE verses_fts MATCH ?
         ORDER BY rank
         LIMIT ?
@@ -48,7 +48,7 @@ class UnifiedVerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM verses
+      SELECT * FROM bible_verses
       WHERE text LIKE ? OR book LIKE ? OR themes LIKE ?
       ORDER BY
         CASE
@@ -76,7 +76,7 @@ class UnifiedVerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM verses
+      SELECT * FROM bible_verses
       WHERE themes LIKE ?
       ORDER BY RANDOM()
       LIMIT ?
@@ -94,7 +94,7 @@ class UnifiedVerseService {
   Future<List<BibleVerse>> getAllVerses({int? limit, int? offset}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM verses ORDER BY book, chapter, verse_number';
+    String query = 'SELECT * FROM bible_verses ORDER BY book, chapter, verse_number';
     if (limit != null) {
       query += ' LIMIT $limit';
       if (offset != null) {
@@ -153,7 +153,7 @@ class UnifiedVerseService {
 
     final results = await database.rawQuery('''
       SELECT v.*, fv.date_added, fv.note, fv.tags
-      FROM verses v
+      FROM bible_verses v
       JOIN favorite_verses fv ON v.id = fv.verse_id
       ORDER BY fv.date_added DESC
     ''');
@@ -254,7 +254,7 @@ class UnifiedVerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT DISTINCT themes FROM verses WHERE themes IS NOT NULL
+      SELECT DISTINCT themes FROM bible_verses WHERE themes IS NOT NULL
     ''');
 
     final Set<String> allThemes = {};
@@ -305,7 +305,7 @@ class UnifiedVerseService {
     final args = themes.map((theme) => '%"$theme"%').toList();
 
     final results = await database.rawQuery('''
-      SELECT * FROM verses
+      SELECT * FROM bible_verses
       WHERE $themeClauses
       ORDER BY RANDOM()
       LIMIT ?
@@ -323,7 +323,7 @@ class UnifiedVerseService {
   Future<BibleVerse?> getDailyVerse({String? preferredTheme}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM verses';
+    String query = 'SELECT * FROM bible_verses';
     List<dynamic> args = [];
 
     if (preferredTheme != null && preferredTheme.isNotEmpty) {
@@ -350,11 +350,11 @@ class UnifiedVerseService {
   Future<Map<String, dynamic>> getVerseStats() async {
     final database = await _db.database;
 
-    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM verses');
+    final totalCount = await database.rawQuery('SELECT COUNT(*) as count FROM bible_verses');
     final favoriteCount = await database.rawQuery('SELECT COUNT(*) as count FROM favorite_verses');
 
     final themeStats = await database.rawQuery('''
-      SELECT themes FROM verses WHERE themes IS NOT NULL
+      SELECT themes FROM bible_verses WHERE themes IS NOT NULL
     ''');
 
     // Count theme occurrences

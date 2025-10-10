@@ -18,8 +18,8 @@ class VerseService {
         SELECT v.*,
                snippet(verses_fts, 0, '<mark>', '</mark>', '...', 32) as snippet,
                rank
-        FROM verses_fts
-        JOIN verses v ON verses_fts.rowid = v.id
+        FROM bible_verses_fts
+        JOIN bible_verses v ON verses_fts.rowid = v.id
         WHERE verses_fts MATCH ?
         ORDER BY rank
         LIMIT ?
@@ -134,7 +134,7 @@ class VerseService {
     final args = themes.expand((theme) => ['%$theme%', theme]).toList();
 
     final results = await database.rawQuery('''
-      SELECT * FROM verses
+      SELECT * FROM bible_verses
       WHERE $themeClauses
       ORDER BY RANDOM()
       LIMIT ?
