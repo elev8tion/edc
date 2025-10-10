@@ -27,7 +27,11 @@ class GeminiAIService {
   // Your 19,750 training examples loaded in memory
   List<TrainingExample> _trainingExamples = [];
 
-  static const String _apiKey = 'AIzaSyDqdTkiZC1vTX2RkWNN1puv8sW0sVCedRQ';
+  // API key from environment variable (passed via --dart-define)
+  static const String _apiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 
   bool get isReady => _isInitialized && _model != null && _trainingExamples.isNotEmpty;
 
