@@ -38,7 +38,7 @@ class GeminiAIService {
     return key;
   }
 
-  bool get isReady => _isInitialized && _model != null && _trainingExamples.isNotEmpty;
+  bool get isReady => _isInitialized && _model != null;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -76,7 +76,7 @@ class GeminiAIService {
     }
   }
 
-  /// Load your 19,750 LSTM training examples
+  /// Load training examples (optional - Gemini works without them)
   Future<void> _loadTrainingData() async {
     try {
       final String data = await rootBundle.loadString('assets/lstm_training_data.txt');
@@ -113,8 +113,8 @@ class GeminiAIService {
 
       _logger.info('Loaded ${_trainingExamples.length} training examples', context: 'GeminiAIService');
     } catch (e) {
-      _logger.error('Failed to load training data: $e', context: 'GeminiAIService');
-      throw Exception('Cannot initialize without training data');
+      _logger.info('Training data not available - Gemini will work without examples', context: 'GeminiAIService');
+      // Not critical - Gemini works fine without training examples
     }
   }
 

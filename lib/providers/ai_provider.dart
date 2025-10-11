@@ -1,16 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/ai_service.dart';
-import '../services/local_ai_service.dart';
+import '../services/gemini_ai_service.dart';
+import '../services/unified_verse_service.dart';
+import '../models/bible_verse.dart';
 
-/// Provider for AI service instance
+/// Provider for AI service instance (Gemini AI)
 final aiServiceProvider = Provider<AIService>((ref) {
-  return AIServiceFactory.instance;
+  return GeminiAIServiceAdapter();
 });
 
 /// Provider for AI service initialization status
 final aiServiceInitializedProvider = FutureProvider<bool>((ref) async {
   try {
-    await AIServiceFactory.initialize();
+    await GeminiAIService.instance.initialize();
     return true;
   } catch (e) {
     return false;
@@ -105,4 +107,98 @@ class _Fallback extends AIServiceState {
 class _Error extends AIServiceState {
   final String message;
   const _Error(this.message);
+}
+
+/// Adapter that wraps GeminiAIService to implement AIService interface
+class GeminiAIServiceAdapter implements AIService {
+  final GeminiAIService _gemini = GeminiAIService.instance;
+  final UnifiedVerseService _verseService = UnifiedVerseService();
+
+  @override
+  Future<void> initialize() async {
+    await _gemini.initialize();
+  }
+
+  @override
+  bool get isReady => _gemini.isReady;
+
+  @override
+  Future<AIResponse> generateResponse({
+    required String userInput,
+    List conversationHistory = const [],
+    Map<String, dynamic>? context,
+  }) async {
+    final stopwatch = Stopwatch()..start();
+
+    // Detect theme from user input
+    final themes = BiblicalPrompts.detectThemes(userInput);
+    final theme = themes.isNotEmpty ? themes.first : 'comfort';
+
+    // Get relevant verses for the theme
+    final verses = await getRelevantVerses(theme, limit: 3);
+
+    // Convert conversation history to strings (if needed)
+    final historyStrings = conversationHistory.map((msg) {
+      if (msg is String) return msg;
+      return msg.toString();
+    }).toList();
+
+    // Call Gemini AI
+    final response = await _gemini.generateResponse(
+      userInput: userInput,
+      theme: theme,
+      verses: verses,
+      conversationHistory: historyStrings,
+    );
+
+    stopwatch.stop();
+
+    // Return with proper processing time
+    return AIResponse(
+      content: response.content,
+      verses: response.verses,
+      metadata: response.metadata,
+      processingTime: stopwatch.elapsed,
+      confidence: response.confidence,
+    );
+  }
+
+  @override
+  Stream<String> generateResponseStream({
+    required String userInput,
+    List conversationHistory = const [],
+    Map<String, dynamic>? context,
+  }) async* {
+    // Gemini doesn't support streaming yet, so just return the full response
+    final response = await generateResponse(
+      userInput: userInput,
+      conversationHistory: conversationHistory,
+      context: context,
+    );
+    yield response.content;
+  }
+
+  @override
+  Future<List<BibleVerse>> getRelevantVerses(String topic, {int limit = 3}) async {
+    try {
+      return await _verseService.searchVerses(topic, limit: limit);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  Future<void> dispose() async {
+    _gemini.dispose();
+  }
+}
+
+/// Performance monitoring for AI service
+class AIPerformanceMonitor {
+  static final Map<String, dynamic> stats = {
+    'total_requests': 0,
+    'total_response_time_ms': 0,
+    'average_response_time_ms': 0,
+    'last_request_time': null,
+  };
 }

@@ -9,6 +9,7 @@ import 'core/navigation/app_routes.dart';
 import 'core/providers/app_providers.dart';
 import 'core/error/error_handler.dart';
 import 'core/services/database_service.dart';
+import 'services/gemini_ai_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/auth_screen.dart';
@@ -20,7 +21,6 @@ import 'screens/verse_library_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/devotional_screen.dart';
 import 'screens/reading_plan_screen.dart';
-import 'services/local_ai_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,9 +46,9 @@ void main() async {
     ),
   );
 
-  // Initialize AI services in background (template-based mode)
-  AIServiceFactory.initialize().catchError((e) {
-    debugPrint('AI Service initialization failed: $e');
+  // Initialize Gemini AI service in background
+  GeminiAIService.instance.initialize().catchError((e) {
+    debugPrint('Gemini AI Service initialization failed: $e');
   });
 
   // Initialize notification service

@@ -50,19 +50,7 @@ edc/
 quantum_mcp_ids/
 docs/
 
-# Cloudflare credentials - NEVER COMMIT!
+# Environment variables - NEVER COMMIT!
 .env
 .env.*
 !.env.example
-
-# AI Model Files (770 MB, downloaded separately)
-# Llama 3.2 1B GGUF model
-*.gguf
-assets/models/*.gguf
-assets/models/Llama-3.2-1B-Instruct-Q4_K_M.gguf
-
-# Python Training Environment
-training/venv/
-training/*.log
-training/__pycache__/
-*.pyc

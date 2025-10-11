@@ -77,8 +77,6 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/bible.db
-    - assets/models/
-    - assets/lstm_training_data.txt
     - .env
 
   shaders:

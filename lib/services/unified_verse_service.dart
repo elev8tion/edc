@@ -21,11 +21,11 @@ class UnifiedVerseService {
       // Use FTS5 for full-text search with ranking
       final results = await database.rawQuery('''
         SELECT v.*,
-               snippet(bible_verses_fts, 0, '<mark>', '</mark>', '...', 32) as snippet,
+               snippet(verses_fts, 0, '<mark>', '</mark>', '...', 32) as snippet,
                rank
-        FROM bible_verses_fts
-        JOIN bible_verses v ON bible_verses_fts.rowid = v.id
-        WHERE bible_verses_fts MATCH ?
+        FROM verses_fts
+        JOIN verses v ON verses_fts.rowid = v.id
+        WHERE verses_fts MATCH ?
         ORDER BY rank
         LIMIT ?
       ''', [query, limit]);
@@ -48,7 +48,7 @@ class UnifiedVerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE text LIKE ? OR book LIKE ? OR language LIKE ?
       ORDER BY
         CASE
@@ -76,7 +76,7 @@ class UnifiedVerseService {
     final database = await _db.database;
 
     final results = await database.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE text LIKE ?
       ORDER BY RANDOM()
       LIMIT ?
@@ -94,7 +94,7 @@ class UnifiedVerseService {
   Future<List<BibleVerse>> getAllVerses({int? limit, int? offset}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM bible_verses ORDER BY book, chapter, verse';
+    String query = 'SELECT * FROM verses ORDER BY book, chapter, verse';
     if (limit != null) {
       query += ' LIMIT $limit';
       if (offset != null) {

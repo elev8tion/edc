@@ -9,7 +9,7 @@ class VerseService {
 
   Future<List<BibleVerse>> getAllVerses() async {
     final db = await _database.database;
-    final maps = await db.query('bible_verses');
+    final maps = await db.query('verses');
     return maps.map((map) => _verseFromMap(map)).toList();
   }
 
@@ -44,9 +44,9 @@ class VerseService {
       final versionArgs = version != null ? [version] : [];
 
       final maps = await db.rawQuery('''
-        SELECT bv.* FROM bible_verses bv
-        INNER JOIN bible_verses_fts fts ON bv.id = fts.rowid
-        WHERE bible_verses_fts MATCH ? $versionFilter
+        SELECT bv.* FROM verses bv
+        INNER JOIN verses_fts fts ON bv.id = fts.rowid
+        WHERE verses_fts MATCH ? $versionFilter
         ORDER BY rank
         LIMIT ?
       ''', [query, ...versionArgs, limit]);
@@ -62,7 +62,7 @@ class VerseService {
       // Fallback to LIKE search if FTS5 fails
       print('FTS5 search failed, using fallback: $e');
       final maps = await db.query(
-        'bible_verses',
+        'verses',
         where: 'text LIKE ? ${version != null ? 'AND version = ?' : ''}',
         whereArgs: version != null ? ['%$query%', version] : ['%$query%'],
         limit: limit,
@@ -105,7 +105,7 @@ class VerseService {
   Future<void> toggleFavorite(String verseId) async {
     final db = await _database.database;
     final verse = await db.query(
-      'bible_verses',
+      'verses',
       where: 'id = ?',
       whereArgs: [verseId],
     );
@@ -113,7 +113,7 @@ class VerseService {
     if (verse.isNotEmpty) {
       final isFavorite = verse.first['is_favorite'] == 1;
       await db.update(
-        'bible_verses',
+        'verses',
         {'is_favorite': isFavorite ? 0 : 1},
         where: 'id = ?',
         whereArgs: [verseId],
@@ -180,7 +180,7 @@ class VerseService {
   Future<BibleVerse?> _getTodaySelectedVerse(int todayTimestamp) async {
     final db = await _database.database;
     final maps = await db.rawQuery('''
-      SELECT bv.* FROM bible_verses bv
+      SELECT bv.* FROM verses bv
       INNER JOIN daily_verse_history dvh ON bv.id = dvh.verse_id
       WHERE dvh.shown_date = ?
       LIMIT 1
@@ -271,7 +271,7 @@ class VerseService {
     }
 
     final maps = await db.rawQuery('''
-      SELECT * FROM bible_verses
+      SELECT * FROM verses
       WHERE version = ? $excludeClause
       ORDER BY RANDOM()
       LIMIT 1
@@ -313,7 +313,7 @@ class VerseService {
   }) async {
     final db = await _database.database;
     final maps = await db.query(
-      'bible_verses',
+      'verses',
       where: 'version = ? AND book = ? AND chapter = ? AND verse = ?',
       whereArgs: [version, book, chapter, verse],
       limit: 1,
@@ -336,7 +336,7 @@ class VerseService {
   Future<List<BibleVerse>> searchBibleText(String query, {String version = 'WEB'}) async {
     final db = await _database.database;
     final maps = await db.query(
-      'bible_verses',
+      'verses',
       where: 'version = ? AND text LIKE ?',
       whereArgs: [version, '%$query%'],
       limit: 50,
@@ -361,7 +361,7 @@ class VerseService {
   }) async {
     final db = await _database.database;
     final maps = await db.query(
-      'bible_verses',
+      'verses',
       where: 'version = ? AND book = ? AND chapter = ?',
       whereArgs: [version, book, chapter],
       orderBy: 'verse ASC',
@@ -384,7 +384,7 @@ class VerseService {
     final db = await _database.database;
     final placeholders = ids.map((_) => '?').join(',');
     final maps = await db.query(
-      'bible_verses',
+      'verses',
       where: 'id IN ($placeholders)',
       whereArgs: ids,
     );
@@ -394,7 +394,7 @@ class VerseService {
   Future<int> getFavoriteCount() async {
     final db = await _database.database;
     final result = await db.rawQuery(
-      'SELECT COUNT(*) as count FROM bible_verses WHERE is_favorite = 1',
+      'SELECT COUNT(*) as count FROM verses WHERE is_favorite = 1',
     );
     return result.first['count'] as int;
   }
@@ -493,7 +493,7 @@ class VerseService {
         vb.note,
         vb.tags,
         vb.created_at as bookmark_created_at
-      FROM bible_verses bv
+      FROM verses bv
       INNER JOIN verse_bookmarks vb ON bv.id = vb.verse_id
       ORDER BY vb.created_at DESC
     ''');
@@ -521,7 +521,7 @@ class VerseService {
         vb.note,
         vb.tags,
         vb.created_at as bookmark_created_at
-      FROM bible_verses bv
+      FROM verses bv
       INNER JOIN verse_bookmarks vb ON bv.id = vb.verse_id
       WHERE vb.tags LIKE ?
       ORDER BY vb.created_at DESC
@@ -645,7 +645,7 @@ class VerseService {
         dvh.shown_date,
         dvh.theme,
         dvh.created_at
-      FROM bible_verses bv
+      FROM verses bv
       INNER JOIN daily_verse_history dvh ON bv.id = dvh.verse_id
       ORDER BY dvh.shown_date DESC
       LIMIT ?
