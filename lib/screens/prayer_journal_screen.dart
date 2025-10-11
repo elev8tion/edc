@@ -679,7 +679,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                             const SizedBox(width: AppSpacing.md),
                             Expanded(
                               child: GlassButton(
-                                text: 'Add Prayer',
+                                text: 'Add',
                                 height: 48,
                                 onPressed: () {
                                   if (title.isNotEmpty && description.isNotEmpty && selectedCategoryId != null) {

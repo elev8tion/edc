@@ -71,14 +71,18 @@ class V1InitialSchema {
       CREATE TABLE prayer_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        category TEXT, -- personal, family, work, health, etc.
-        status TEXT DEFAULT 'active', -- active, answered, archived
+        description TEXT NOT NULL,
+        category TEXT,
+        status TEXT DEFAULT 'active',
         date_created INTEGER NOT NULL,
         date_answered INTEGER,
-        testimony TEXT, -- testimony of answered prayer
+        testimony TEXT,
         is_private INTEGER DEFAULT 1,
-        reminder_frequency TEXT -- daily, weekly, none
+        reminder_frequency TEXT,
+        is_answered INTEGER DEFAULT 0,
+        answer_description TEXT,
+        grace TEXT,
+        need_help TEXT
       )
     ''');
 

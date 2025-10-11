@@ -8,13 +8,14 @@ import 'migrations/v1_5_add_verse_columns.dart';
 import 'migrations/v2_add_indexes.dart';
 // // v2_populate_verses.dart migration removed (verses loaded from bible.db asset) // REMOVED - file deleted
 import 'migrations/v5_update_chat_schema.dart';
+import 'migrations/v10_rename_prayer_content.dart';
 import '../error/error_handler.dart';
 import '../error/app_error.dart';
 import '../logging/app_logger.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 9;
+  static const int _databaseVersion = 10;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -185,6 +186,12 @@ class DatabaseHelper {
         } else {
           _logger.info('Chat tables already exist at v9 upgrade', context: 'DatabaseHelper');
         }
+      }
+
+      if (oldVersion < 10 && newVersion >= 10) {
+        // Version 10: Rename prayer_requests.content to description
+        _logger.info('Migrating prayer_requests table to use description column', context: 'DatabaseHelper');
+        await V10RenamePrayerContent.migrate(db);
       }
 
       _logger.info('Database upgrade completed successfully', context: 'DatabaseHelper');

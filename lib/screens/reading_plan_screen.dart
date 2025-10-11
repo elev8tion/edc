@@ -129,6 +129,8 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
         padding: const EdgeInsets.all(4),
         child: TabBar(
           controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.center,
           indicator: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),

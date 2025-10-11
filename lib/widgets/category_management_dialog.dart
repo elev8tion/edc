@@ -359,7 +359,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: GlassButton(
-                    text: 'Create Category',
+                    text: 'Create',
                     height: 48,
                     onPressed: () async {
                       if (categoryName.isNotEmpty) {
@@ -537,7 +537,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: GlassButton(
-                          text: 'Save Changes',
+                          text: 'Save',
                           height: 48,
                           onPressed: () async {
                             if (categoryName.isNotEmpty) {
