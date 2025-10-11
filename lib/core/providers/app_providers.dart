@@ -142,13 +142,13 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   await notifications.initialize();
 
   // Load Bible on first launch
-  final isKJVLoaded = await bibleLoader.isBibleLoaded('WEB');
-  if (!isKJVLoaded) {
-    print('📖 Loading Bible for first time...');
+  final isWEBLoaded = await bibleLoader.isBibleLoaded('WEB');
+  if (!isWEBLoaded) {
+    print('📖 Loading WEB Bible for first time...');
     await bibleLoader.loadAllBibles();
-    print('✅ Bible loaded successfully!');
+    print('✅ WEB Bible loaded successfully!');
   } else {
-    print('✅ Bible already loaded');
+    print('✅ WEB Bible already loaded');
   }
 
   // Load devotional content on first launch

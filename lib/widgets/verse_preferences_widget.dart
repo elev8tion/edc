@@ -35,10 +35,6 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
 
   final List<String> _availableVersions = [
     'WEB',
-    'ESV',
-    'NIV',
-    'NKJV',
-    'NLT',
   ];
 
   @override
