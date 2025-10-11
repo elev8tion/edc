@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,6 +51,7 @@ class VerseLibraryScreen extends ConsumerStatefulWidget {
 class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -59,6 +61,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -160,7 +163,13 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
         child: TextField(
           controller: _searchController,
           onChanged: (value) {
-            ref.read(searchQueryProvider.notifier).state = value;
+            // Cancel previous timer
+            _debounceTimer?.cancel();
+
+            // Start new timer - only update search after 300ms of no typing
+            _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+              ref.read(searchQueryProvider.notifier).state = value;
+            });
           },
           style: TextStyle(
             color: AppColors.primaryText,

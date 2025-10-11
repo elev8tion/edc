@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -182,7 +183,14 @@ class GeminiAIService {
 
       _logger.info('Sending request to Gemini...', context: 'GeminiAIService');
 
-      final response = await _model!.generateContent([Content.text(prompt)]);
+      final response = await _model!.generateContent([Content.text(prompt)])
+        .timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            _logger.error('Gemini request timed out after 30 seconds', context: 'GeminiAIService');
+            throw TimeoutException('AI request timed out after 30 seconds');
+          },
+        );
 
       if (response.text == null || response.text!.isEmpty) {
         throw Exception('Gemini returned empty response');

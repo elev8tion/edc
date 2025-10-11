@@ -2,6 +2,7 @@
 /// Implements 3-strike system for crisis detections
 /// After 3 crisis events, account is locked for 30 days then deleted
 
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'crisis_detection_service.dart';
 
@@ -273,6 +274,3 @@ class AccountLockoutService {
     return true;
   }
 }
-
-// Import for JSON encoding
-import 'dart:convert';

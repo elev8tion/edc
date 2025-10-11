@@ -31,6 +31,9 @@ class ChatScreen extends HookConsumerWidget {
     final sessionId = useState<String?>(null);
     final conversationService = useMemoized(() => ConversationService());
 
+    // Watch AI service initialization state
+    final aiServiceState = ref.watch(aiServiceStateProvider);
+
     // Initialize session and load messages from database
     useEffect(() {
       Future<void> initializeSession() async {
@@ -193,6 +196,8 @@ class ChatScreen extends HookConsumerWidget {
             child: Column(
               children: [
                 _buildAppBar(context, messages, sessionId, conversationService),
+                // AI Service initialization status banner
+                _buildAIStatusBanner(aiServiceState),
                 Expanded(
                   child: _buildMessagesList(scrollController, messages.value, isTyping.value),
                 ),
@@ -201,6 +206,102 @@ class ChatScreen extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAIStatusBanner(AIServiceState state) {
+    return state.when(
+      initializing: () => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.orange.withValues(alpha: 0.3),
+              Colors.orange.withValues(alpha: 0.2),
+            ],
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.9)),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Initializing AI service...',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+      ready: () => const SizedBox.shrink(),
+      fallback: (reason) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.amber.withValues(alpha: 0.3),
+              Colors.amber.withValues(alpha: 0.2),
+            ],
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber, color: Colors.white.withValues(alpha: 0.9), size: 16),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Using fallback responses: $reason',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      error: (message) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.red.withValues(alpha: 0.3),
+              Colors.red.withValues(alpha: 0.2),
+            ],
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.white.withValues(alpha: 0.9), size: 16),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'AI service error: $message',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
