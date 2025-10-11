@@ -271,4 +271,57 @@ Relevant Bible verses to weave into your response:''');
     _trainingExamples.clear();
     _logger.info('Gemini AI Service disposed', context: 'GeminiAIService');
   }
+
+  /// Generate a concise conversation title from first exchange
+  Future<String> generateConversationTitle({
+    required String userMessage,
+    required String aiResponse,
+  }) async {
+    if (!isReady) {
+      throw Exception('Gemini AI Service not initialized');
+    }
+
+    try {
+      _logger.info('Generating conversation title...', context: 'GeminiAIService');
+
+      final prompt = '''Generate a concise, descriptive title (3-5 words max) for this conversation.
+Title should capture the main topic or question.
+
+User: $userMessage
+AI: ${aiResponse.substring(0, aiResponse.length > 200 ? 200 : aiResponse.length)}...
+
+Return ONLY the title, nothing else. No quotes, no punctuation at the end.
+Examples: "Dealing with Anxiety", "Finding Gods Purpose", "Overcoming Doubt"
+
+Title:''';
+
+      final response = await _model!.generateContent([
+        Content.text(prompt)
+      ]);
+
+      if (response.text == null || response.text!.isEmpty) {
+        throw Exception('Gemini returned empty title');
+      }
+
+      // Clean up the response
+      String title = response.text!.trim();
+      
+      // Remove quotes if present
+      title = title.replaceAll('"', '').replaceAll("'", '');
+      
+      // Limit length
+      if (title.length > 50) {
+        title = title.substring(0, 47) + '...';
+      }
+
+      _logger.info('✅ Generated title: "$title"', context: 'GeminiAIService');
+      return title;
+    } catch (e) {
+      _logger.error('Failed to generate title: $e', context: 'GeminiAIService');
+      // Fallback to simple extraction from user message
+      final words = userMessage.split(' ').take(5).join(' ');
+      return words.length > 50 ? '${words.substring(0, 47)}...' : words;
+    }
+  }
+
 }

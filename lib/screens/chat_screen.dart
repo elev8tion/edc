@@ -11,6 +11,7 @@ import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
 import '../services/conversation_service.dart';
+import '../services/gemini_ai_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -136,6 +137,29 @@ class ChatScreen extends HookConsumerWidget {
         // Save AI message to database
         if (sessionId.value != null) {
           await conversationService.saveMessage(aiMessage);
+          
+          // Auto-generate conversation title after first exchange
+          // Count only user and AI messages (excluding system welcome message)
+          final conversationMessages = messages.value.where((m) => 
+            m.type == MessageType.user || m.type == MessageType.ai
+          ).toList();
+          
+          debugPrint('🔍 Conversation has ${conversationMessages.length} messages (excluding system)');
+          
+          if (conversationMessages.length == 2) {
+            try {
+              debugPrint('🎯 Triggering title generation...');
+              final userMsg = conversationMessages.first.content;
+              final title = await GeminiAIService.instance.generateConversationTitle(
+                userMessage: userMsg,
+                aiResponse: response.content,
+              );
+              await conversationService.updateSessionTitle(sessionId.value!, title);
+              debugPrint('✅ Auto-generated title: "$title"');
+            } catch (e) {
+              debugPrint('⚠️ Failed to generate title: $e');
+            }
+          }
         }
 
         scrollToBottom();
