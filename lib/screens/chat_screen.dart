@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 import '../models/chat_message.dart';
@@ -10,6 +11,7 @@ import '../components/gradient_background.dart';
 import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
+import '../components/modern_message_bubble.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 
@@ -38,26 +40,61 @@ class ChatScreen extends HookConsumerWidget {
     useEffect(() {
       Future<void> initializeSession() async {
         try {
-          // Create new session
-          final newSessionId = await conversationService.createSession(
-            title: 'New Conversation',
-          );
-          sessionId.value = newSessionId;
+          debugPrint('🔄 Initializing chat session...');
 
-          // Add welcome message with sessionId
-          final welcomeMessage = ChatMessage.system(
-            content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
-            sessionId: newSessionId,
-          );
-          await conversationService.saveMessage(welcomeMessage);
+          // Try to resume the last active session first
+          String? existingSessionId = await conversationService.getLastActiveSession();
 
-          // Load all messages from database
-          final loadedMessages = await conversationService.getMessages(newSessionId);
-          messages.value = loadedMessages;
-        } catch (e) {
-          debugPrint('Failed to initialize session: $e');
+          if (existingSessionId != null) {
+            // Resume existing session
+            debugPrint('✅ Resuming session: $existingSessionId');
+            sessionId.value = existingSessionId;
+
+            // Load messages from database
+            final loadedMessages = await conversationService.getMessages(existingSessionId);
+            debugPrint('📨 Loaded ${loadedMessages.length} messages from session $existingSessionId');
+
+            if (loadedMessages.isEmpty) {
+              // Session exists but no messages - add welcome message
+              debugPrint('⚠️ Session exists but has no messages, adding welcome message');
+              final welcomeMessage = ChatMessage.system(
+                content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+                sessionId: existingSessionId,
+              );
+              await conversationService.saveMessage(welcomeMessage);
+              messages.value = [welcomeMessage];
+              debugPrint('✅ Welcome message added to existing session');
+            } else {
+              // Load existing messages
+              messages.value = loadedMessages;
+              debugPrint('✅ Loaded existing conversation with ${loadedMessages.length} messages');
+            }
+          } else {
+            // No existing session - create new one
+            debugPrint('🆕 No active session found, creating new session');
+            final newSessionId = await conversationService.createSession(
+              title: 'New Conversation',
+            );
+            sessionId.value = newSessionId;
+            debugPrint('✅ Created new session: $newSessionId');
+
+            // Add welcome message with sessionId
+            final welcomeMessage = ChatMessage.system(
+              content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+              sessionId: newSessionId,
+            );
+            await conversationService.saveMessage(welcomeMessage);
+
+            // Set messages
+            messages.value = [welcomeMessage];
+            debugPrint('✅ New session initialized with welcome message');
+          }
+        } catch (e, stackTrace) {
+          debugPrint('❌ Failed to initialize session: $e');
+          debugPrint('❌ Stack trace: $stackTrace');
           // Fallback to in-memory
           messages.value = [_createWelcomeMessage()];
+          debugPrint('⚠️ Using in-memory fallback mode');
         }
       }
 
@@ -106,6 +143,9 @@ class ChatScreen extends HookConsumerWidget {
       // Save user message to database
       if (sessionId.value != null) {
         await conversationService.saveMessage(userMessage);
+        debugPrint('💾 Saved user message to session ${sessionId.value}');
+      } else {
+        debugPrint('⚠️ Cannot save message - no active session');
       }
 
       scrollToBottom();
@@ -140,15 +180,16 @@ class ChatScreen extends HookConsumerWidget {
         // Save AI message to database
         if (sessionId.value != null) {
           await conversationService.saveMessage(aiMessage);
-          
+          debugPrint('💾 Saved AI message to session ${sessionId.value}');
+
           // Auto-generate conversation title after first exchange
           // Count only user and AI messages (excluding system welcome message)
-          final conversationMessages = messages.value.where((m) => 
+          final conversationMessages = messages.value.where((m) =>
             m.type == MessageType.user || m.type == MessageType.ai
           ).toList();
-          
+
           debugPrint('🔍 Conversation has ${conversationMessages.length} messages (excluding system)');
-          
+
           if (conversationMessages.length == 2) {
             try {
               debugPrint('🎯 Triggering title generation...');
@@ -163,6 +204,8 @@ class ChatScreen extends HookConsumerWidget {
               debugPrint('⚠️ Failed to generate title: $e');
             }
           }
+        } else {
+          debugPrint('⚠️ Cannot save AI message - no active session');
         }
 
         scrollToBottom();
@@ -182,10 +225,350 @@ class ChatScreen extends HookConsumerWidget {
         // Save fallback AI message to database
         if (sessionId.value != null) {
           await conversationService.saveMessage(aiMessage);
+          debugPrint('💾 Saved fallback AI message to session ${sessionId.value}');
+        } else {
+          debugPrint('⚠️ Cannot save fallback message - no active session');
         }
 
         scrollToBottom();
       }
+    }
+
+    // Regenerate AI response for a specific message
+    Future<void> regenerateResponse(int aiMessageIndex) async {
+      if (aiMessageIndex < 0 || aiMessageIndex >= messages.value.length) {
+        debugPrint('❌ Invalid message index: $aiMessageIndex');
+        return;
+      }
+
+      final aiMessage = messages.value[aiMessageIndex];
+      if (!aiMessage.isAI) {
+        debugPrint('❌ Cannot regenerate non-AI message');
+        return;
+      }
+
+      // Find the previous user message
+      String? userInput;
+      for (int i = aiMessageIndex - 1; i >= 0; i--) {
+        if (messages.value[i].isUser) {
+          userInput = messages.value[i].content;
+          break;
+        }
+      }
+
+      if (userInput == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not find previous user message'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      debugPrint('🔄 Regenerating response for user input: "$userInput"');
+      isTyping.value = true;
+
+      try {
+        // Use actual AI service
+        final aiService = ref.read(aiServiceProvider);
+
+        if (!aiService.isReady) {
+          throw Exception('AI Service not ready');
+        }
+
+        final response = await aiService.generateResponse(
+          userInput: userInput,
+          conversationHistory: messages.value.take(aiMessageIndex).toList(),
+        );
+        debugPrint('✅ AI service returned new response');
+
+        final newAiMessage = ChatMessage.ai(
+          content: response.content,
+          verses: response.verses,
+          metadata: response.metadata,
+          sessionId: sessionId.value,
+        );
+
+        // Replace the message in the list
+        final updatedMessages = List<ChatMessage>.from(messages.value);
+        updatedMessages[aiMessageIndex] = newAiMessage;
+        messages.value = updatedMessages;
+
+        // Update in database
+        if (sessionId.value != null) {
+          // Delete old message and save new one
+          await conversationService.deleteMessage(aiMessage.id);
+          await conversationService.saveMessage(newAiMessage);
+          debugPrint('💾 Updated message in database');
+        }
+
+        isTyping.value = false;
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('✨ Response regenerated successfully'),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to regenerate response: $e');
+        isTyping.value = false;
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to regenerate response: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+
+    // Export conversation to text
+    Future<void> exportConversation() async {
+      if (sessionId.value == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No conversation to export')),
+          );
+        }
+        return;
+      }
+
+      try {
+        debugPrint('📤 Exporting conversation: ${sessionId.value}');
+        final exportText = await conversationService.exportConversation(sessionId.value!);
+
+        if (exportText.isEmpty) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No messages to export')),
+            );
+          }
+          return;
+        }
+
+        if (context.mounted) {
+          showGlassDialog(
+            context: context,
+            child: GlassContainer(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.download, color: AppTheme.primaryColor),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Export Conversation',
+                          style: TextStyle(
+                            color: AppColors.primaryText,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 400),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: SelectableText(
+                        exportText,
+                        style: const TextStyle(
+                          color: AppColors.primaryText,
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GlassDialogButton(
+                        text: 'Close',
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      GlassDialogButton(
+                        text: 'Share',
+                        isPrimary: true,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Share.share(
+                            exportText,
+                            subject: 'Biblical AI Conversation Export',
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to export conversation: $e');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to export: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+
+    // Share conversation directly
+    Future<void> shareConversation() async {
+      if (sessionId.value == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No conversation to share')),
+          );
+        }
+        return;
+      }
+
+      try {
+        debugPrint('📤 Sharing conversation: ${sessionId.value}');
+        final exportText = await conversationService.exportConversation(sessionId.value!);
+
+        if (exportText.isEmpty) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No messages to share')),
+            );
+          }
+          return;
+        }
+
+        await Share.share(
+          exportText,
+          subject: 'Biblical AI Conversation',
+        );
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('📤 Conversation shared'),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to share conversation: $e');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to share: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+
+    // Show chat options menu
+    void showChatOptions() {
+      showCustomBottomSheet(
+        context: context,
+        title: 'Chat Options',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryColor.withValues(alpha: 0.3),
+                      AppTheme.primaryColor.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.download, color: AppTheme.primaryColor),
+              ),
+              title: const Text(
+                'Export Conversation',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              subtitle: Text(
+                'View and copy conversation text',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.secondaryText,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                exportConversation();
+              },
+            ),
+            const SizedBox(height: 8),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.accentColor.withValues(alpha: 0.3),
+                      AppTheme.accentColor.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.share, color: AppTheme.accentColor),
+              ),
+              title: const Text(
+                'Share Conversation',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              subtitle: Text(
+                'Share via system share sheet',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.secondaryText,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                shareConversation();
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      );
     }
 
     return Scaffold(
@@ -195,11 +578,11 @@ class ChatScreen extends HookConsumerWidget {
           SafeArea(
             child: Column(
               children: [
-                _buildAppBar(context, messages, sessionId, conversationService),
+                _buildAppBar(context, messages, sessionId, conversationService, showChatOptions),
                 // AI Service initialization status banner
                 _buildAIStatusBanner(aiServiceState),
                 Expanded(
-                  child: _buildMessagesList(scrollController, messages.value, isTyping.value),
+                  child: _buildMessagesList(scrollController, messages.value, isTyping.value, regenerateResponse),
                 ),
                 _buildMessageInput(messageController, sendMessage),
               ],
@@ -311,6 +694,7 @@ class ChatScreen extends HookConsumerWidget {
     ValueNotifier<List<ChatMessage>> messages,
     ValueNotifier<String?> sessionId,
     ConversationService conversationService,
+    VoidCallback onShowOptions,
   ) {
     return Container(
       padding: AppSpacing.screenPadding,
@@ -382,6 +766,27 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             child: IconButton(
+              icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
+              onPressed: onShowOptions,
+              tooltip: 'Chat Options',
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
               icon: const Icon(Icons.history, color: Colors.white, size: 20),
               onPressed: () => _showConversationHistory(context, messages, sessionId, conversationService),
               tooltip: 'Conversation History',
@@ -413,7 +818,12 @@ class ChatScreen extends HookConsumerWidget {
     ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: -0.3);
   }
 
-  Widget _buildMessagesList(ScrollController scrollController, List<ChatMessage> messages, bool isTyping) {
+  Widget _buildMessagesList(
+    ScrollController scrollController,
+    List<ChatMessage> messages,
+    bool isTyping,
+    Future<void> Function(int) onRegenerateResponse,
+  ) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -422,139 +832,23 @@ class ChatScreen extends HookConsumerWidget {
         if (index == messages.length && isTyping) {
           return _buildTypingIndicator();
         }
-        return _buildMessageBubble(messages[index], index);
+
+        final message = messages[index];
+
+        // Use ModernMessageBubble for better UI and regenerate functionality
+        return ModernMessageBubble(
+          message: message,
+          showTimestamp: index == messages.length - 1 ||
+              (index < messages.length - 1 &&
+               messages[index + 1].type != message.type),
+          onRegenerateResponse: message.isAI
+              ? () => onRegenerateResponse(index)
+              : null,
+        ).animate()
+          .fadeIn(duration: AppAnimations.normal, delay: (index * 50).ms)
+          .slideX(begin: message.isUser ? 0.3 : -0.3);
       },
     );
-  }
-
-  Widget _buildMessageBubble(ChatMessage message, int index) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        mainAxisAlignment:
-            message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!message.isUser) ...[
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryColor.withValues(alpha: 0.3),
-                    AppTheme.primaryColor.withValues(alpha: 0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.auto_awesome,
-                color: AppColors.primaryText,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-          ],
-          Flexible(
-            child: Container(
-              padding: AppSpacing.cardPadding,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: message.isUser
-                      ? [
-                          AppTheme.primaryColor.withValues(alpha: 0.8),
-                          AppTheme.primaryColor.withValues(alpha: 0.6),
-                        ]
-                      : [
-                          Colors.white.withValues(alpha: 0.2),
-                          Colors.white.withValues(alpha: 0.1),
-                        ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(message.isUser ? 20 : 8),
-                  topRight: Radius.circular(message.isUser ? 8 : 20),
-                  bottomLeft: const Radius.circular(20),
-                  bottomRight: const Radius.circular(20),
-                ),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.content,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.primaryText,
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          offset: const Offset(0, 1),
-                          blurRadius: 2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    _formatTime(message.timestamp),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (message.isUser) ...[
-            const SizedBox(width: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.goldColor.withValues(alpha: 0.3),
-                    AppTheme.goldColor.withValues(alpha: 0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.goldColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.person,
-                color: AppColors.primaryText,
-                size: 20,
-              ),
-            ),
-          ],
-        ],
-      ),
-    ).animate().fadeIn(duration: AppAnimations.normal, delay: (index * 100).ms).slideX(
-          begin: message.isUser ? 0.3 : -0.3,
-        );
   }
 
   Widget _buildTypingIndicator() {
@@ -738,7 +1032,9 @@ class ChatScreen extends HookConsumerWidget {
     ValueNotifier<String?> sessionId,
     ConversationService conversationService,
   ) async {
+    debugPrint('📜 Opening conversation history...');
     final sessions = await conversationService.getSessions();
+    debugPrint('📜 Found ${sessions.length} sessions in history');
 
     if (!context.mounted) return;
 
@@ -777,79 +1073,170 @@ class ChatScreen extends HookConsumerWidget {
                   session['created_at'] as int,
                 );
                 final messageCount = session['message_count'] as int? ?? 0;
+                final sessionIdStr = session['id'] as String;
 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white.withValues(alpha: 0.15),
-                        Colors.white.withValues(alpha: 0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(AppSpacing.md),
-                    leading: Container(
-                      padding: const EdgeInsets.all(AppSpacing.sm),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.goldColor.withValues(alpha: 0.3),
-                            AppTheme.goldColor.withValues(alpha: 0.1),
+                return Dismissible(
+                  key: Key(sessionIdStr),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (direction) async {
+                    // Show confirmation dialog
+                    return await showGlassDialog<bool>(
+                      context: context,
+                      child: GlassContainer(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.delete_outline,
+                              color: Colors.red.shade400,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Delete Conversation?',
+                              style: TextStyle(
+                                color: AppColors.primaryText,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'This will permanently delete this conversation and all its messages.',
+                              style: TextStyle(
+                                color: AppColors.secondaryText,
+                                fontWeight: FontWeight.w500,
+                                height: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                GlassDialogButton(
+                                  text: 'Cancel',
+                                  onTap: () => Navigator.pop(context, false),
+                                ),
+                                GlassDialogButton(
+                                  text: 'Delete',
+                                  isPrimary: true,
+                                  onTap: () => Navigator.pop(context, true),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppTheme.goldColor.withValues(alpha: 0.4),
-                          width: 1,
+                      ),
+                    ) ?? false;
+                  },
+                  onDismissed: (direction) async {
+                    // Delete the session
+                    await conversationService.deleteSession(sessionIdStr);
+                    debugPrint('🗑️ Deleted session: $sessionIdStr');
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Conversation deleted'),
+                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                        ),
+                      );
+                    }
+                  },
+                  background: Container(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.red.withValues(alpha: 0.8),
+                          Colors.red.withValues(alpha: 0.6),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.15),
+                          Colors.white.withValues(alpha: 0.05),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(AppSpacing.md),
+                      leading: Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.goldColor.withValues(alpha: 0.3),
+                              AppTheme.goldColor.withValues(alpha: 0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppTheme.goldColor.withValues(alpha: 0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.chat_bubble_outline,
+                          color: AppColors.primaryText,
+                          size: 20,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.chat_bubble_outline,
-                        color: AppColors.primaryText,
-                        size: 20,
+                      title: Text(
+                        session['title'] as String? ?? 'Conversation',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryText,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    title: Text(
-                      session['title'] as String? ?? 'Conversation',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primaryText,
+                      subtitle: Text(
+                        '${_formatDate(createdAt)} • $messageCount messages',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.secondaryText,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      '${_formatDate(createdAt)} • $messageCount messages',
-                      style: TextStyle(
-                        fontSize: 12,
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
                         color: AppColors.secondaryText,
-                        fontWeight: FontWeight.w500,
                       ),
+                      onTap: () {
+                        debugPrint('👆 User selected session: $sessionIdStr');
+                        Navigator.pop(context);
+                        _loadConversation(
+                          sessionIdStr,
+                          messages,
+                          sessionId,
+                          conversationService,
+                        );
+                      },
                     ),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: AppColors.secondaryText,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _loadConversation(
-                        session['id'] as String,
-                        messages,
-                        sessionId,
-                        conversationService,
-                      );
-                    },
-                  ),
-                ).animate().fadeIn(duration: AppAnimations.fast).slideX(begin: 0.2);
+                  ).animate().fadeIn(duration: AppAnimations.fast).slideX(begin: 0.2),
+                );
               },
             ),
     );
@@ -861,7 +1248,47 @@ class ChatScreen extends HookConsumerWidget {
     ValueNotifier<String?> sessionId,
     ConversationService conversationService,
   ) async {
-    // Show confirmation dialog using your glass dialog component
+    debugPrint('🆕 New conversation button clicked');
+
+    // Get current message count (excluding system welcome message)
+    final conversationMessages = messages.value.where((m) =>
+      m.type == MessageType.user || m.type == MessageType.ai
+    ).toList();
+
+    debugPrint('🔍 Current conversation has ${conversationMessages.length} messages (excluding system)');
+
+    // Only show confirmation if there's actual conversation content
+    if (conversationMessages.isEmpty) {
+      // No real messages yet - just create new session directly
+      debugPrint('✨ No messages yet, creating new session directly');
+      final newSessionId = await conversationService.createSession(
+        title: 'New Conversation',
+      );
+      sessionId.value = newSessionId;
+
+      final welcomeMessage = ChatMessage.system(
+        content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+        sessionId: newSessionId,
+      );
+      await conversationService.saveMessage(welcomeMessage);
+      messages.value = [welcomeMessage];
+
+      debugPrint('✅ New session created: $newSessionId');
+
+      // Show success feedback
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('✨ New conversation started'),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
+
+    // Show confirmation dialog if there's content
     showGlassDialog(
       context: context,
       child: GlassContainer(
@@ -878,10 +1305,11 @@ class ChatScreen extends HookConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Current conversation will be saved. Start fresh?',
+              'Your current conversation will be saved to history.\n\nStart a fresh conversation?',
               style: TextStyle(
                 color: AppColors.secondaryText,
                 fontWeight: FontWeight.w500,
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
@@ -897,8 +1325,17 @@ class ChatScreen extends HookConsumerWidget {
                   text: 'New Chat',
                   isPrimary: true,
                   onTap: () async {
+                    debugPrint('✅ User confirmed new conversation');
                     Navigator.pop(context);
+
+                    // Ensure current session is finalized
+                    if (sessionId.value != null) {
+                      debugPrint('💾 Finalizing current session: ${sessionId.value}');
+                      // Session is already auto-updated via _updateSessionLastMessage
+                    }
+
                     // Create new session
+                    debugPrint('🆕 Creating new session...');
                     final newSessionId = await conversationService.createSession(
                       title: 'New Conversation',
                     );
@@ -911,6 +1348,19 @@ class ChatScreen extends HookConsumerWidget {
                     );
                     await conversationService.saveMessage(welcomeMessage);
                     messages.value = [welcomeMessage];
+
+                    // Show success feedback
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('✨ New conversation started! Previous chat saved to history.'),
+                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+
+                    debugPrint('✅ Started new conversation: $newSessionId');
                   },
                 ),
               ],
@@ -928,8 +1378,11 @@ class ChatScreen extends HookConsumerWidget {
     ConversationService conversationService,
   ) async {
     try {
+      debugPrint('📂 Loading conversation: $conversationSessionId');
+
       // Load messages from database
       final loadedMessages = await conversationService.getMessages(conversationSessionId);
+      debugPrint('📨 Retrieved ${loadedMessages.length} messages from database');
 
       // Update session ID
       sessionId.value = conversationSessionId;
@@ -938,8 +1391,9 @@ class ChatScreen extends HookConsumerWidget {
       messages.value = loadedMessages;
 
       debugPrint('✅ Loaded conversation: $conversationSessionId with ${loadedMessages.length} messages');
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('❌ Failed to load conversation: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
     }
   }
 
@@ -958,9 +1412,4 @@ class ChatScreen extends HookConsumerWidget {
     }
   }
 
-  String _formatTime(DateTime dateTime) {
-    final hour = dateTime.hour.toString().padLeft(2, '0');
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
 }

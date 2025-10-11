@@ -7,6 +7,55 @@ import '../models/chat_message.dart';
 class ConversationService {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
+  /// Verify and repair chat_sessions schema if needed
+  Future<void> _verifyChatSessionsSchema() async {
+    try {
+      final db = await _dbHelper.database;
+
+      // Check if columns exist by trying a query
+      await db.rawQuery('''
+        SELECT last_message_at, last_message_preview, updated_at
+        FROM chat_sessions
+        LIMIT 1
+      ''');
+
+      debugPrint('✅ Chat sessions schema verified');
+    } catch (e) {
+      debugPrint('⚠️ Chat sessions schema incomplete, repairing...');
+
+      try {
+        final db = await _dbHelper.database;
+
+        // Try to add missing columns
+        try {
+          await db.execute('ALTER TABLE chat_sessions ADD COLUMN last_message_at INTEGER');
+          debugPrint('✅ Added last_message_at column');
+        } catch (_) {}
+
+        try {
+          await db.execute('ALTER TABLE chat_sessions ADD COLUMN last_message_preview TEXT');
+          debugPrint('✅ Added last_message_preview column');
+        } catch (_) {}
+
+        try {
+          await db.execute('ALTER TABLE chat_sessions ADD COLUMN updated_at INTEGER');
+          debugPrint('✅ Added updated_at column');
+        } catch (_) {}
+
+        // Update any sessions with null updated_at
+        await db.rawUpdate('''
+          UPDATE chat_sessions
+          SET updated_at = created_at
+          WHERE updated_at IS NULL
+        ''');
+
+        debugPrint('✅ Chat sessions schema repaired successfully');
+      } catch (repairError) {
+        debugPrint('❌ Failed to repair schema: $repairError');
+      }
+    }
+  }
+
   /// Save a message to the database
   Future<void> saveMessage(ChatMessage message) async {
     try {
@@ -106,22 +155,29 @@ class ConversationService {
   /// Create a new chat session
   Future<String> createSession({String? title}) async {
     try {
+      // Verify schema first
+      await _verifyChatSessionsSchema();
+
       final db = await _dbHelper.database;
       final sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+      final now = DateTime.now().millisecondsSinceEpoch;
 
       await db.insert('chat_sessions', {
         'id': sessionId,
         'title': title ?? 'New Conversation',
-        'created_at': DateTime.now().millisecondsSinceEpoch,
-        'updated_at': DateTime.now().millisecondsSinceEpoch,
+        'created_at': now,
+        'updated_at': now,
         'is_archived': 0,
         'message_count': 0,
+        'last_message_at': now,
+        'last_message_preview': null,
       });
 
-      debugPrint('✅ Session created: $sessionId');
+      debugPrint('✅ Session created: $sessionId with all required fields');
       return sessionId;
     } catch (e) {
       debugPrint('❌ Failed to create session: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
       rethrow;
     }
   }
@@ -129,6 +185,9 @@ class ConversationService {
   /// Get all chat sessions
   Future<List<Map<String, dynamic>>> getSessions({bool includeArchived = false}) async {
     try {
+      // Verify schema first
+      await _verifyChatSessionsSchema();
+
       final db = await _dbHelper.database;
 
       final List<Map<String, dynamic>> maps = await db.query(
@@ -138,10 +197,62 @@ class ConversationService {
         orderBy: 'updated_at DESC',
       );
 
+      debugPrint('✅ Retrieved ${maps.length} chat sessions');
       return maps;
     } catch (e) {
       debugPrint('❌ Failed to get sessions: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
       return [];
+    }
+  }
+
+  /// Get the most recent active session (for resuming)
+  Future<String?> getLastActiveSession() async {
+    try {
+      // Verify schema first
+      await _verifyChatSessionsSchema();
+
+      final db = await _dbHelper.database;
+
+      final List<Map<String, dynamic>> maps = await db.query(
+        'chat_sessions',
+        where: 'is_archived = ?',
+        whereArgs: [0],
+        orderBy: 'updated_at DESC',
+        limit: 1,
+      );
+
+      if (maps.isEmpty) {
+        debugPrint('ℹ️ No active sessions found');
+        return null;
+      }
+
+      final sessionId = maps.first['id'] as String;
+      debugPrint('✅ Found last active session: $sessionId');
+      return sessionId;
+    } catch (e) {
+      debugPrint('❌ Failed to get last active session: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
+      return null;
+    }
+  }
+
+  /// Check if a session exists
+  Future<bool> sessionExists(String sessionId) async {
+    try {
+      final db = await _dbHelper.database;
+
+      final result = await db.query(
+        'chat_sessions',
+        where: 'id = ?',
+        whereArgs: [sessionId],
+        limit: 1,
+      );
+
+      return result.isNotEmpty;
+    } catch (e) {
+      debugPrint('❌ Failed to check session existence: $e');
+      return false;
     }
   }
 
@@ -250,25 +361,38 @@ class ConversationService {
 
   /// Update session's last message info
   Future<void> _updateSessionLastMessage(ChatMessage message) async {
-    if (message.sessionId == null) return;
+    if (message.sessionId == null) {
+      debugPrint('⚠️ Cannot update session - message has no sessionId');
+      return;
+    }
 
     try {
       final db = await _dbHelper.database;
+      final messageCount = await getMessageCount(message.sessionId!);
 
-      await db.update(
+      final updateData = {
+        'updated_at': message.timestamp.millisecondsSinceEpoch,
+        'last_message_at': message.timestamp.millisecondsSinceEpoch,
+        'last_message_preview': message.preview,
+        'message_count': messageCount,
+      };
+
+      final rowsAffected = await db.update(
         'chat_sessions',
-        {
-          'updated_at': message.timestamp.millisecondsSinceEpoch,
-          'last_message_at': message.timestamp.millisecondsSinceEpoch,
-          'last_message_preview': message.preview,
-          'message_count': await getMessageCount(message.sessionId!),
-        },
+        updateData,
         where: 'id = ?',
         whereArgs: [message.sessionId],
       );
+
+      if (rowsAffected > 0) {
+        debugPrint('✅ Updated session ${message.sessionId}: $messageCount messages, preview: "${message.preview}"');
+      } else {
+        debugPrint('⚠️ Session ${message.sessionId} not found for update');
+      }
     } catch (e) {
       debugPrint('⚠️ Failed to update session last message: $e');
-      // Don't rethrow - this is not critical
+      debugPrint('⚠️ Stack trace: ${StackTrace.current}');
+      // Don't rethrow - this is not critical, but log the full error
     }
   }
 
