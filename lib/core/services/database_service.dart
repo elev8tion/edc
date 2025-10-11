@@ -6,11 +6,12 @@ import '../models/bible_verse.dart';
 import '../models/devotional.dart';
 import '../models/reading_plan.dart';
 import '../database/migrations/v6_add_prayer_categories.dart';
+import '../database/migrations/v8_add_missing_tables.dart';
 
 class DatabaseService {
   static Database? _database;
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 7;
+  static const int _databaseVersion = 8;
 
   /// Optional test database path (for in-memory testing)
   static String? _testDatabasePath;
@@ -223,6 +224,11 @@ class DatabaseService {
         );
       }
       print('✅ Added themes, category, and reference columns to bible_verses table');
+    }
+
+    if (oldVersion < 8) {
+      // Add missing tables for Prayer Categories, Devotionals, Reading Plans
+      await V8AddMissingTables.up(db);
     }
   }
 
