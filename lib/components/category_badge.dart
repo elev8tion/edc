@@ -6,6 +6,7 @@ class CategoryBadge extends StatelessWidget {
   final String text;
   final Color? badgeColor;
   final Color? textColor;
+  final IconData? icon;
   final double? size;
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
@@ -16,6 +17,7 @@ class CategoryBadge extends StatelessWidget {
     required this.text,
     this.badgeColor,
     this.textColor,
+    this.icon,
     this.size,
     this.fontSize = 14,
     this.padding,
@@ -57,26 +59,49 @@ class CategoryBadge extends StatelessWidget {
     // For pill-style badges (no size specified)
     if (size == null) {
       return Container(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withValues(alpha: 0.2)
-              : Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              color.withValues(alpha: 0.4),
+              color.withValues(alpha: 0.2),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: color,
             width: 2,
           ),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: textColor ?? Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: fontSize,
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.3),
+              blurRadius: 8,
+              spreadRadius: 0,
             ),
-          ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 16,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              text,
+              style: TextStyle(
+                color: textColor ?? Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: fontSize,
+              ),
+            ),
+          ],
         ),
       );
     }

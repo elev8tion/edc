@@ -231,27 +231,98 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               const SizedBox(height: 8),
               SizedBox(
                 height: 36,
-                child: ListView.builder(
+                child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-                    return Padding(
+                  children: [
+                    // "All" filter chip
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          ref.read(selectedCategoryFilterProvider.notifier).state = null;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: selectedCategory == null
+                                ? LinearGradient(
+                                    colors: [
+                                      AppTheme.primaryColor.withValues(alpha: 0.4),
+                                      AppTheme.primaryColor.withValues(alpha: 0.2),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                : LinearGradient(
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.15),
+                                      Colors.white.withValues(alpha: 0.05),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: selectedCategory == null
+                                  ? AppTheme.primaryColor
+                                  : Colors.white.withValues(alpha: 0.2),
+                              width: selectedCategory == null ? 2 : 1,
+                            ),
+                            boxShadow: selectedCategory == null
+                                ? [
+                                    BoxShadow(
+                                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      spreadRadius: 0,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.grid_view,
+                                size: 16,
+                                color: selectedCategory == null
+                                    ? Colors.white
+                                    : Colors.white.withValues(alpha: 0.7),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'All',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: selectedCategory == null
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: selectedCategory == null
+                                      ? Colors.white
+                                      : Colors.white.withValues(alpha: 0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Category chips
+                    ...categories.map((category) => Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: CategoryFilterChip(
                         category: category,
-                        isSelected: selectedCategory == category.name,
+                        isSelected: selectedCategory == category.id,
                         onTap: () {
-                          if (selectedCategory == category.name) {
+                          if (selectedCategory == category.id) {
                             ref.read(selectedCategoryFilterProvider.notifier).state = null;
                           } else {
-                            ref.read(selectedCategoryFilterProvider.notifier).state = category.name;
+                            ref.read(selectedCategoryFilterProvider.notifier).state = category.id;
                           }
                         },
                       ),
-                    );
-                  },
+                    )).toList(),
+                  ],
                 ),
               ),
             ],
@@ -395,6 +466,8 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     );
                     return CategoryBadge(
                       text: category.name,
+                      badgeColor: category.color,
+                      icon: category.icon,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
                     );
