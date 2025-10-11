@@ -60,7 +60,7 @@ class CategoryFilterChip extends StatelessWidget {
             Icon(
               category.icon,
               size: 16,
-              color: isSelected ? category.color : Colors.white.withValues(alpha: 0.7),
+              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.7),
             ),
             const SizedBox(width: 6),
             Text(

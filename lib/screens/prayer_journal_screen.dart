@@ -195,41 +195,45 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
         if (categories.isEmpty) return const SizedBox.shrink();
 
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+          margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Filter by Category',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.secondaryText,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (selectedCategory != null)
-                    TextButton(
-                      onPressed: () {
-                        ref.read(selectedCategoryFilterProvider.notifier).state = null;
-                      },
-                      child: Text(
-                        'Clear Filter',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                          color: AppTheme.primaryColor,
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Row(
+                  children: [
+                    Text(
+                      'Filter by Category',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryText,
                       ),
                     ),
-                ],
+                    const Spacer(),
+                    if (selectedCategory != null)
+                      TextButton(
+                        onPressed: () {
+                          ref.read(selectedCategoryFilterProvider.notifier).state = null;
+                        },
+                        child: Text(
+                          'Clear Filter',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
               SizedBox(
                 height: 36,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final category = categories[index];
