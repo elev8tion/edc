@@ -103,7 +103,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -216,7 +216,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               CategoryBadge(
                 text: devotional.readingTime,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                fontSize: 12,
+                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
               ),
             ],
           ),
@@ -337,10 +337,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.check_circle,
                         color: Colors.green,
-                        size: 20,
+                        size: ResponsiveUtils.iconSize(context, 20),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       Column(
@@ -379,7 +379,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                     child: Icon(
                       Icons.close,
                       color: Colors.green.withValues(alpha: 0.6),
-                      size: 20,
+                      size: ResponsiveUtils.iconSize(context, 20),
                     ),
                   ),
                 ],
@@ -405,10 +405,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.arrow_back_ios,
                           color: AppColors.primaryText,
-                          size: 16,
+                          size: ResponsiveUtils.iconSize(context, 16),
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         const Text(
@@ -446,10 +446,10 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward_ios,
                           color: AppColors.primaryText,
-                          size: 16,
+                          size: ResponsiveUtils.iconSize(context, 16),
                         ),
                       ],
                     ),

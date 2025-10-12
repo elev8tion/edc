@@ -11,6 +11,8 @@ import '../components/blur_popup_menu.dart';
 import '../components/category_filter_chip.dart';
 import '../components/glass_fab.dart';
 import '../widgets/category_management_dialog.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import '../utils/responsive_utils.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/models/prayer_request.dart';
@@ -97,7 +99,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -141,7 +143,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
+              icon: Icon(Icons.settings, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -231,7 +233,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ),
               const SizedBox(height: 8),
               SizedBox(
-                height: 36,
+                height: ResponsiveUtils.scaleSize(context, 36, minScale: 0.9, maxScale: 1.2),
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -285,7 +287,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                             children: [
                               Icon(
                                 Icons.grid_view,
-                                size: 16,
+                                size: ResponsiveUtils.iconSize(context, 16),
                                 color: selectedCategory == null
                                     ? Colors.white
                                     : Colors.white.withValues(alpha: 0.7),
@@ -294,7 +296,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                               Text(
                                 'All',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                                   fontWeight: selectedCategory == null
                                       ? FontWeight.w700
                                       : FontWeight.w500,
@@ -332,7 +334,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
       },
       loading: () => Container(
         margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
-        height: 36,
+        height: ResponsiveUtils.scaleSize(context, 36, minScale: 0.9, maxScale: 1.2),
         child: ListView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -384,7 +386,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+            Icon(Icons.error_outline, size: ResponsiveUtils.iconSize(context, 48), color: Colors.red.shade300),
             const SizedBox(height: 16),
             Text(
               'Unable to load prayers',
@@ -436,7 +438,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+            Icon(Icons.error_outline, size: ResponsiveUtils.iconSize(context, 48), color: Colors.red.shade300),
             const SizedBox(height: 16),
             Text(
               'Unable to load answered prayers',
@@ -753,7 +755,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                         const SizedBox(height: AppSpacing.sm),
                         if (categories.isNotEmpty)
                           SizedBox(
-                            height: 40,
+                            height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.9, maxScale: 1.2),
                             child: BlurDropdown(
                               value: categories.firstWhere((c) => c.id == selectedCategoryId, orElse: () => categories.first).name,
                               items: categories.map((category) => category.name).toList(),

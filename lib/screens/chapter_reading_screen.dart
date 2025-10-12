@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/glass_button.dart';
@@ -7,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
 import '../services/bible_chapter_service.dart';
 import '../models/bible_verse.dart';
+import '../utils/responsive_utils.dart';
 
 /// Chapter Reading Screen - displays Bible chapters with verse-by-verse reading
 class ChapterReadingScreen extends ConsumerStatefulWidget {
@@ -185,7 +187,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -196,8 +198,8 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               children: [
                 Text(
                   '${widget.book} $currentChapter',
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
@@ -210,7 +212,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                         ? 'Chapter ${_currentChapterIndex + 1} of $totalChapters'
                         : '1 chapter',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                         color: Colors.white.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w500,
                       ),
@@ -219,14 +221,14 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                       const SizedBox(width: 8),
                       Icon(
                         Icons.check_circle,
-                        size: 16,
+                        size: ResponsiveUtils.iconSize(context, 16),
                         color: Colors.green.shade300,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Completed',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                           color: Colors.green.shade300,
                           fontWeight: FontWeight.w600,
                         ),
@@ -325,14 +327,14 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               children: [
                 Icon(
                   Icons.info_outline,
-                  size: 48,
+                  size: ResponsiveUtils.iconSize(context, 48),
                   color: AppTheme.primaryColor,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No verses found for ${widget.book} $chapterNum',
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     color: Colors.white,
                   ),
                   textAlign: TextAlign.center,
@@ -355,8 +357,8 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               // Chapter title
               Text(
                 '${widget.book} $chapterNum',
-                style: const TextStyle(
-                  fontSize: 28,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 28, minSize: 24, maxSize: 32),
                   fontWeight: FontWeight.w800,
                   color: Colors.black,
                   letterSpacing: -0.5,
@@ -400,8 +402,8 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                         child: Center(
                           child: Text(
                             '${verse.verseNumber}',
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                               fontWeight: FontWeight.w700,
                               color: AppColors.primaryText,
                             ),
@@ -414,8 +416,8 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                       Expanded(
                         child: Text(
                           verse.text,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                             height: 1.6,
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -489,7 +491,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               children: [
                 Icon(
                   Icons.error_outline,
-                  size: 64,
+                  size: ResponsiveUtils.iconSize(context, 64),
                   color: Colors.red.shade300,
                 ),
                 const SizedBox(height: 16),
@@ -505,7 +507,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                 Text(
                   error,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: Colors.white.withValues(alpha: 0.8),
                   ),
                   textAlign: TextAlign.center,
@@ -548,7 +550,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               children: [
                 Icon(
                   Icons.book_outlined,
-                  size: 64,
+                  size: ResponsiveUtils.iconSize(context, 64),
                   color: AppTheme.primaryColor,
                 ),
                 const SizedBox(height: 16),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
 import 'chat_screen.dart';
 import '../components/frosted_glass_card.dart';
@@ -118,8 +119,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(width: AppSpacing.md),
             Container(
-              width: 40,
-              height: 40,
+              width: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
+              height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -131,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Icon(
                 Icons.person,
                 color: AppColors.primaryText,
-                size: 20,
+                size: ResponsiveUtils.iconSize(context, 20),
               ),
             ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal).scale(begin: const Offset(0.8, 0.8)),
           ],
@@ -147,9 +148,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final prayersCountAsync = ref.watch(activePrayersCountProvider);
     final versesCountAsync = ref.watch(savedVersesCountProvider);
 
-    return SizedBox(
-      height: 120,
-      child: ListView(
+    return LayoutBuilder(
+      builder: (context, constraints) => SizedBox(
+        height: ResponsiveUtils.scaleSize(context, 130, minScale: 0.9, maxScale: 1.3),
+        child: ListView(
         scrollDirection: Axis.horizontal,
         padding: AppSpacing.horizontalXl,
         // Optimize horizontal scrolling performance
@@ -248,6 +250,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -259,9 +262,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required Color color,
     required int delay,
   }) {
-    return Container(
-      width: 140,
-      padding: AppSpacing.screenPadding,
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        width: ResponsiveUtils.scaleSize(context, 140, minScale: 0.9, maxScale: 1.2),
+        padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -302,52 +306,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          // Value text with responsive sizing that scales down if needed
-          LayoutBuilder(
-            builder: (context, constraints) {
-              return Text(
-                value,
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 16, maxSize: 22),
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primaryText,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      offset: const Offset(0, 2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              );
-            },
-          ),
-          const SizedBox(height: 2),
-          // Label text with responsive sizing
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              label,
+          // Value text with auto-sizing to prevent overflow
+          Flexible(
+            child: AutoSizeText(
+              value,
               style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
-                fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 16, maxSize: 22),
+                fontWeight: FontWeight.w800,
+                color: AppColors.primaryText,
                 shadows: [
                   Shadow(
                     color: Colors.black.withValues(alpha: 0.3),
-                    offset: const Offset(0, 1),
-                    blurRadius: 2,
+                    offset: const Offset(0, 2),
+                    blurRadius: 4,
                   ),
                 ],
               ),
-              textAlign: TextAlign.center,
               maxLines: 1,
+              minFontSize: 14,
+              maxFontSize: 22,
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(height: 2),
+          // Label text with auto-sizing
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: AutoSizeText(
+                label,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      offset: const Offset(0, 1),
+                      blurRadius: 2,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                minFontSize: 7,
+                maxFontSize: 11,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
         ],
+      ),
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
   }
@@ -358,9 +367,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required Color color,
     required int delay,
   }) {
-    return Container(
-      width: 140,
-      padding: AppSpacing.screenPadding,
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        width: ResponsiveUtils.scaleSize(context, 140, minScale: 0.9, maxScale: 1.2),
+        padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -410,28 +420,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(height: 2),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
-                fontWeight: FontWeight.w600,
-                color: Colors.white.withValues(alpha: 0.9),
-                shadows: [
-                  Shadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    offset: const Offset(0, 1),
-                    blurRadius: 2,
-                  ),
-                ],
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: AutoSizeText(
+                label,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      offset: const Offset(0, 1),
+                      blurRadius: 2,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                minFontSize: 7,
+                maxFontSize: 11,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
+      ),
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
   }
@@ -640,9 +655,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
         ),
         const SizedBox(height: AppSpacing.lg),
-        SizedBox(
-          height: 120,
-          child: ListView(
+        LayoutBuilder(
+          builder: (context, constraints) => SizedBox(
+            height: ResponsiveUtils.scaleSize(context, 120, minScale: 0.9, maxScale: 1.3),
+            child: ListView(
             scrollDirection: Axis.horizontal,
             padding: AppSpacing.horizontalXl,
             // Optimize horizontal scrolling performance
@@ -689,6 +705,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 delay: 1800,
               ),
             ],
+            ),
           ),
         ),
       ],
@@ -702,11 +719,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required VoidCallback onTap,
     required int delay,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 100,
-        padding: AppSpacing.cardPadding,
+    return LayoutBuilder(
+      builder: (context, constraints) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: ResponsiveUtils.scaleSize(context, 100, minScale: 0.9, maxScale: 1.2),
+          padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -747,7 +765,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             Flexible(
-              child: Text(
+              child: AutoSizeText(
                 label,
                 style: TextStyle(
                   fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
@@ -763,13 +781,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
+                minFontSize: 8,
+                maxFontSize: 13,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
-      ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
+        ),
+      ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8)),
+    );
   }
 
   Widget _buildDailyVerse() {
@@ -859,7 +880,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
@@ -875,24 +896,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ],
                   ),
+                  maxLines: 5,
+                  minFontSize: 12,
+                  maxFontSize: 18,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Psalm 23:1-2 ESV',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                        color: AppTheme.goldColor,
-                        fontWeight: FontWeight.w700,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            offset: const Offset(0, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
+                    Flexible(
+                      child: AutoSizeText(
+                        'Psalm 23:1-2 ESV',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                          color: AppTheme.goldColor,
+                          fontWeight: FontWeight.w700,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              offset: const Offset(0, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
+                        maxLines: 1,
+                        minFontSize: 10,
+                        maxFontSize: 16,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const CategoryBadge(

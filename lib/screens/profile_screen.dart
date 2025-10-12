@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
                 onPressed: () => NavigationService.pop(),
               ),
             ),
@@ -164,9 +164,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfileCard() {
     return FrostedGlassCard(
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Responsive avatar
+          // Avatar on the LEFT
           Container(
             width: ResponsiveUtils.scaleSize(context, 80, minScale: 0.9, maxScale: 1.3),
             height: ResponsiveUtils.scaleSize(context, 80, minScale: 0.9, maxScale: 1.3),
@@ -197,45 +198,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ).animate().scale(duration: AppAnimations.slow),
 
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(width: 12),
 
-          // Name
-          Text(
-            userName,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
-              fontWeight: FontWeight.w700,
-              color: AppColors.primaryText,
+          // Name, email, member info in the MIDDLE
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  userName,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 22, minSize: 18, maxSize: 26),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryText,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
+
+                const SizedBox(height: AppSpacing.sm),
+
+                CategoryBadge(
+                  text: 'Member since ${_formatDate(memberSince)}',
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 7, maxSize: 11),
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
+              ],
             ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
+          ),
 
-          const SizedBox(height: 4),
+          const SizedBox(width: 8),
 
-          // Email
-          Text(
-            userEmail,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-              color: Colors.white.withValues(alpha: 0.7),
-            ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: 300.ms),
-
-          const SizedBox(height: AppSpacing.md),
-
-          // Member since
-          CategoryBadge(
-            text: 'Member since ${_formatDate(memberSince)}',
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // Edit Profile Button
-          GestureDetector(
-            onTap: _showEditProfileDialog,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          // Edit Profile Button on the RIGHT
+          Flexible(
+            child: GestureDetector(
+              onTap: _showEditProfileDialog,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -245,16 +245,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                'Edit Profile',
-                style: TextStyle(
-                  color: AppColors.primaryText,
-                  fontWeight: FontWeight.w600,
-                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                child: Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    color: AppColors.primaryText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: 500.ms),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: 500.ms),
+          ),
         ],
       ),
     ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: 0.2);
@@ -573,7 +576,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Icon(
         icon,
         color: isDestructive ? Colors.red : Colors.white.withValues(alpha: 0.9),
-        size: 22,
+        size: ResponsiveUtils.iconSize(context, 22),
       ),
       title: Text(
         title,
@@ -586,7 +589,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Icon(
         Icons.chevron_right,
         color: isDestructive ? Colors.red.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.5),
-        size: 20,
+        size: ResponsiveUtils.iconSize(context, 20),
       ),
       onTap: onTap,
     );

@@ -93,12 +93,16 @@ class CategoryBadge extends StatelessWidget {
               ),
               const SizedBox(width: 6),
             ],
-            Text(
-              text,
-              style: TextStyle(
-                color: textColor ?? Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: fontSize,
+            Flexible(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: textColor ?? Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: fontSize,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

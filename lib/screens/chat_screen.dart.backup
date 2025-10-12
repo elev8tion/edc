@@ -423,10 +423,10 @@ class ChatScreen extends HookConsumerWidget {
                       padding: const EdgeInsets.all(16),
                       child: SelectableText(
                         exportText,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.primaryText,
                           fontFamily: 'monospace',
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                          fontSize: 12,
                           height: 1.4,
                         ),
                       ),
@@ -553,7 +553,7 @@ class ChatScreen extends HookConsumerWidget {
               subtitle: Text(
                 'View and copy conversation text',
                 style: TextStyle(
-                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                  fontSize: 12,
                   color: AppColors.secondaryText,
                 ),
               ),
@@ -587,7 +587,7 @@ class ChatScreen extends HookConsumerWidget {
               subtitle: Text(
                 'Share via system share sheet',
                 style: TextStyle(
-                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                  fontSize: 12,
                   color: AppColors.secondaryText,
                 ),
               ),
@@ -663,18 +663,12 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Flexible(
-              child: AutoSizeText(
-                'Initializing AI service...',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 1,
-                minFontSize: 10,
-                maxFontSize: 15,
-                overflow: TextOverflow.ellipsis,
+            Text(
+              'Initializing AI service...',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -697,17 +691,13 @@ class ChatScreen extends HookConsumerWidget {
             Icon(Icons.warning_amber, color: Colors.white.withValues(alpha: 0.9), size: 16),
             const SizedBox(width: 12),
             Expanded(
-              child: AutoSizeText(
+              child: Text(
                 'Using fallback responses: $reason',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
-                maxLines: 2,
-                minFontSize: 10,
-                maxFontSize: 15,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -729,17 +719,13 @@ class ChatScreen extends HookConsumerWidget {
             Icon(Icons.error_outline, color: Colors.white.withValues(alpha: 0.9), size: 16),
             const SizedBox(width: 12),
             Expanded(
-              child: AutoSizeText(
+              child: Text(
                 'AI service error: $message',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
-                maxLines: 2,
-                minFontSize: 10,
-                maxFontSize: 15,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -774,7 +760,7 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -783,13 +769,13 @@ class ChatScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AutoSizeText(
+                const Text(
                   'Biblical AI Guidance',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryText,
-                    shadows: const [
+                    shadows: [
                       Shadow(
                         color: Colors.black26,
                         offset: Offset(0, 2),
@@ -797,23 +783,15 @@ class ChatScreen extends HookConsumerWidget {
                       ),
                     ],
                   ),
-                  maxLines: 1,
-                  minFontSize: 16,
-                  maxFontSize: 24,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                AutoSizeText(
+                Text(
                   'Gemini AI',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                    fontSize: 12,
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
-                  maxLines: 1,
-                  minFontSize: 9,
-                  maxFontSize: 14,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -833,7 +811,7 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             child: IconButton(
-              icon: Icon(Icons.more_vert, color: Colors.white, size: ResponsiveUtils.iconSize(context, 20)),
+              icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
               onPressed: onShowOptions,
               tooltip: 'Chat Options',
             ),
@@ -854,7 +832,7 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             child: IconButton(
-              icon: Icon(Icons.history, color: Colors.white, size: ResponsiveUtils.iconSize(context, 20)),
+              icon: const Icon(Icons.history, color: Colors.white, size: 20),
               onPressed: () => _showConversationHistory(context, messages, sessionId, conversationService),
               tooltip: 'Conversation History',
             ),
@@ -875,7 +853,7 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
             child: IconButton(
-              icon: Icon(Icons.add, color: AppColors.primaryText, size: ResponsiveUtils.iconSize(context, 20)),
+              icon: const Icon(Icons.add, color: AppColors.primaryText, size: 20),
               onPressed: () => _startNewConversation(context, messages, sessionId, conversationService),
               tooltip: 'New Conversation',
             ),
@@ -958,7 +936,7 @@ class ChatScreen extends HookConsumerWidget {
                       subtitle: Text(
                         'Generate a new response to this message',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                          fontSize: 12,
                           color: AppColors.secondaryText,
                         ),
                       ),
@@ -982,7 +960,7 @@ class ChatScreen extends HookConsumerWidget {
           children: [
             if (!message.isUser) ...[
               Container(
-                padding: EdgeInsets.all(ResponsiveUtils.scaleSize(context, AppSpacing.sm, minScale: 0.9, maxScale: 1.1)),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -996,10 +974,10 @@ class ChatScreen extends HookConsumerWidget {
                     width: 1,
                   ),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.auto_awesome,
                   color: AppColors.primaryText,
-                  size: ResponsiveUtils.iconSize(context, 20),
+                  size: 20,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -1042,10 +1020,10 @@ class ChatScreen extends HookConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AutoSizeText(
+                    Text(
                       message.content,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                        fontSize: 15,
                         color: AppColors.primaryText,
                         height: 1.4,
                         fontWeight: FontWeight.w500,
@@ -1057,10 +1035,6 @@ class ChatScreen extends HookConsumerWidget {
                           ),
                         ],
                       ),
-                      minFontSize: 12,
-                      maxFontSize: 17,
-                      maxLines: 500,
-                      overflow: TextOverflow.visible,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     TimeAndStatus(
@@ -1076,7 +1050,7 @@ class ChatScreen extends HookConsumerWidget {
             if (message.isUser) ...[
               const SizedBox(width: AppSpacing.md),
               Container(
-                padding: EdgeInsets.all(ResponsiveUtils.scaleSize(context, AppSpacing.sm, minScale: 0.9, maxScale: 1.1)),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -1090,10 +1064,10 @@ class ChatScreen extends HookConsumerWidget {
                     width: 1,
                   ),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.person,
                   color: AppColors.primaryText,
-                  size: ResponsiveUtils.iconSize(context, 20),
+                  size: 20,
                 ),
               ),
             ],
@@ -1145,15 +1119,15 @@ class ChatScreen extends HookConsumerWidget {
               ),
               child: TextField(
                 controller: messageController,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.primaryText,
-                  fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                  fontSize: 15,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Ask for biblical guidance...',
                   hintStyle: TextStyle(
                     color: AppColors.tertiaryText,
-                    fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                    fontSize: 15,
                   ),
                   border: InputBorder.none,
                   filled: true,
@@ -1204,7 +1178,7 @@ class ChatScreen extends HookConsumerWidget {
               icon: Icon(
                 Icons.send,
                 color: canSend ? AppColors.primaryText : AppColors.tertiaryText,
-                size: ResponsiveUtils.iconSize(context, 20),
+                size: 20,
               ),
             ),
           ),
@@ -1252,21 +1226,17 @@ class ChatScreen extends HookConsumerWidget {
                 children: [
                   Icon(
                     Icons.history,
-                    size: ResponsiveUtils.iconSize(context, 64),
+                    size: 64,
                     color: Colors.white.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  AutoSizeText(
+                  Text(
                     'No conversation history yet',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                      fontSize: 16,
                       color: AppColors.secondaryText,
                       fontWeight: FontWeight.w500,
                     ),
-                    maxLines: 1,
-                    minFontSize: 12,
-                    maxFontSize: 18,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1296,35 +1266,26 @@ class ChatScreen extends HookConsumerWidget {
                             Icon(
                               Icons.delete_outline,
                               color: Colors.red.shade400,
-                              size: ResponsiveUtils.iconSize(context, 48),
+                              size: 48,
                             ),
                             const SizedBox(height: 16),
-                            AutoSizeText(
+                            const Text(
                               'Delete Conversation?',
                               style: TextStyle(
                                 color: AppColors.primaryText,
                                 fontWeight: FontWeight.w700,
-                                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                                fontSize: 20,
                               ),
-                              maxLines: 1,
-                              minFontSize: 16,
-                              maxFontSize: 24,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 12),
-                            AutoSizeText(
+                            Text(
                               'This will permanently delete this conversation and all its messages.',
                               style: TextStyle(
                                 color: AppColors.secondaryText,
-                                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                                 fontWeight: FontWeight.w500,
                                 height: 1.5,
                               ),
                               textAlign: TextAlign.center,
-                              maxLines: 3,
-                              minFontSize: 11,
-                              maxFontSize: 16,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 24),
                             Row(
@@ -1373,10 +1334,10 @@ class ChatScreen extends HookConsumerWidget {
                     ),
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 20),
-                    child: Icon(
+                    child: const Icon(
                       Icons.delete,
                       color: Colors.white,
-                      size: ResponsiveUtils.iconSize(context, 32),
+                      size: 32,
                     ),
                   ),
                   child: Container(
@@ -1411,39 +1372,33 @@ class ChatScreen extends HookConsumerWidget {
                             width: 1,
                           ),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.chat_bubble_outline,
                           color: AppColors.primaryText,
-                          size: ResponsiveUtils.iconSize(context, 20),
+                          size: 20,
                         ),
                       ),
-                      title: AutoSizeText(
+                      title: Text(
                         session['title'] as String? ?? 'Conversation',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryText,
                         ),
                         maxLines: 1,
-                        minFontSize: 12,
-                        maxFontSize: 18,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: AutoSizeText(
+                      subtitle: Text(
                         '${_formatDate(createdAt)} • $messageCount messages',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                          fontSize: 12,
                           color: AppColors.secondaryText,
                           fontWeight: FontWeight.w500,
                         ),
-                        maxLines: 1,
-                        minFontSize: 9,
-                        maxFontSize: 14,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       trailing: Icon(
                         Icons.arrow_forward_ios,
-                        size: ResponsiveUtils.iconSize(context, 16),
+                        size: 16,
                         color: AppColors.secondaryText,
                       ),
                       onTap: () {
@@ -1517,32 +1472,23 @@ class ChatScreen extends HookConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AutoSizeText(
+            Text(
               'Start New Conversation?',
               style: TextStyle(
                 color: AppColors.primaryText,
                 fontWeight: FontWeight.w700,
-                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                fontSize: 20,
               ),
-              maxLines: 1,
-              minFontSize: 16,
-              maxFontSize: 24,
-              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
-            AutoSizeText(
+            Text(
               'Your current conversation will be saved to history.\n\nStart a fresh conversation?',
               style: TextStyle(
                 color: AppColors.secondaryText,
-                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                 fontWeight: FontWeight.w500,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
-              maxLines: 4,
-              minFontSize: 11,
-              maxFontSize: 16,
-              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 24),
             Row(

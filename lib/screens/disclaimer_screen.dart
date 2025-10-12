@@ -5,6 +5,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import '../utils/responsive_utils.dart';
 
 class DisclaimerScreen extends StatefulWidget {
   const DisclaimerScreen({Key? key}) : super(key: key);
@@ -32,7 +34,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
               Center(
                 child: Icon(
                   Icons.warning_amber_rounded,
-                  size: 64,
+                  size: ResponsiveUtils.iconSize(context, 64),
                   color: Colors.orange.shade700,
                 ),
               ),
@@ -127,7 +129,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                         child: Text(
                           'I understand and acknowledge that this app provides pastoral guidance only and is not a substitute for professional counseling, medical advice, or emergency services.',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                             color: Colors.grey.shade800,
                             height: 1.5,
                           ),
@@ -155,7 +157,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                   child: const Text(
                     'Continue to App',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -192,13 +194,13 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: Colors.blue.shade700, size: 24),
+              Icon(icon, color: Colors.blue.shade700, size: ResponsiveUtils.iconSize(context, 24)),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade900,
                   ),
@@ -210,7 +212,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
           Text(
             content,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
               color: Colors.grey.shade700,
               height: 1.5,
             ),

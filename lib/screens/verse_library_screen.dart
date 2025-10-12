@@ -121,7 +121,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -212,7 +212,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
     final displayThemes = ['All', ...themes.take(10)];
 
     return Container(
-      height: 50,
+      height: ResponsiveUtils.scaleSize(context, 50, minScale: 0.9, maxScale: 1.2),
       margin: AppSpacing.verticalLg,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

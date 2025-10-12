@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../services/smart_model_manager.dart';
 import '../services/hybrid_ai_service.dart';
+import '../utils/responsive_utils.dart';
 
 /// Smart onboarding that downloads AI model in background
 class SmartOnboardingScreen extends ConsumerStatefulWidget {
@@ -181,7 +183,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
               ),
               child: Text(
                 _getButtonText(),
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20)),
               ),
             ),
           ),
@@ -210,14 +212,14 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
         children: [
           Icon(
             page.icon,
-            size: 100,
+            size: ResponsiveUtils.iconSize(context, 100),
             color: Theme.of(context).primaryColor,
           ),
           const SizedBox(height: 40),
           Text(
             page.title,
-            style: const TextStyle(
-              fontSize: 28,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 28, minSize: 24, maxSize: 32),
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -226,7 +228,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
           Text(
             page.subtitle,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
               color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
@@ -235,7 +237,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
           Text(
             page.description,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
               color: Colors.grey[700],
               height: 1.5,
             ),
@@ -281,7 +283,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
             statusText,
             style: TextStyle(
               color: statusColor,
-              fontSize: 14,
+              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
             ),
           ),
           if (showProgress && _modelStatus!.progress != null) ...[

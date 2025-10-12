@@ -497,7 +497,7 @@ class TextSizeNotifier extends StateNotifier<double> {
   final AsyncValue<PreferencesService> _preferencesAsync;
   PreferencesService? _preferences;
 
-  TextSizeNotifier(this._preferencesAsync) : super(16.0) {
+  TextSizeNotifier(this._preferencesAsync) : super(1.0) { // Default 1.0 = 100% scale
     _initializeTextSize();
   }
 
@@ -508,8 +508,10 @@ class TextSizeNotifier extends StateNotifier<double> {
         data: (prefs) {
           _preferences = prefs;
           final savedSize = prefs.loadTextSize();
-          state = savedSize;
-          print('✅ Text size initialized from preferences: $savedSize');
+          // Migrate old pixel-based values (12-24) to scale factor (0.8-1.5)
+          final scaleFactor = _migrateToScaleFactor(savedSize);
+          state = scaleFactor;
+          print('✅ Text size initialized from preferences: $scaleFactor (${(scaleFactor * 100).round()}%)');
         },
         loading: () {
           print('⏳ Loading preferences for text size...');
@@ -523,12 +525,24 @@ class TextSizeNotifier extends StateNotifier<double> {
     }
   }
 
-  /// Set text size
+  /// Migrate old pixel-based text sizes (12-24) to scale factors (0.8-1.5)
+  double _migrateToScaleFactor(double value) {
+    // If value is in old range (12-24), convert to scale factor
+    if (value >= 12.0 && value <= 24.0) {
+      // Map 12-24 range to 0.8-1.5 range
+      // 16 (middle) → 1.0, 12 (min) → 0.8, 24 (max) → 1.5
+      return 0.8 + ((value - 12.0) / 12.0) * 0.7;
+    }
+    // Already a scale factor, return as-is
+    return value.clamp(0.8, 1.5);
+  }
+
+  /// Set text size (scale factor from 0.8 to 1.5)
   Future<void> setTextSize(double size) async {
-    // Validate size is within reasonable bounds (12-24)
-    if (size < 12.0 || size > 24.0) {
-      print('⚠️ Text size out of bounds: $size. Clamping to valid range.');
-      size = size.clamp(12.0, 24.0);
+    // Validate size is within scale factor bounds (0.8-1.5)
+    if (size < 0.8 || size > 1.5) {
+      print('⚠️ Text scale factor out of bounds: $size. Clamping to valid range.');
+      size = size.clamp(0.8, 1.5);
     }
 
     state = size;
@@ -537,12 +551,12 @@ class TextSizeNotifier extends StateNotifier<double> {
       try {
         final success = await _preferences!.saveTextSize(size);
         if (success) {
-          print('✅ Text size saved successfully: $size');
+          print('✅ Text scale factor saved successfully: $size (${(size * 100).round()}%)');
         } else {
-          print('⚠️ Failed to save text size');
+          print('⚠️ Failed to save text scale factor');
         }
       } catch (e) {
-        print('❌ Error saving text size: $e');
+        print('❌ Error saving text scale factor: $e');
       }
     } else {
       print('⚠️ Preferences service not initialized, text size not persisted');

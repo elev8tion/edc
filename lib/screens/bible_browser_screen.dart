@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../core/navigation/navigation_service.dart';
@@ -200,7 +201,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -257,15 +258,15 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _filterBooks,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primaryText,
-                  fontSize: 15,
+                  fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                 ),
                 decoration: InputDecoration(
                   hintText: 'Search books...',
                   hintStyle: TextStyle(
                     color: AppColors.tertiaryText,
-                    fontSize: 15,
+                    fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                   ),
                   border: InputBorder.none,
                   filled: true,
@@ -277,7 +278,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
                   prefixIcon: Icon(
                     Icons.search,
                     color: Colors.white.withValues(alpha: 0.7),
-                    size: 20,
+                    size: ResponsiveUtils.iconSize(context, 20),
                   ),
                 ),
               ),
@@ -326,14 +327,14 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
             children: [
               Icon(
                 Icons.search_off,
-                size: 64,
+                size: ResponsiveUtils.iconSize(context, 64),
                 color: Colors.white.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
               Text(
                 'No books found',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
                 ),
@@ -342,7 +343,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
               Text(
                 'Try a different search term',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   color: Colors.white.withValues(alpha: 0.7),
                 ),
               ),
@@ -411,10 +412,10 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
                     width: 1.5,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.menu_book,
                   color: Colors.white,
-                  size: 24,
+                  size: ResponsiveUtils.iconSize(context, 24),
                 ),
               ),
               const SizedBox(width: 16),

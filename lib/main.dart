@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:responsive_framework/responsive_framework.dart';
 import 'theme/app_theme.dart';
 import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
@@ -99,11 +100,14 @@ void main() async {
 // To disable: Change to false for normal authentication flow
 const bool kDevelopmentMode = true;
 
-class EverydayChristianApp extends StatelessWidget {
+class EverydayChristianApp extends ConsumerWidget {
   const EverydayChristianApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch text size preference for global text scaling
+    final textScaleFactor = ref.watch(textSizeProvider);
+
     return MaterialApp(
       title: 'Everyday Christian',
       debugShowCheckedModeBanner: false,
@@ -114,36 +118,45 @@ class EverydayChristianApp extends StatelessWidget {
       initialRoute: AppRoutes.splash, // Fixed: Always start with splash for proper init
       onGenerateRoute: _generateRoute,
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1.0),
-          ),
-          child: kDevelopmentMode
-            ? Stack(
-                children: [
-                  child!,
-                  Positioned(
-                    top: 50,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Text(
-                        'DEV',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+        return ResponsiveBreakpoints.builder(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              // Use TextScaler with user preference (0.8-1.5 scale)
+              textScaler: TextScaler.linear(textScaleFactor),
+            ),
+            child: kDevelopmentMode
+              ? Stack(
+                  children: [
+                    child!,
+                    Positioned(
+                      top: 50,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'DEV',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              )
-            : child!,
+                  ],
+                )
+              : child!,
+          ),
+          breakpoints: [
+            const Breakpoint(start: 0, end: 450, name: MOBILE),
+            const Breakpoint(start: 451, end: 800, name: TABLET),
+            const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+            const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+          ],
         );
       },
     );

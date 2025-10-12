@@ -62,7 +62,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
               onPressed: () => NavigationService.pop(),
             ),
           ),
@@ -165,29 +165,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             'Appearance',
             Icons.palette,
             [
-              _buildDropdownTile(
-                'Theme',
-                'Choose your app theme',
-                ref.watch(themeModeProvider) == ThemeMode.dark ? 'Dark' : 'Light',
-                ['Dark', 'Light'],
-                (value) {
-                  final mode = value == 'Dark' ? ThemeMode.dark : ThemeMode.light;
-                  ref.read(themeModeProvider.notifier).setTheme(mode);
-                },
-              ),
-              _buildDropdownTile(
-                'Language',
-                'Choose your preferred language',
-                ref.watch(languageProvider),
-                ['English', 'Spanish'],
-                (value) => ref.read(languageProvider.notifier).setLanguage(value!),
-              ),
               _buildSliderTile(
                 'Text Size',
-                'Adjust reading text size for better readability',
+                'Adjust text size throughout the app',
                 ref.watch(textSizeProvider),
-                12.0,
-                24.0,
+                0.8,
+                1.5,
                 (value) => ref.read(textSizeProvider.notifier).setTextSize(value),
               ),
             ],
@@ -422,11 +405,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
               Text(
-                '${value.round()}px',
+                '${(value * 100).round()}%',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: AppColors.primaryText,
                 ),
               ),
             ],
@@ -443,7 +426,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               value: value,
               min: min,
               max: max,
-              divisions: ((max - min) / 2).round(),
+              divisions: ((max - min) / 0.1).round(),
               onChanged: onChanged,
             ),
           ),
@@ -668,7 +651,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.white.withValues(alpha: 0.5),
-                  size: 16,
+                  size: ResponsiveUtils.iconSize(context, 16),
                 ),
               ],
             ),
