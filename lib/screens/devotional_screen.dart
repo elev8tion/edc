@@ -226,10 +226,18 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           Container(
             padding: AppSpacing.screenPadding,
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.25),
+                  Colors.white.withValues(alpha: 0.15),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 1.5,
               ),
             ),
             child: Column(
