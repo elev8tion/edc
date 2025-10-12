@@ -539,15 +539,28 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: reading.isCompleted
-                      ? Colors.green.withValues(alpha: 0.2)
-                      : AppTheme.primaryColor.withValues(alpha: 0.2),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withValues(alpha: 0.25),
+                      Colors.white.withValues(alpha: 0.15),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: reading.isCompleted
-                        ? Colors.green.withValues(alpha: 0.5)
-                        : AppTheme.primaryColor.withValues(alpha: 0.5),
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: reading.isCompleted
+                          ? Colors.green.withValues(alpha: 0.2)
+                          : AppTheme.primaryColor.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   reading.isCompleted ? Icons.check_circle : Icons.book,

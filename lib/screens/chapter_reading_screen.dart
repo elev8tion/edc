@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
+import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
+import '../services/bible_chapter_service.dart';
+import '../models/bible_verse.dart';
 
-/// Placeholder for Chapter Reading Screen
-/// This will be fully implemented by Agent 4
-class ChapterReadingScreen extends StatelessWidget {
+/// Chapter Reading Screen - displays Bible chapters with verse-by-verse reading
+class ChapterReadingScreen extends ConsumerStatefulWidget {
   final String book;
   final int startChapter;
   final int endChapter;
@@ -21,11 +24,84 @@ class ChapterReadingScreen extends StatelessWidget {
   });
 
   @override
+  ConsumerState<ChapterReadingScreen> createState() => _ChapterReadingScreenState();
+}
+
+class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
+  final BibleChapterService _chapterService = BibleChapterService();
+  final PageController _pageController = PageController();
+
+  late Future<Map<int, List<BibleVerse>>> _versesFuture;
+  int _currentChapterIndex = 0;
+  bool _isCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVerses();
+    _checkCompletion();
+  }
+
+  void _loadVerses() {
+    _versesFuture = _chapterService.getChapterRange(
+      widget.book,
+      widget.startChapter,
+      widget.endChapter,
+    );
+  }
+
+  Future<void> _checkCompletion() async {
+    if (widget.readingId != null) {
+      final completed = await _chapterService.isReadingComplete(widget.readingId!);
+      if (mounted) {
+        setState(() => _isCompleted = completed);
+      }
+    }
+  }
+
+  Future<void> _markAsComplete() async {
+    if (widget.readingId == null) return;
+
+    try {
+      await _chapterService.markReadingComplete(widget.readingId!);
+      if (mounted) {
+        setState(() => _isCompleted = true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Reading marked as complete!'),
+              ],
+            ),
+            backgroundColor: Colors.green.shade700,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isMultiChapter = endChapter > startChapter;
-    final chapterRange = isMultiChapter
-        ? '$book $startChapter-$endChapter'
-        : '$book $startChapter';
+    final totalChapters = widget.endChapter - widget.startChapter + 1;
+    final currentChapter = widget.startChapter + _currentChapterIndex;
 
     return Scaffold(
       body: Stack(
@@ -35,122 +111,468 @@ class ChapterReadingScreen extends StatelessWidget {
             child: Column(
               children: [
                 // Header
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                _buildHeader(currentChapter, totalChapters),
+
+                // Chapter indicator
+                _buildChapterIndicator(currentChapter, totalChapters),
+
+                // Content
+                Expanded(
+                  child: FutureBuilder<Map<int, List<BibleVerse>>>(
+                    future: _versesFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return _buildLoading();
+                      }
+
+                      if (snapshot.hasError) {
+                        return _buildError(snapshot.error.toString());
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return _buildNoData();
+                      }
+
+                      final chaptersMap = snapshot.data!;
+                      final chapters = List.generate(
+                        totalChapters,
+                        (i) => widget.startChapter + i,
+                      );
+
+                      return PageView.builder(
+                        controller: _pageController,
+                        itemCount: chapters.length,
+                        onPageChanged: (index) {
+                          setState(() => _currentChapterIndex = index);
+                        },
+                        itemBuilder: (context, index) {
+                          final chapterNum = chapters[index];
+                          final verses = chaptersMap[chapterNum] ?? [];
+                          return _buildChapterPage(chapterNum, verses);
+                        },
+                      );
+                    },
+                  ),
+                ),
+
+                // Mark as Complete button
+                if (widget.readingId != null) _buildCompleteButton(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(int currentChapter, int totalChapters) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => NavigationService.pop(),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${widget.book} $currentChapter',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      totalChapters > 1
+                        ? 'Chapter ${_currentChapterIndex + 1} of $totalChapters'
+                        : '1 chapter',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (_isCompleted) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: Colors.green.shade300,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Completed',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.green.shade300,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChapterIndicator(int currentChapter, int totalChapters) {
+    if (totalChapters == 1) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(
+              Icons.chevron_left,
+              color: _currentChapterIndex > 0
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.3),
+            ),
+            onPressed: _currentChapterIndex > 0
+                ? () {
+                    if (_pageController.hasClients) {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  }
+                : null,
+          ),
+          Expanded(
+            child: Container(
+              height: 4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: (_currentChapterIndex + 1) / totalChapters,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.primaryColor,
+                        AppTheme.secondaryColor,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.chevron_right,
+              color: _currentChapterIndex < totalChapters - 1
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.3),
+            ),
+            onPressed: _currentChapterIndex < totalChapters - 1
+                ? () {
+                    if (_pageController.hasClients) {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  }
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChapterPage(int chapterNum, List<BibleVerse> verses) {
+    if (verses.isEmpty) {
+      return Center(
+        child: FrostedGlassCard(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 48,
+                  color: AppTheme.primaryColor,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No verses found for ${widget.book} $chapterNum',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: FrostedGlassCard(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Chapter title
+              Text(
+                '${widget.book} $chapterNum',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.primaryColor,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Verses
+              ...verses.map((verse) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Verse number with glassmorphic style (matching FAB)
                       Container(
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.white.withValues(alpha: 0.2),
-                              Colors.white.withValues(alpha: 0.1),
+                              Colors.white.withValues(alpha: 0.25),
+                              Colors.white.withValues(alpha: 0.15),
                             ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            width: 1,
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1.5,
                           ),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => NavigationService.pop(),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              chapterRange,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isMultiChapter
-                                  ? '${endChapter - startChapter + 1} chapters'
-                                  : '1 chapter',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.w500,
-                              ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${verse.verseNumber}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryText,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Verse text
+                      Expanded(
+                        child: Text(
+                          verse.text,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            height: 1.6,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.2,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                // Content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: FrostedGlassCard(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.construction,
-                              size: 64,
-                              color: AppTheme.primaryColor,
-                            ),
-                            const SizedBox(height: 24),
-                            const Text(
-                              'Chapter Reader Coming Soon',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Agent 4 is building the full chapter reading experience',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white.withValues(alpha: 0.8),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 32),
-                            Text(
-                              'Reading: $chapterRange',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppTheme.primaryColor,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            if (readingId != null) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                'Reading ID: $readingId',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white.withValues(alpha: 0.6),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+  Widget _buildCompleteButton() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GlassButton(
+        text: _isCompleted ? '✓ Reading Completed' : 'Mark as Complete',
+        onPressed: _isCompleted ? null : _markAsComplete,
+        height: 56,
+      ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Center(
+      child: FrostedGlassCard(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Loading Bible chapter...',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FrostedGlassCard(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red.shade300,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Error loading chapter',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  error,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _loadVerses();
+                    });
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoData() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FrostedGlassCard(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.book_outlined,
+                  size: 64,
+                  color: AppTheme.primaryColor,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No verses available',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Could not find verses for ${widget.book} ${widget.startChapter}-${widget.endChapter}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
