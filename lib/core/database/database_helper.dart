@@ -3,19 +3,14 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'migrations/v1_initial_schema.dart';
-import 'migrations/v1_5_add_verse_columns.dart';
-import 'migrations/v2_add_indexes.dart';
-// // v2_populate_verses.dart migration removed (verses loaded from bible.db asset) // REMOVED - file deleted
-import 'migrations/v5_update_chat_schema.dart';
-import 'migrations/v10_rename_prayer_content.dart';
 import '../error/error_handler.dart';
 import '../error/app_error.dart';
 import '../logging/app_logger.dart';
 
+/// Unified database helper with all tables in one schema
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 10;
+  static const int _databaseVersion = 1;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -58,10 +53,8 @@ class DatabaseHelper {
       String path;
 
       if (_testDatabasePath != null) {
-        // Use test path (e.g., inMemoryDatabasePath)
         path = _testDatabasePath!;
       } else {
-        // Use production path
         Directory documentsDirectory = await getApplicationDocumentsDirectory();
         path = join(documentsDirectory.path, _databaseName);
       }
@@ -72,7 +65,6 @@ class DatabaseHelper {
         path,
         version: _databaseVersion,
         onCreate: _onCreate,
-        onUpgrade: _onUpgrade,
         onOpen: _onOpen,
       );
     } catch (e, stackTrace) {
@@ -89,26 +81,354 @@ class DatabaseHelper {
     }
   }
 
-  /// Create database tables
+  /// Create all database tables
   Future<void> _onCreate(Database db, int version) async {
     try {
       _logger.info('Creating database schema v$version', context: 'DatabaseHelper');
 
-      // Create all tables using migration scripts
-      await V1InitialSchema.up(db);
+      // ==================== VERSES TABLES ====================
 
-      if (version >= 2) {
-        await V15AddVerseColumns.migrate(db);
-        await V2AddIndexes.up(db);
-      }
+      // Main verses table
+      await db.execute('''
+        CREATE TABLE verses (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          book TEXT NOT NULL,
+          chapter INTEGER NOT NULL,
+          verse_number INTEGER NOT NULL,
+          text TEXT NOT NULL,
+          translation TEXT NOT NULL DEFAULT 'ESV',
+          themes TEXT,
+          created_at INTEGER,
+          UNIQUE(book, chapter, verse_number, translation)
+        )
+      ''');
 
-      // Version 3 migration removed - PopulateVersesMigration file deleted
+      // FTS5 virtual table for verse search
+      await db.execute('''
+        CREATE VIRTUAL TABLE verses_fts USING fts5(
+          text,
+          book,
+          themes,
+          content='verses',
+          content_rowid='id'
+        )
+      ''');
 
-      if (version >= 5) {
-        await V5UpdateChatSchema.up(db);
-      }
+      // Triggers to maintain FTS index
+      await db.execute('''
+        CREATE TRIGGER verses_fts_insert AFTER INSERT ON verses BEGIN
+          INSERT INTO verses_fts(rowid, text, book, themes)
+          VALUES (new.id, new.text, new.book, new.themes);
+        END
+      ''');
 
-      // Version 6: Ensures chat_sessions table exists (handled by v5 migration)
+      await db.execute('''
+        CREATE TRIGGER verses_fts_delete AFTER DELETE ON verses BEGIN
+          INSERT INTO verses_fts(verses_fts, rowid, text, book, themes)
+          VALUES ('delete', old.id, old.text, old.book, old.themes);
+        END
+      ''');
+
+      await db.execute('''
+        CREATE TRIGGER verses_fts_update AFTER UPDATE ON verses BEGIN
+          INSERT INTO verses_fts(verses_fts, rowid, text, book, themes)
+          VALUES ('delete', old.id, old.text, old.book, old.themes);
+          INSERT INTO verses_fts(rowid, text, book, themes)
+          VALUES (new.id, new.text, new.book, new.themes);
+        END
+      ''');
+
+      // Bible verses table (full Bible storage)
+      await db.execute('''
+        CREATE TABLE bible_verses (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          version TEXT NOT NULL,
+          book TEXT NOT NULL,
+          chapter INTEGER NOT NULL,
+          verse INTEGER NOT NULL,
+          text TEXT NOT NULL,
+          language TEXT NOT NULL,
+          themes TEXT,
+          category TEXT,
+          reference TEXT
+        )
+      ''');
+
+      // Bible verses indexes
+      await db.execute('CREATE INDEX idx_bible_version ON bible_verses(version)');
+      await db.execute('CREATE INDEX idx_bible_book_chapter ON bible_verses(book, chapter)');
+      await db.execute('CREATE INDEX idx_bible_search ON bible_verses(book, chapter, verse)');
+
+      // Bible verses FTS5
+      await db.execute('''
+        CREATE VIRTUAL TABLE bible_verses_fts USING fts5(
+          book,
+          chapter,
+          verse,
+          text,
+          content=bible_verses,
+          content_rowid=id
+        )
+      ''');
+
+      // Bible verses FTS triggers
+      await db.execute('''
+        CREATE TRIGGER bible_verses_ai AFTER INSERT ON bible_verses BEGIN
+          INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+          VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+        END
+      ''');
+
+      await db.execute('''
+        CREATE TRIGGER bible_verses_ad AFTER DELETE ON bible_verses BEGIN
+          DELETE FROM bible_verses_fts WHERE rowid = old.id;
+        END
+      ''');
+
+      await db.execute('''
+        CREATE TRIGGER bible_verses_au AFTER UPDATE ON bible_verses BEGIN
+          DELETE FROM bible_verses_fts WHERE rowid = old.id;
+          INSERT INTO bible_verses_fts(rowid, book, chapter, verse, text)
+          VALUES (new.id, new.book, new.chapter, new.verse, new.text);
+        END
+      ''');
+
+      // Favorite verses
+      await db.execute('''
+        CREATE TABLE favorite_verses (
+          id TEXT PRIMARY KEY,
+          verse_id INTEGER,
+          text TEXT NOT NULL,
+          reference TEXT NOT NULL,
+          category TEXT NOT NULL,
+          note TEXT,
+          tags TEXT,
+          date_added INTEGER NOT NULL,
+          FOREIGN KEY (verse_id) REFERENCES verses (id) ON DELETE CASCADE
+        )
+      ''');
+
+      // Daily verses
+      await db.execute('''
+        CREATE TABLE daily_verses (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          date_delivered INTEGER NOT NULL,
+          user_opened INTEGER DEFAULT 0,
+          notification_sent INTEGER DEFAULT 0,
+          FOREIGN KEY (verse_id) REFERENCES verses (id) ON DELETE CASCADE,
+          UNIQUE(verse_id, date_delivered)
+        )
+      ''');
+
+      // Daily verse history
+      await db.execute('''
+        CREATE TABLE daily_verse_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          shown_date INTEGER NOT NULL,
+          theme TEXT,
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+          UNIQUE(verse_id, shown_date)
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_daily_verse_date ON daily_verse_history(shown_date DESC)');
+
+      // Verse bookmarks
+      await db.execute('''
+        CREATE TABLE verse_bookmarks (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          verse_id INTEGER NOT NULL,
+          note TEXT,
+          tags TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER,
+          FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+          UNIQUE(verse_id)
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_bookmarks_created ON verse_bookmarks(created_at DESC)');
+
+      // Verse preferences
+      await db.execute('''
+        CREATE TABLE verse_preferences (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          preference_key TEXT NOT NULL UNIQUE,
+          preference_value TEXT NOT NULL,
+          updated_at INTEGER NOT NULL
+        )
+      ''');
+
+      // ==================== CHAT TABLES ====================
+
+      // Chat sessions
+      await db.execute('''
+        CREATE TABLE chat_sessions (
+          id TEXT PRIMARY KEY,
+          title TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          is_archived INTEGER DEFAULT 0,
+          message_count INTEGER DEFAULT 0,
+          last_message_at INTEGER,
+          last_message_preview TEXT
+        )
+      ''');
+
+      // Chat messages
+      await db.execute('''
+        CREATE TABLE chat_messages (
+          id TEXT PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          content TEXT NOT NULL,
+          type TEXT NOT NULL,
+          timestamp INTEGER NOT NULL,
+          status TEXT DEFAULT 'sent',
+          verse_references TEXT,
+          metadata TEXT,
+          user_id TEXT,
+          FOREIGN KEY (session_id) REFERENCES chat_sessions (id) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_chat_messages_session ON chat_messages(session_id)');
+      await db.execute('CREATE INDEX idx_chat_messages_timestamp ON chat_messages(timestamp DESC)');
+
+      // ==================== PRAYER TABLES ====================
+
+      // Prayer requests
+      await db.execute('''
+        CREATE TABLE prayer_requests (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          category TEXT NOT NULL,
+          status TEXT DEFAULT 'active',
+          date_created INTEGER NOT NULL,
+          date_answered INTEGER,
+          is_answered INTEGER DEFAULT 0,
+          answer_description TEXT,
+          testimony TEXT,
+          is_private INTEGER DEFAULT 1,
+          reminder_frequency TEXT,
+          grace TEXT,
+          need_help TEXT
+        )
+      ''');
+
+      // Prayer categories
+      await db.execute('''
+        CREATE TABLE prayer_categories (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL UNIQUE,
+          icon TEXT NOT NULL,
+          color TEXT NOT NULL,
+          description TEXT,
+          sort_order INTEGER DEFAULT 0,
+          is_active INTEGER DEFAULT 1,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
+      // Prayer streak activity
+      await db.execute('''
+        CREATE TABLE prayer_streak_activity (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          activity_date INTEGER NOT NULL UNIQUE,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_prayer_activity_date ON prayer_streak_activity(activity_date)');
+
+      // ==================== DEVOTIONAL TABLES ====================
+
+      // Devotionals
+      await db.execute('''
+        CREATE TABLE devotionals (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          subtitle TEXT NOT NULL,
+          content TEXT NOT NULL,
+          verse TEXT NOT NULL,
+          verse_reference TEXT NOT NULL,
+          date INTEGER NOT NULL,
+          reading_time TEXT NOT NULL,
+          is_completed INTEGER NOT NULL DEFAULT 0,
+          completed_date INTEGER
+        )
+      ''');
+
+      // ==================== READING PLAN TABLES ====================
+
+      // Reading plans
+      await db.execute('''
+        CREATE TABLE reading_plans (
+          id TEXT PRIMARY KEY,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          duration TEXT NOT NULL,
+          category TEXT NOT NULL,
+          difficulty TEXT NOT NULL,
+          estimated_time_per_day TEXT NOT NULL,
+          total_readings INTEGER NOT NULL,
+          completed_readings INTEGER NOT NULL DEFAULT 0,
+          is_started INTEGER NOT NULL DEFAULT 0,
+          start_date INTEGER
+        )
+      ''');
+
+      // Daily readings
+      await db.execute('''
+        CREATE TABLE daily_readings (
+          id TEXT PRIMARY KEY,
+          plan_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT NOT NULL,
+          book TEXT NOT NULL,
+          chapters TEXT NOT NULL,
+          estimated_time TEXT NOT NULL,
+          date INTEGER NOT NULL,
+          is_completed INTEGER NOT NULL DEFAULT 0,
+          completed_date INTEGER,
+          FOREIGN KEY (plan_id) REFERENCES reading_plans (id)
+        )
+      ''');
+
+      // ==================== USER SETTINGS ====================
+
+      // User settings
+      await db.execute('''
+        CREATE TABLE user_settings (
+          key TEXT PRIMARY KEY,
+          value TEXT NOT NULL,
+          type TEXT NOT NULL,
+          updated_at INTEGER
+        )
+      ''');
+
+      // ==================== SEARCH HISTORY ====================
+
+      // Search history
+      await db.execute('''
+        CREATE TABLE search_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          query TEXT NOT NULL,
+          search_type TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_search_history ON search_history(created_at DESC)');
+
+      // Insert default data
+      await _insertDefaultSettings(db);
+      await _insertSampleVerses(db);
+      await _insertVersePreferences(db);
+      await _insertDefaultPrayerCategories(db);
 
       _logger.info('Database schema created successfully', context: 'DatabaseHelper');
     } catch (e, stackTrace) {
@@ -125,94 +445,125 @@ class DatabaseHelper {
     }
   }
 
-  /// Handle database upgrades
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    try {
-      _logger.info(
-        'Upgrading database from v$oldVersion to v$newVersion',
-        context: 'DatabaseHelper',
-      );
+  /// Handle database open
+  Future<void> _onOpen(Database db) async {
+    await db.execute('PRAGMA foreign_keys = ON');
+  }
 
-      if (oldVersion < 2 && newVersion >= 2) {
-        await V15AddVerseColumns.migrate(db);
-        await V2AddIndexes.up(db);
-      }
+  Future<void> _insertDefaultSettings(Database db) async {
+    final defaultSettings = [
+      {'key': 'daily_verse_time', 'value': '09:30', 'type': 'String'},
+      {'key': 'daily_verse_enabled', 'value': 'true', 'type': 'bool'},
+      {'key': 'preferred_translation', 'value': 'ESV', 'type': 'String'},
+      {'key': 'theme_mode', 'value': 'system', 'type': 'String'},
+      {'key': 'notifications_enabled', 'value': 'true', 'type': 'bool'},
+      {'key': 'biometric_enabled', 'value': 'false', 'type': 'bool'},
+      {'key': 'onboarding_completed', 'value': 'false', 'type': 'bool'},
+      {'key': 'first_launch', 'value': 'true', 'type': 'bool'},
+      {'key': 'verse_streak_count', 'value': '0', 'type': 'int'},
+      {'key': 'last_verse_date', 'value': '0', 'type': 'int'},
+      {'key': 'preferred_verse_themes', 'value': '["hope", "strength", "comfort"]', 'type': 'String'},
+      {'key': 'chat_history_days', 'value': '30', 'type': 'int'},
+      {'key': 'prayer_reminder_enabled', 'value': 'true', 'type': 'bool'},
+      {'key': 'font_size_scale', 'value': '1.0', 'type': 'double'},
+    ];
 
-      // Version 3 migration removed - PopulateVersesMigration file deleted
-
-      if (oldVersion < 5 && newVersion >= 5) {
-        await V5UpdateChatSchema.up(db);
-      }
-
-      if (oldVersion < 6 && newVersion >= 6) {
-        // Run V5 migration again to ensure chat_sessions table exists
-        await V5UpdateChatSchema.up(db);
-      }
-
-      if (oldVersion < 7 && newVersion >= 7) {
-        // Run V5 migration with fixed SQL (removed DEFAULT with complex expressions)
-        await V5UpdateChatSchema.up(db);
-      }
-
-      if (oldVersion < 8 && newVersion >= 8) {
-        // Version 8: Fixed all invalid DEFAULT expressions in V1InitialSchema
-        // CRITICAL FIX: Check if chat_sessions exists (DatabaseService vs DatabaseHelper conflict)
-        final chatSessionsCheck = await db.rawQuery(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='chat_sessions'"
-        );
-
-        if (chatSessionsCheck.isEmpty) {
-          _logger.warning(
-            'Chat tables missing (DatabaseService conflict), creating from v5 migration',
-            context: 'DatabaseHelper',
-          );
-          await V5UpdateChatSchema.up(db);
-        }
-      }
-
-      if (oldVersion < 9 && newVersion >= 9) {
-        // Version 9: Ensure chat tables exist (fixes broken v8 upgrades)
-        // Check if chat_sessions table exists
-        final chatSessionsCheck = await db.rawQuery(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='chat_sessions'"
-        );
-
-        if (chatSessionsCheck.isEmpty) {
-          _logger.warning(
-            'Chat tables missing at v9 upgrade, creating from v5 migration',
-            context: 'DatabaseHelper',
-          );
-          await V5UpdateChatSchema.up(db);
-        } else {
-          _logger.info('Chat tables already exist at v9 upgrade', context: 'DatabaseHelper');
-        }
-      }
-
-      if (oldVersion < 10 && newVersion >= 10) {
-        // Version 10: Rename prayer_requests.content to description
-        _logger.info('Migrating prayer_requests table to use description column', context: 'DatabaseHelper');
-        await V10RenamePrayerContent.migrate(db);
-      }
-
-      _logger.info('Database upgrade completed successfully', context: 'DatabaseHelper');
-    } catch (e, stackTrace) {
-      _logger.fatal(
-        'Database migration failed from v$oldVersion to v$newVersion',
-        context: 'DatabaseHelper',
-        stackTrace: stackTrace,
-      );
-      throw ErrorHandler.databaseError(
-        message: 'Database upgrade failed',
-        details: e.toString(),
-        severity: ErrorSeverity.fatal,
-      );
+    for (final setting in defaultSettings) {
+      await db.insert('user_settings', setting);
     }
   }
 
-  /// Handle database open
-  Future<void> _onOpen(Database db) async {
-    // Enable foreign key constraints
-    await db.execute('PRAGMA foreign_keys = ON');
+  Future<void> _insertSampleVerses(Database db) async {
+    final sampleVerses = [
+      {
+        'book': 'Jeremiah',
+        'chapter': 29,
+        'verse_number': 11,
+        'text': 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
+        'translation': 'ESV',
+        'themes': '["hope", "future", "guidance", "trust"]'
+      },
+      {
+        'book': 'Philippians',
+        'chapter': 4,
+        'verse_number': 13,
+        'text': 'I can do all things through him who strengthens me.',
+        'translation': 'ESV',
+        'themes': '["strength", "perseverance", "faith", "encouragement"]'
+      },
+    ];
+
+    for (final verse in sampleVerses) {
+      await db.insert('verses', verse);
+    }
+
+    // Favorite verses
+    final favorites = [
+      {
+        'id': '1',
+        'text': 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
+        'reference': 'Jeremiah 29:11',
+        'category': 'Hope',
+        'date_added': DateTime.now().millisecondsSinceEpoch,
+      },
+    ];
+
+    for (final verse in favorites) {
+      await db.insert('favorite_verses', verse);
+    }
+  }
+
+  Future<void> _insertVersePreferences(Database db) async {
+    final versePreferences = [
+      {
+        'preference_key': 'preferred_themes',
+        'preference_value': 'faith,hope,love,peace,strength',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'preference_key': 'avoid_recent_days',
+        'preference_value': '30',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'preference_key': 'preferred_version',
+        'preference_value': 'WEB',
+        'updated_at': DateTime.now().millisecondsSinceEpoch,
+      },
+    ];
+
+    for (final pref in versePreferences) {
+      await db.insert('verse_preferences', pref);
+    }
+  }
+
+  Future<void> _insertDefaultPrayerCategories(Database db) async {
+    final categories = [
+      {
+        'id': 'family',
+        'name': 'Family',
+        'icon': 'people',
+        'color': '#4CAF50',
+        'description': 'Prayers for family members',
+        'sort_order': 1,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'health',
+        'name': 'Health',
+        'icon': 'favorite',
+        'color': '#F44336',
+        'description': 'Prayers for health and healing',
+        'sort_order': 2,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+    ];
+
+    for (final category in categories) {
+      await db.insert('prayer_categories', category);
+    }
   }
 
   /// Close database
@@ -224,7 +575,7 @@ class DatabaseHelper {
     }
   }
 
-  /// Delete database (for testing)
+  /// Delete database
   Future<void> deleteDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
@@ -234,9 +585,21 @@ class DatabaseHelper {
     _database = null;
   }
 
-  // CRUD Operations for Verses
+  /// Initialize (for compatibility)
+  Future<void> initialize() async {
+    await database;
+  }
 
-  /// Insert verse
+  /// Reset database
+  Future<void> resetDatabase() async {
+    await close();
+    await deleteDatabase();
+    await database;
+  }
+
+  // ==================== CRUD OPERATIONS ====================
+  // (Keep all existing methods from both classes)
+
   Future<int> insertVerse(Map<String, dynamic> verse) async {
     return await ErrorHandler.handleAsync(
       () async {
@@ -247,7 +610,6 @@ class DatabaseHelper {
     );
   }
 
-  /// Get verse by ID
   Future<Map<String, dynamic>?> getVerse(int id) async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.query(
@@ -258,7 +620,6 @@ class DatabaseHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
-  /// Search verses by text or themes
   Future<List<Map<String, dynamic>>> searchVerses({
     String? query,
     List<String>? themes,
@@ -269,86 +630,76 @@ class DatabaseHelper {
       () async {
         final db = await database;
 
-    // If we have a FTS query, we need to join with verses_fts table
-    if (query != null && query.isNotEmpty) {
-      String sql = '''
-        SELECT v.*
-        FROM verses v
-        INNER JOIN verses_fts fts ON v.id = fts.rowid
-        WHERE verses_fts MATCH ?
-      ''';
-      List<dynamic> args = [query];
+        if (query != null && query.isNotEmpty) {
+          String sql = '''
+            SELECT v.*
+            FROM verses v
+            INNER JOIN verses_fts fts ON v.id = fts.rowid
+            WHERE verses_fts MATCH ?
+          ''';
+          List<dynamic> args = [query];
 
-      // Add theme filtering
-      if (themes != null && themes.isNotEmpty) {
-        sql += ' AND (${themes.map((theme) => 'v.themes LIKE ?').join(' OR ')})';
-        args.addAll(themes.map((theme) => '%"$theme"%'));
-      }
+          if (themes != null && themes.isNotEmpty) {
+            sql += ' AND (${themes.map((theme) => 'v.themes LIKE ?').join(' OR ')})';
+            args.addAll(themes.map((theme) => '%"$theme"%'));
+          }
 
-      // Add translation filtering
-      if (translation != null) {
-        sql += ' AND v.translation = ?';
-        args.add(translation);
-      }
+          if (translation != null) {
+            sql += ' AND v.translation = ?';
+            args.add(translation);
+          }
 
-      sql += ' ORDER BY RANDOM()';
+          sql += ' ORDER BY RANDOM()';
 
-      if (limit != null) {
-        sql += ' LIMIT ?';
-        args.add(limit);
-      }
+          if (limit != null) {
+            sql += ' LIMIT ?';
+            args.add(limit);
+          }
 
-      return await db.rawQuery(sql, args);
-    }
+          return await db.rawQuery(sql, args);
+        }
 
-    // If no FTS query, use regular query
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
+        String whereClause = '';
+        List<dynamic> whereArgs = [];
 
-    if (themes != null && themes.isNotEmpty) {
-      whereClause += '(${themes.map((theme) => 'themes LIKE ?').join(' OR ')})';
-      whereArgs.addAll(themes.map((theme) => '%"$theme"%'));
-    }
+        if (themes != null && themes.isNotEmpty) {
+          whereClause += '(${themes.map((theme) => 'themes LIKE ?').join(' OR ')})';
+          whereArgs.addAll(themes.map((theme) => '%"$theme"%'));
+        }
 
-    if (translation != null) {
-      if (whereClause.isNotEmpty) whereClause += ' AND ';
-      whereClause += 'translation = ?';
-      whereArgs.add(translation);
-    }
+        if (translation != null) {
+          if (whereClause.isNotEmpty) whereClause += ' AND ';
+          whereClause += 'translation = ?';
+          whereArgs.add(translation);
+        }
 
-    return await db.query(
-      'verses',
-      where: whereClause.isNotEmpty ? whereClause : null,
-      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
-      orderBy: 'RANDOM()',
-      limit: limit,
-    );
+        return await db.query(
+          'verses',
+          where: whereClause.isNotEmpty ? whereClause : null,
+          whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+          orderBy: 'RANDOM()',
+          limit: limit,
+        );
       },
       context: 'DatabaseHelper.searchVerses',
       fallbackValue: <Map<String, dynamic>>[],
     );
   }
 
-  /// Get verses by theme
   Future<List<Map<String, dynamic>>> getVersesByTheme(String theme, {int? limit}) async {
     return await searchVerses(themes: [theme], limit: limit);
   }
 
-  /// Get random verse
   Future<Map<String, dynamic>?> getRandomVerse({List<String>? themes}) async {
     final verses = await searchVerses(themes: themes, limit: 1);
     return verses.isNotEmpty ? verses.first : null;
   }
 
-  // CRUD Operations for Chat Messages
-
-  /// Insert chat message
   Future<int> insertChatMessage(Map<String, dynamic> message) async {
     final db = await database;
     return await db.insert('chat_messages', message);
   }
 
-  /// Get chat messages for a session
   Future<List<Map<String, dynamic>>> getChatMessages({
     String? sessionId,
     int? limit,
@@ -366,7 +717,6 @@ class DatabaseHelper {
     );
   }
 
-  /// Delete chat messages older than days
   Future<int> deleteOldChatMessages(int days) async {
     final db = await database;
     final cutoffDate = DateTime.now().subtract(Duration(days: days)).millisecondsSinceEpoch;
@@ -378,16 +728,12 @@ class DatabaseHelper {
     );
   }
 
-  // CRUD Operations for Prayer Requests
-
-  /// Insert prayer request
   Future<int> insertPrayerRequest(Map<String, dynamic> prayer) async {
     final db = await database;
     return await db.insert('prayer_requests', prayer);
   }
 
-  /// Update prayer request
-  Future<int> updatePrayerRequest(int id, Map<String, dynamic> prayer) async {
+  Future<int> updatePrayerRequest(String id, Map<String, dynamic> prayer) async {
     final db = await database;
     return await db.update(
       'prayer_requests',
@@ -397,7 +743,6 @@ class DatabaseHelper {
     );
   }
 
-  /// Get prayer requests
   Future<List<Map<String, dynamic>>> getPrayerRequests({
     String? status,
     String? category,
@@ -432,24 +777,6 @@ class DatabaseHelper {
     );
   }
 
-  /// Mark prayer as answered
-  Future<int> markPrayerAnswered(int id, String testimony) async {
-    final db = await database;
-    return await db.update(
-      'prayer_requests',
-      {
-        'status': 'answered',
-        'date_answered': DateTime.now().millisecondsSinceEpoch,
-        'testimony': testimony,
-      },
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  // CRUD Operations for User Settings
-
-  /// Set user setting
   Future<void> setSetting(String key, dynamic value) async {
     final db = await database;
 
@@ -464,7 +791,6 @@ class DatabaseHelper {
     );
   }
 
-  /// Get user setting
   Future<T?> getSetting<T>(String key, {T? defaultValue}) async {
     final db = await database;
 
@@ -480,7 +806,6 @@ class DatabaseHelper {
     final String value = setting['value'];
     final String type = setting['type'];
 
-    // Convert string back to original type
     switch (type) {
       case 'bool':
         return (value.toLowerCase() == 'true') as T?;
@@ -494,7 +819,6 @@ class DatabaseHelper {
     }
   }
 
-  /// Delete setting
   Future<int> deleteSetting(String key) async {
     final db = await database;
     return await db.delete(
@@ -504,66 +828,6 @@ class DatabaseHelper {
     );
   }
 
-  // CRUD Operations for Daily Verses
-
-  /// Record daily verse delivery
-  Future<int> recordDailyVerse(int verseId, DateTime date, {bool opened = false}) async {
-    final db = await database;
-
-    return await db.insert(
-      'daily_verses',
-      {
-        'verse_id': verseId,
-        'date_delivered': date.millisecondsSinceEpoch,
-        'user_opened': opened ? 1 : 0,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  /// Mark daily verse as opened
-  Future<int> markDailyVerseOpened(int verseId, DateTime date) async {
-    final db = await database;
-
-    return await db.update(
-      'daily_verses',
-      {'user_opened': 1},
-      where: 'verse_id = ? AND date_delivered = ?',
-      whereArgs: [verseId, date.millisecondsSinceEpoch],
-    );
-  }
-
-  /// Get daily verse history
-  Future<List<Map<String, dynamic>>> getDailyVerseHistory({int? limit}) async {
-    final db = await database;
-
-    return await db.rawQuery('''
-      SELECT dv.*, v.book, v.chapter, v.verse_number, v.text, v.translation
-      FROM daily_verses dv
-      JOIN verses v ON dv.verse_id = v.id
-      ORDER BY dv.date_delivered DESC
-      ${limit != null ? 'LIMIT $limit' : ''}
-    ''');
-  }
-
-  /// Get verse streak count
-  Future<int> getVerseStreak() async {
-    final db = await database;
-
-    final result = await db.rawQuery('''
-      SELECT COUNT(*) as streak
-      FROM daily_verses
-      WHERE user_opened = 1
-      AND date_delivered >= ?
-      ORDER BY date_delivered DESC
-    ''', [DateTime.now().subtract(const Duration(days: 30)).millisecondsSinceEpoch]);
-
-    return result.first['streak'] as int;
-  }
-
-  // Utility Methods
-
-  /// Get database file size
   Future<int> getDatabaseSize() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
@@ -575,7 +839,6 @@ class DatabaseHelper {
     return 0;
   }
 
-  /// Export database for backup
   Future<String> exportDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String sourcePath = join(documentsDirectory.path, _databaseName);
