@@ -9,6 +9,7 @@ import '../components/category_badge.dart';
 import '../components/blur_dropdown.dart';
 import '../components/blur_popup_menu.dart';
 import '../components/category_filter_chip.dart';
+import '../components/glass_fab.dart';
 import '../widgets/category_management_dialog.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
@@ -66,12 +67,11 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ],
             ),
           ),
+          GlassFab(
+            onPressed: _showAddPrayerDialog,
+            icon: Icons.add,
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddPrayerDialog,
-        backgroundColor: AppTheme.primaryColor,
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
