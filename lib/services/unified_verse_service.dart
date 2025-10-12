@@ -97,7 +97,7 @@ class UnifiedVerseService {
   Future<List<BibleVerse>> getAllVerses({int? limit, int? offset}) async {
     final database = await _db.database;
 
-    String query = 'SELECT * FROM verses ORDER BY book, chapter, verse';
+    String query = 'SELECT * FROM verses ORDER BY book, chapter, verse_number';
     if (limit != null) {
       query += ' LIMIT $limit';
       if (offset != null) {

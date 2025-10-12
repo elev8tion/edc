@@ -434,6 +434,7 @@ class DatabaseHelper {
       await _insertSampleVerses(db);
       await _insertVersePreferences(db);
       await _insertDefaultPrayerCategories(db);
+      await _insertDefaultReadingPlans(db);
 
       _logger.info('Database schema created successfully', context: 'DatabaseHelper');
     } catch (e, stackTrace) {
@@ -755,6 +756,93 @@ class DatabaseHelper {
 
     for (final category in categories) {
       await db.insert('prayer_categories', category);
+    }
+  }
+
+  Future<void> _insertDefaultReadingPlans(Database db) async {
+    final plans = [
+      {
+        'id': 'plan_new_testament',
+        'title': 'New Testament in 90 Days',
+        'description': 'Read through the entire New Testament in just 90 days. Perfect for understanding the life of Jesus and the early church.',
+        'duration': '90 days',
+        'category': 'newTestament',
+        'difficulty': 'beginner',
+        'estimated_time_per_day': '15-20 min',
+        'total_readings': 90,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+      {
+        'id': 'plan_psalms_proverbs',
+        'title': 'Psalms & Proverbs',
+        'description': 'Explore wisdom and worship through Psalms and Proverbs. Great for daily meditation and practical living.',
+        'duration': '60 days',
+        'category': 'wisdom',
+        'difficulty': 'beginner',
+        'estimated_time_per_day': '10-15 min',
+        'total_readings': 60,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+      {
+        'id': 'plan_gospels',
+        'title': 'Life of Jesus (4 Gospels)',
+        'description': 'Journey through the life, teachings, death, and resurrection of Jesus Christ through all four Gospel accounts.',
+        'duration': '40 days',
+        'category': 'gospels',
+        'difficulty': 'beginner',
+        'estimated_time_per_day': '15-20 min',
+        'total_readings': 40,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+      {
+        'id': 'plan_one_year_bible',
+        'title': 'One Year Bible Reading',
+        'description': 'Read the entire Bible in one year with a balanced mix of Old Testament, New Testament, Psalms, and Proverbs daily.',
+        'duration': '365 days',
+        'category': 'wholeBible',
+        'difficulty': 'challenging',
+        'estimated_time_per_day': '20-30 min',
+        'total_readings': 365,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+      {
+        'id': 'plan_paul_letters',
+        'title': 'Paul\'s Letters',
+        'description': 'Study all of Paul\'s epistles to understand his theology, church teachings, and practical Christian living.',
+        'duration': '45 days',
+        'category': 'epistles',
+        'difficulty': 'intermediate',
+        'estimated_time_per_day': '15-20 min',
+        'total_readings': 45,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+      {
+        'id': 'plan_pentateuch',
+        'title': 'Books of Moses (Pentateuch)',
+        'description': 'Discover God\'s covenant with His people through Genesis, Exodus, Leviticus, Numbers, and Deuteronomy.',
+        'duration': '75 days',
+        'category': 'oldTestament',
+        'difficulty': 'intermediate',
+        'estimated_time_per_day': '20-25 min',
+        'total_readings': 75,
+        'completed_readings': 0,
+        'is_started': 0,
+        'start_date': null,
+      },
+    ];
+
+    for (final plan in plans) {
+      await db.insert('reading_plans', plan);
     }
   }
 
