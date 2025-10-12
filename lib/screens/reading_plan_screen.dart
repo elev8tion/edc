@@ -14,7 +14,6 @@ import '../core/models/reading_plan.dart';
 import '../core/navigation/navigation_service.dart';
 import '../utils/responsive_utils.dart';
 import '../utils/reading_reference_parser.dart';
-import 'chapter_reading_screen.dart';
 
 class ReadingPlanScreen extends ConsumerStatefulWidget {
   const ReadingPlanScreen({super.key});
@@ -928,16 +927,11 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
         reading.chapters,
       );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChapterReadingScreen(
-            book: parsed.book,
-            startChapter: parsed.startChapter,
-            endChapter: parsed.endChapter,
-            readingId: reading.id,
-          ),
-        ),
+      NavigationService.goToChapterReading(
+        book: parsed.book,
+        startChapter: parsed.startChapter,
+        endChapter: parsed.endChapter,
+        readingId: reading.id,
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

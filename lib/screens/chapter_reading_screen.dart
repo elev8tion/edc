@@ -355,10 +355,10 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               // Chapter title
               Text(
                 '${widget.book} $chapterNum',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppTheme.primaryColor,
+                  color: Colors.black,
                   letterSpacing: -0.5,
                 ),
               ),

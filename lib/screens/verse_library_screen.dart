@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -623,9 +624,14 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             ListTile(
               leading: const Icon(Icons.share, color: Colors.white),
               title: const Text('Share with Friends', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                // TODO: Implement share functionality
+              onTap: () async {
                 NavigationService.pop();
+                // Share verse with friends using share_plus
+                final shareText = '"${verse.text}"\n\n— ${verse.reference}';
+                await Share.share(
+                  shareText,
+                  subject: 'Bible Verse - ${verse.reference}',
+                );
               },
             ),
             const SizedBox(height: AppSpacing.xl),

@@ -144,6 +144,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildStatsRow() {
     final streakAsync = ref.watch(devotionalStreakProvider);
     final totalCompletedAsync = ref.watch(totalDevotionalsCompletedProvider);
+    final prayersCountAsync = ref.watch(activePrayersCountProvider);
+    final versesCountAsync = ref.watch(savedVersesCountProvider);
 
     return SizedBox(
       height: 120,
@@ -177,20 +179,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(width: AppSpacing.lg),
-          _buildStatCard(
-            value: "42",
-            label: "Prayers",
-            icon: Icons.favorite,
-            color: Colors.red,
-            delay: 700,
+          prayersCountAsync.when(
+            data: (count) => _buildStatCard(
+              value: "$count",
+              label: "Prayers",
+              icon: Icons.favorite,
+              color: Colors.red,
+              delay: 700,
+            ),
+            loading: () => _buildStatCardLoading(
+              label: "Prayers",
+              icon: Icons.favorite,
+              color: Colors.red,
+              delay: 700,
+            ),
+            error: (_, __) => _buildStatCard(
+              value: "0",
+              label: "Prayers",
+              icon: Icons.favorite,
+              color: Colors.red,
+              delay: 700,
+            ),
           ),
           const SizedBox(width: AppSpacing.lg),
-          _buildStatCard(
-            value: "156",
-            label: "Verses Read",
-            icon: Icons.menu_book,
-            color: AppTheme.goldColor,
-            delay: 800,
+          versesCountAsync.when(
+            data: (count) => _buildStatCard(
+              value: "$count",
+              label: "Saved Verses",
+              icon: Icons.menu_book,
+              color: AppTheme.goldColor,
+              delay: 800,
+            ),
+            loading: () => _buildStatCardLoading(
+              label: "Saved Verses",
+              icon: Icons.menu_book,
+              color: AppTheme.goldColor,
+              delay: 800,
+            ),
+            error: (_, __) => _buildStatCard(
+              value: "0",
+              label: "Saved Verses",
+              icon: Icons.menu_book,
+              color: AppTheme.goldColor,
+              delay: 800,
+            ),
           ),
           const SizedBox(width: AppSpacing.lg),
           totalCompletedAsync.when(
@@ -618,11 +650,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             cacheExtent: 200,
             children: [
               _buildQuickActionCard(
-                label: "Bible Library",
-                icon: Icons.search,
+                label: "Read Bible",
+                icon: Icons.menu_book,
                 color: AppTheme.goldColor,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
+                onTap: () => NavigationService.goToBibleBrowser(),
                 delay: 1400,
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              _buildQuickActionCard(
+                label: "Verse Library",
+                icon: Icons.search,
+                color: Colors.blue,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
+                delay: 1500,
               ),
               const SizedBox(width: AppSpacing.lg),
               _buildQuickActionCard(
@@ -630,14 +670,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 icon: Icons.add,
                 color: Colors.green,
                 onTap: () => NavigationService.goToPrayerJournal(),
-                delay: 1500,
-              ),
-              const SizedBox(width: AppSpacing.lg),
-              _buildQuickActionCard(
-                label: "Share Verse",
-                icon: Icons.share,
-                color: Colors.blue,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.verseLibrary),
                 delay: 1600,
               ),
               const SizedBox(width: AppSpacing.lg),

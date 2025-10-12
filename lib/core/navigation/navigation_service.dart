@@ -102,6 +102,30 @@ class NavigationService {
     return pushNamed(AppRoutes.readingPlan);
   }
 
+  /// Navigate to Bible browser screen
+  static Future<void> goToBibleBrowser() {
+    return pushNamed(AppRoutes.bibleBrowser);
+  }
+
+  /// Navigate to chapter reading screen with arguments
+  /// Arguments should be a Map with: book, startChapter, endChapter, readingId (optional)
+  static Future<void> goToChapterReading({
+    required String book,
+    required int startChapter,
+    required int endChapter,
+    String? readingId,
+  }) {
+    return pushNamed(
+      AppRoutes.chapterReading,
+      arguments: {
+        'book': book,
+        'startChapter': startChapter,
+        'endChapter': endChapter,
+        'readingId': readingId,
+      },
+    );
+  }
+
   /// Show a dialog
   static Future<T?> showAppDialog<T>({
     required Widget dialog,

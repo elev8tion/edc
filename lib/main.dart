@@ -21,6 +21,8 @@ import 'screens/verse_library_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/devotional_screen.dart';
 import 'screens/reading_plan_screen.dart';
+import 'screens/chapter_reading_screen.dart';
+import 'screens/bible_browser_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -184,6 +186,22 @@ class EverydayChristianApp extends StatelessWidget {
         break;
       case AppRoutes.readingPlan:
         page = const ReadingPlanScreen();
+        break;
+      case AppRoutes.chapterReading:
+        final args = settings.arguments as Map<String, dynamic>?;
+        if (args != null) {
+          page = ChapterReadingScreen(
+            book: args['book'] as String,
+            startChapter: args['startChapter'] as int,
+            endChapter: args['endChapter'] as int,
+            readingId: args['readingId'] as String?,
+          );
+        } else {
+          page = const SplashScreen(); // Fallback if no arguments
+        }
+        break;
+      case AppRoutes.bibleBrowser:
+        page = const BibleBrowserScreen();
         break;
       default:
         page = const SplashScreen();

@@ -41,12 +41,17 @@ final prayerServiceProvider = Provider<PrayerService>((ref) {
   return PrayerService(database);
 });
 
+// TODO: REFACTOR - Multiple verse services exist with overlapping functionality
+// - core/services/verse_service.dart (legacy, used by verse_preferences_widget, daily_verse_screen)
+// - services/verse_service.dart (legacy, used by verse_context_service)
+// - services/unified_verse_service.dart (modern, feature-complete, preferred)
+// RECOMMENDATION: Migrate all functionality to UnifiedVerseService and deprecate legacy services
 final verseServiceProvider = Provider<VerseService>((ref) {
   final database = ref.watch(databaseServiceProvider);
   return VerseService(database);
 });
 
-// Unified Verse Service (for verse library and search)
+// Unified Verse Service (modern, feature-complete - USE THIS for new features)
 final unifiedVerseServiceProvider = Provider<UnifiedVerseService>((ref) {
   return UnifiedVerseService();
 });
@@ -89,6 +94,25 @@ final availableThemesProvider = FutureProvider<List<String>>((ref) async {
 final verseStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final service = ref.watch(unifiedVerseServiceProvider);
   return await service.getVerseStats();
+});
+
+/// Provider for count of saved/favorite verses
+final savedVersesCountProvider = FutureProvider<int>((ref) async {
+  final service = ref.watch(unifiedVerseServiceProvider);
+  final verses = await service.getFavoriteVerses();
+  return verses.length;
+});
+
+/// Provider for count of active prayers
+final activePrayersCountProvider = FutureProvider<int>((ref) async {
+  final service = ref.watch(prayerServiceProvider);
+  return await service.getPrayerCount();
+});
+
+/// Provider for count of active reading plans
+final activeReadingPlansCountProvider = FutureProvider<int>((ref) async {
+  final plans = await ref.watch(activeReadingPlansProvider.future);
+  return plans.length;
 });
 
 final devotionalServiceProvider = Provider<DevotionalService>((ref) {
