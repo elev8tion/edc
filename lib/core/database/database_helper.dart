@@ -10,7 +10,7 @@ import '../logging/app_logger.dart';
 /// Unified database helper with all tables in one schema
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 4;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -65,6 +65,7 @@ class DatabaseHelper {
         path,
         version: _databaseVersion,
         onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
         onOpen: _onOpen,
       );
     } catch (e, stackTrace) {
@@ -315,7 +316,8 @@ class DatabaseHelper {
           is_private INTEGER DEFAULT 1,
           reminder_frequency TEXT,
           grace TEXT,
-          need_help TEXT
+          need_help TEXT,
+          FOREIGN KEY (category) REFERENCES prayer_categories (id) ON DELETE RESTRICT
         )
       ''');
 
@@ -327,9 +329,12 @@ class DatabaseHelper {
           icon TEXT NOT NULL,
           color TEXT NOT NULL,
           description TEXT,
-          sort_order INTEGER DEFAULT 0,
+          display_order INTEGER DEFAULT 0,
           is_active INTEGER DEFAULT 1,
-          created_at INTEGER NOT NULL
+          is_default INTEGER DEFAULT 0,
+          created_at INTEGER NOT NULL,
+          date_created INTEGER NOT NULL,
+          date_modified INTEGER
         )
       ''');
 
@@ -445,6 +450,108 @@ class DatabaseHelper {
     }
   }
 
+  /// Handle database upgrade
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      try {
+        // Fix Issue #1: Rename sort_order to display_order
+        await db.execute('ALTER TABLE prayer_categories RENAME COLUMN sort_order TO display_order');
+        _logger.info('Successfully renamed sort_order to display_order');
+      } catch (e) {
+        _logger.error('Migration v1→v2 failed: $e');
+        // If column already has correct name, continue
+        if (!e.toString().contains('no such column')) {
+          rethrow;
+        }
+      }
+
+      try {
+        // Fix Issue #5: Add cat_ prefix to default category IDs if missing
+        await db.execute("""
+          UPDATE prayer_categories
+          SET id = 'cat_' || id
+          WHERE id NOT LIKE 'cat_%'
+        """);
+        _logger.info('Successfully updated category IDs with cat_ prefix');
+      } catch (e) {
+        _logger.error('Category ID migration failed: $e');
+      }
+    }
+
+    if (oldVersion < 3) {
+      try {
+        // Add foreign key constraint by recreating table
+        await db.execute('''
+          CREATE TABLE prayer_requests_new (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            category TEXT NOT NULL,
+            status TEXT DEFAULT 'active',
+            date_created INTEGER NOT NULL,
+            date_answered INTEGER,
+            is_answered INTEGER DEFAULT 0,
+            answer_description TEXT,
+            testimony TEXT,
+            is_private INTEGER DEFAULT 1,
+            reminder_frequency TEXT,
+            grace TEXT,
+            need_help TEXT,
+            FOREIGN KEY (category) REFERENCES prayer_categories (id) ON DELETE RESTRICT
+          )
+        ''');
+
+        // Copy data from old table
+        await db.execute('''
+          INSERT INTO prayer_requests_new
+          SELECT * FROM prayer_requests
+        ''');
+
+        // Drop old table
+        await db.execute('DROP TABLE prayer_requests');
+
+        // Rename new table
+        await db.execute('ALTER TABLE prayer_requests_new RENAME TO prayer_requests');
+
+        _logger.info('Successfully added foreign key constraint to prayer_requests');
+      } catch (e) {
+        _logger.error('Foreign key migration failed: $e');
+      }
+    }
+
+    if (oldVersion < 4) {
+      try {
+        // Add missing columns to prayer_categories table
+        await db.execute('ALTER TABLE prayer_categories ADD COLUMN is_default INTEGER DEFAULT 0');
+        _logger.info('Successfully added is_default column');
+      } catch (e) {
+        _logger.error('Failed to add is_default column: $e');
+      }
+
+      try {
+        await db.execute('ALTER TABLE prayer_categories ADD COLUMN date_created INTEGER NOT NULL DEFAULT 0');
+        _logger.info('Successfully added date_created column');
+      } catch (e) {
+        _logger.error('Failed to add date_created column: $e');
+      }
+
+      try {
+        await db.execute('ALTER TABLE prayer_categories ADD COLUMN date_modified INTEGER');
+        _logger.info('Successfully added date_modified column');
+      } catch (e) {
+        _logger.error('Failed to add date_modified column: $e');
+      }
+
+      // Update existing rows to set created_at as date_created if it exists
+      try {
+        await db.execute('UPDATE prayer_categories SET date_created = created_at WHERE date_created = 0');
+        _logger.info('Successfully migrated created_at to date_created');
+      } catch (e) {
+        _logger.error('Failed to migrate created_at: $e');
+      }
+    }
+  }
+
   /// Handle database open
   Future<void> _onOpen(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON');
@@ -540,22 +647,82 @@ class DatabaseHelper {
   Future<void> _insertDefaultPrayerCategories(Database db) async {
     final categories = [
       {
-        'id': 'family',
+        'id': 'cat_family',
         'name': 'Family',
         'icon': 'people',
         'color': '#4CAF50',
         'description': 'Prayers for family members',
-        'sort_order': 1,
+        'display_order': 1,
         'is_active': 1,
         'created_at': DateTime.now().millisecondsSinceEpoch,
       },
       {
-        'id': 'health',
+        'id': 'cat_health',
         'name': 'Health',
         'icon': 'favorite',
         'color': '#F44336',
         'description': 'Prayers for health and healing',
-        'sort_order': 2,
+        'display_order': 2,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_work',
+        'name': 'Work',
+        'icon': 'work',
+        'color': '#2196F3',
+        'description': 'Prayers for work and career',
+        'display_order': 3,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_faith',
+        'name': 'Faith',
+        'icon': 'church',
+        'color': '#9C27B0',
+        'description': 'Prayers for spiritual growth and faith',
+        'display_order': 4,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_relationships',
+        'name': 'Relationships',
+        'icon': 'favorite_border',
+        'color': '#E91E63',
+        'description': 'Prayers for relationships and friendships',
+        'display_order': 5,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_guidance',
+        'name': 'Guidance',
+        'icon': 'explore',
+        'color': '#673AB7',
+        'description': 'Prayers for direction and wisdom',
+        'display_order': 6,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_gratitude',
+        'name': 'Gratitude',
+        'icon': 'celebration',
+        'color': '#FFC107',
+        'description': 'Prayers of thanksgiving and gratitude',
+        'display_order': 7,
+        'is_active': 1,
+        'created_at': DateTime.now().millisecondsSinceEpoch,
+      },
+      {
+        'id': 'cat_other',
+        'name': 'Other',
+        'icon': 'more_horiz',
+        'color': '#9E9E9E',
+        'description': 'Other prayer requests',
+        'display_order': 8,
         'is_active': 1,
         'created_at': DateTime.now().millisecondsSinceEpoch,
       },

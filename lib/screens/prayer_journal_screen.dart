@@ -13,10 +13,11 @@ import '../components/glass_fab.dart';
 import '../widgets/category_management_dialog.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
-import '../core/models/prayer_request.dart' hide PrayerCategory;
+import '../core/models/prayer_request.dart';
 import '../core/models/prayer_category.dart';
 import '../core/providers/prayer_providers.dart';
 import '../core/providers/category_providers.dart';
+import '../core/widgets/skeleton_loader.dart';
 import '../utils/responsive_utils.dart';
 
 class PrayerJournalScreen extends ConsumerStatefulWidget {
@@ -329,7 +330,21 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           ),
         ).animate().fadeIn(duration: AppAnimations.slow, delay: (400).ms);
       },
-      loading: () => const SizedBox.shrink(),
+      loading: () => Container(
+        margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
+        height: 36,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+          children: List.generate(
+            3,
+            (i) => const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: SkeletonChip(),
+            ),
+          ),
+        ),
+      ),
       error: (_, __) => const SizedBox.shrink(),
     );
   }
@@ -358,11 +373,29 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+        padding: AppSpacing.screenPadding,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 3,
+        itemBuilder: (_, __) => const SkeletonCard(),
+      ),
       error: (error, stack) => Center(
-        child: Text(
-          'Error loading prayers: $error',
-          style: const TextStyle(color: Colors.white),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+            const SizedBox(height: 16),
+            Text(
+              'Unable to load prayers',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primaryText),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => ref.refresh(activePrayersProvider),
+              child: const Text('Retry'),
+            ),
+          ],
         ),
       ),
     );
@@ -392,11 +425,29 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+        padding: AppSpacing.screenPadding,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 3,
+        itemBuilder: (_, __) => const SkeletonCard(),
+      ),
       error: (error, stack) => Center(
-        child: Text(
-          'Error loading answered prayers: $error',
-          style: const TextStyle(color: Colors.white),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
+            const SizedBox(height: 16),
+            Text(
+              'Unable to load answered prayers',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primaryText),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => ref.refresh(answeredPrayersProvider),
+              child: const Text('Retry'),
+            ),
+          ],
         ),
       ),
     );

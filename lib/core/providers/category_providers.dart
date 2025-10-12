@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/prayer_category.dart';
 import '../services/category_service.dart';
@@ -16,7 +17,9 @@ final activeCategoriesProvider = FutureProvider<List<PrayerCategory>>((ref) asyn
     final service = ref.read(categoryServiceProvider);
     return await service.getActiveCategories();
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return empty list instead of crashing
+    debugPrint('Failed to load active categories: $error');
+    return [];
   }
 });
 
@@ -26,7 +29,9 @@ final allCategoriesProvider = FutureProvider<List<PrayerCategory>>((ref) async {
     final service = ref.read(categoryServiceProvider);
     return await service.getAllCategories();
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return empty list instead of crashing
+    debugPrint('Failed to load all categories: $error');
+    return [];
   }
 });
 
@@ -36,7 +41,9 @@ final categoryByIdProvider = FutureProvider.family<PrayerCategory?, String>((ref
     final service = ref.read(categoryServiceProvider);
     return await service.getCategoryById(id);
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return null instead of crashing
+    debugPrint('Failed to load category $id: $error');
+    return null;
   }
 });
 
@@ -46,7 +53,19 @@ final categoryStatisticsProvider = FutureProvider.family<CategoryStatistics, Str
     final service = ref.read(categoryServiceProvider);
     return await service.getCategoryStatistics(categoryId);
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return default statistics instead of crashing
+    debugPrint('Failed to load category statistics for $categoryId: $error');
+    return CategoryStatistics(
+      categoryId: categoryId,
+      categoryName: 'Unknown',
+      totalPrayers: 0,
+      activePrayers: 0,
+      answeredPrayers: 0,
+      archivedPrayers: 0,
+      answerRate: 0.0,
+      categoryColor: const Color(0xFF9E9E9E),
+      categoryIcon: const IconData(0xe3fc),
+    );
   }
 });
 
@@ -56,7 +75,9 @@ final allCategoryStatisticsProvider = FutureProvider<List<CategoryStatistics>>((
     final service = ref.read(categoryServiceProvider);
     return await service.getAllCategoryStatistics();
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return empty list instead of crashing
+    debugPrint('Failed to load all category statistics: $error');
+    return [];
   }
 });
 
@@ -66,7 +87,9 @@ final customCategoryCountProvider = FutureProvider<int>((ref) async {
     final service = ref.read(categoryServiceProvider);
     return await service.getCustomCategoryCount();
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return 0 instead of crashing
+    debugPrint('Failed to load custom category count: $error');
+    return 0;
   }
 });
 

@@ -127,7 +127,7 @@ final prayerStreakServiceProvider = Provider<PrayerStreakService>((ref) {
 });
 
 // State Providers
-final connectivityStateProvider = StreamProvider<bool>((ref) {
+final connectivityStateProvider = StreamProvider.autoDispose<bool>((ref) {
   final service = ref.watch(connectivityServiceProvider);
   return service.connectivityStream;
 });

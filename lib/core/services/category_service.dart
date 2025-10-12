@@ -137,7 +137,7 @@ class CategoryService {
     final prayersUsingCategory = await db.query(
       'prayer_requests',
       where: 'category = ?',
-      whereArgs: [category.name],
+      whereArgs: [category.id],
       limit: 1,
     );
 

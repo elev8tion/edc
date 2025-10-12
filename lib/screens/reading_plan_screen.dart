@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/category_badge.dart';
 import '../components/calendar_heatmap_widget.dart';
@@ -14,6 +13,8 @@ import '../core/providers/app_providers.dart';
 import '../core/models/reading_plan.dart';
 import '../core/navigation/navigation_service.dart';
 import '../utils/responsive_utils.dart';
+import '../utils/reading_reference_parser.dart';
+import 'chapter_reading_screen.dart';
 
 class ReadingPlanScreen extends ConsumerStatefulWidget {
   const ReadingPlanScreen({super.key});
@@ -529,89 +530,92 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
   Widget _buildReadingCard(DailyReading reading, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      child: FrostedGlassCard(
-        child: Row(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: reading.isCompleted
-                    ? Colors.green.withValues(alpha: 0.2)
-                    : AppTheme.primaryColor.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: reading.isCompleted
-                      ? Colors.green.withValues(alpha: 0.5)
-                      : AppTheme.primaryColor.withValues(alpha: 0.5),
-                ),
-              ),
-              child: Icon(
-                reading.isCompleted ? Icons.check_circle : Icons.book,
-                color: reading.isCompleted ? Colors.green : AppTheme.primaryColor,
-                size: ResponsiveUtils.iconSize(context, 24),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.lg),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    reading.title,
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryText,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    reading.description,
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                      color: AppColors.secondaryText,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        size: ResponsiveUtils.iconSize(context, 14),
-                        color: AppColors.tertiaryText,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        reading.estimatedTime,
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                          color: AppColors.tertiaryText,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _toggleReadingComplete(reading),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
+      child: GestureDetector(
+        onTap: () => _openChapterReader(context, reading),
+        child: FrostedGlassCard(
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   color: reading.isCompleted
                       ? Colors.green.withValues(alpha: 0.2)
                       : AppTheme.primaryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: reading.isCompleted
+                        ? Colors.green.withValues(alpha: 0.5)
+                        : AppTheme.primaryColor.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Icon(
-                  reading.isCompleted ? Icons.check : Icons.circle_outlined,
-                  color: AppColors.primaryText,
-                  size: ResponsiveUtils.iconSize(context, 20),
+                  reading.isCompleted ? Icons.check_circle : Icons.book,
+                  color: reading.isCompleted ? Colors.green : AppTheme.primaryColor,
+                  size: ResponsiveUtils.iconSize(context, 24),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      reading.title,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      reading.description,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                        color: AppColors.secondaryText,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: ResponsiveUtils.iconSize(context, 14),
+                          color: AppColors.tertiaryText,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          reading.estimatedTime,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                            color: AppColors.tertiaryText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _toggleReadingComplete(reading),
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: reading.isCompleted
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : AppTheme.primaryColor.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    reading.isCompleted ? Icons.check : Icons.circle_outlined,
+                    color: AppColors.primaryText,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -901,6 +905,36 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
         ],
       ),
     );
+  }
+
+  /// Opens the chapter reader for a specific daily reading
+  void _openChapterReader(BuildContext context, DailyReading reading) {
+    try {
+      final parsed = ReadingReferenceParser.fromDailyReading(
+        reading.book,
+        reading.chapters,
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChapterReadingScreen(
+            book: parsed.book,
+            startChapter: parsed.startChapter,
+            endChapter: parsed.endChapter,
+            readingId: reading.id,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not open reading: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   Future<void> _toggleReadingComplete(DailyReading reading) async {

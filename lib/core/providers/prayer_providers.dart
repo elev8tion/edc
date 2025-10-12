@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/prayer_request.dart';
 import '../error/error_handler.dart';
@@ -11,7 +12,9 @@ final activePrayersProvider = FutureProvider<List<PrayerRequest>>((ref) async {
     final categoryFilter = ref.watch(selectedCategoryFilterProvider);
     return await service.getActivePrayers(categoryFilter: categoryFilter);
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return empty list instead of crashing
+    debugPrint('Failed to load active prayers: $error');
+    return [];
   }
 });
 
@@ -21,7 +24,9 @@ final answeredPrayersProvider = FutureProvider<List<PrayerRequest>>((ref) async 
     final categoryFilter = ref.watch(selectedCategoryFilterProvider);
     return await service.getAnsweredPrayers(categoryFilter: categoryFilter);
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return empty list instead of crashing
+    debugPrint('Failed to load answered prayers: $error');
+    return [];
   }
 });
 
@@ -38,7 +43,13 @@ final prayerStatsProvider = FutureProvider<PrayerStats>((ref) async {
       activePrayers: totalCount - answeredCount,
     );
   } catch (error) {
-    throw ErrorHandler.handle(error);
+    // Log error but return default statistics instead of crashing
+    debugPrint('Failed to load prayer statistics: $error');
+    return PrayerStats(
+      totalPrayers: 0,
+      answeredPrayers: 0,
+      activePrayers: 0,
+    );
   }
 });
 
