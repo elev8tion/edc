@@ -11,6 +11,7 @@ import '../components/gradient_background.dart';
 import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
+import '../components/glass_streaming_message.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 
@@ -29,6 +30,9 @@ class ChatScreen extends HookConsumerWidget {
     final scrollController = useScrollController();
     final messages = useState<List<ChatMessage>>([]);
     final isTyping = useState(false);
+    final isStreaming = useState(false);
+    final isStreamingComplete = useState(false);
+    final streamedText = useState('');
     final sessionId = useState<String?>(null);
     final conversationService = useMemoized(() => ConversationService());
 
@@ -41,53 +45,24 @@ class ChatScreen extends HookConsumerWidget {
         try {
           debugPrint('🔄 Initializing chat session...');
 
-          // Try to resume the last active session first
-          String? existingSessionId = await conversationService.getLastActiveSession();
+          // Always start with a fresh session (old sessions accessible via history)
+          debugPrint('🆕 Creating fresh session');
+          final newSessionId = await conversationService.createSession(
+            title: 'New Conversation',
+          );
+          sessionId.value = newSessionId;
+          debugPrint('✅ Created new session: $newSessionId');
 
-          if (existingSessionId != null) {
-            // Resume existing session
-            debugPrint('✅ Resuming session: $existingSessionId');
-            sessionId.value = existingSessionId;
+          // Add welcome message with sessionId
+          final welcomeMessage = ChatMessage.system(
+            content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
+            sessionId: newSessionId,
+          );
+          await conversationService.saveMessage(welcomeMessage);
 
-            // Load messages from database
-            final loadedMessages = await conversationService.getMessages(existingSessionId);
-            debugPrint('📨 Loaded ${loadedMessages.length} messages from session $existingSessionId');
-
-            if (loadedMessages.isEmpty) {
-              // Session exists but no messages - add welcome message
-              debugPrint('⚠️ Session exists but has no messages, adding welcome message');
-              final welcomeMessage = ChatMessage.system(
-                content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
-                sessionId: existingSessionId,
-              );
-              await conversationService.saveMessage(welcomeMessage);
-              messages.value = [welcomeMessage];
-              debugPrint('✅ Welcome message added to existing session');
-            } else {
-              // Load existing messages
-              messages.value = loadedMessages;
-              debugPrint('✅ Loaded existing conversation with ${loadedMessages.length} messages');
-            }
-          } else {
-            // No existing session - create new one
-            debugPrint('🆕 No active session found, creating new session');
-            final newSessionId = await conversationService.createSession(
-              title: 'New Conversation',
-            );
-            sessionId.value = newSessionId;
-            debugPrint('✅ Created new session: $newSessionId');
-
-            // Add welcome message with sessionId
-            final welcomeMessage = ChatMessage.system(
-              content: 'Peace be with you! 🙏\n\nI\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?',
-              sessionId: newSessionId,
-            );
-            await conversationService.saveMessage(welcomeMessage);
-
-            // Set messages
-            messages.value = [welcomeMessage];
-            debugPrint('✅ New session initialized with welcome message');
-          }
+          // Set messages
+          messages.value = [welcomeMessage];
+          debugPrint('✅ New session initialized with welcome message');
         } catch (e, stackTrace) {
           debugPrint('❌ Failed to initialize session: $e');
           debugPrint('❌ Stack trace: $stackTrace');
@@ -136,7 +111,9 @@ class ChatScreen extends HookConsumerWidget {
       );
 
       messages.value = [...messages.value, userMessage];
-      isTyping.value = true;
+      isStreaming.value = true;
+      isStreamingComplete.value = false;
+      streamedText.value = '';
       messageController.clear();
 
       // Save user message to database
@@ -150,30 +127,52 @@ class ChatScreen extends HookConsumerWidget {
       scrollToBottom();
 
       try {
-        // Use actual AI service
+        // Use actual AI service with streaming
         final aiService = ref.read(aiServiceProvider);
         debugPrint('🔍 AI Service ready: ${aiService.isReady}');
-        
+
         if (!aiService.isReady) {
           debugPrint('⚠️ AI Service not ready, using fallback');
           throw Exception('AI Service not ready');
         }
-        
-        debugPrint('🚀 Calling AI service with: "${text.trim()}"');
-        final response = await aiService.generateResponse(
+
+        debugPrint('🚀 Starting streaming AI response for: "${text.trim()}"');
+
+        // Accumulate full response for saving
+        final fullResponse = StringBuffer();
+
+        // Start streaming
+        final stream = aiService.generateResponseStream(
           userInput: text.trim(),
           conversationHistory: messages.value,
         );
-        debugPrint('✅ AI service returned response: ${response.content.substring(0, 100)}...');
 
+        await for (final chunk in stream) {
+          streamedText.value += chunk;
+          fullResponse.write(chunk);
+
+          // Add small delay for smoother reading experience
+          await Future.delayed(const Duration(milliseconds: 30));
+          scrollToBottom();
+        }
+
+        debugPrint('✅ Streaming complete, full response length: ${fullResponse.length}');
+
+        // Mark streaming as complete but keep widget visible
+        isStreamingComplete.value = true;
+
+        // Wait for completion animation to finish
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Create final AI message with complete response
         final aiMessage = ChatMessage.ai(
-          content: response.content,
-          verses: response.verses,
-          metadata: response.metadata,
+          content: fullResponse.toString(),
           sessionId: sessionId.value,
         );
 
-        isTyping.value = false;
+        // Now transition to final message
+        isStreaming.value = false;
+        isStreamingComplete.value = false;
         messages.value = [...messages.value, aiMessage];
 
         // Save AI message to database
@@ -182,7 +181,6 @@ class ChatScreen extends HookConsumerWidget {
           debugPrint('💾 Saved AI message to session ${sessionId.value}');
 
           // Auto-generate conversation title after first exchange
-          // Count only user and AI messages (excluding system welcome message)
           final conversationMessages = messages.value.where((m) =>
             m.type == MessageType.user || m.type == MessageType.ai
           ).toList();
@@ -195,7 +193,7 @@ class ChatScreen extends HookConsumerWidget {
               final userMsg = conversationMessages.first.content;
               final title = await GeminiAIService.instance.generateConversationTitle(
                 userMessage: userMsg,
-                aiResponse: response.content,
+                aiResponse: fullResponse.toString(),
               );
               await conversationService.updateSessionTitle(sessionId.value!, title);
               debugPrint('✅ Auto-generated title: "$title"');
@@ -218,7 +216,9 @@ class ChatScreen extends HookConsumerWidget {
           sessionId: sessionId.value,
         );
 
-        isTyping.value = false;
+        isStreaming.value = false;
+        isStreamingComplete.value = false;
+        streamedText.value = '';
         messages.value = [...messages.value, aiMessage];
 
         // Save fallback AI message to database
@@ -581,7 +581,16 @@ class ChatScreen extends HookConsumerWidget {
                 // AI Service initialization status banner
                 _buildAIStatusBanner(aiServiceState),
                 Expanded(
-                  child: _buildMessagesList(context, scrollController, messages.value, isTyping.value, regenerateResponse),
+                  child: _buildMessagesList(
+                    context,
+                    scrollController,
+                    messages.value,
+                    isTyping.value,
+                    isStreaming.value,
+                    isStreamingComplete.value,
+                    streamedText.value,
+                    regenerateResponse,
+                  ),
                 ),
                 _buildMessageInput(messageController, sendMessage),
               ],
@@ -822,13 +831,25 @@ class ChatScreen extends HookConsumerWidget {
     ScrollController scrollController,
     List<ChatMessage> messages,
     bool isTyping,
+    bool isStreaming,
+    bool isStreamingComplete,
+    String streamedText,
     Future<void> Function(int) onRegenerateResponse,
   ) {
     return ListView.builder(
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      itemCount: messages.length + (isTyping ? 1 : 0),
+      itemCount: messages.length + (isStreaming ? 1 : (isTyping ? 1 : 0)),
       itemBuilder: (listContext, index) {
+        // Show streaming message while streaming
+        if (index == messages.length && isStreaming) {
+          return GlassStreamingMessage(
+            streamedText: streamedText,
+            isComplete: isStreamingComplete,
+          );
+        }
+
+        // Show typing indicator as fallback
         if (index == messages.length && isTyping) {
           return _buildTypingIndicator();
         }

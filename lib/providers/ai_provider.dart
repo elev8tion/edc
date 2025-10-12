@@ -169,13 +169,31 @@ class GeminiAIServiceAdapter implements AIService {
     List conversationHistory = const [],
     Map<String, dynamic>? context,
   }) async* {
-    // Gemini doesn't support streaming yet, so just return the full response
-    final response = await generateResponse(
+    // Detect theme from user input
+    final themes = BiblicalPrompts.detectThemes(userInput);
+    final theme = themes.isNotEmpty ? themes.first : 'comfort';
+
+    // Get relevant verses for the theme
+    final verses = await getRelevantVerses(theme, limit: 3);
+
+    // Convert conversation history to strings
+    final historyStrings = conversationHistory.map((msg) {
+      if (msg is String) return msg;
+      return msg.toString();
+    }).toList();
+
+    // Use Gemini's streaming capability
+    final stream = _gemini.generateStreamingResponse(
       userInput: userInput,
-      conversationHistory: conversationHistory,
-      context: context,
+      theme: theme,
+      verses: verses,
+      conversationHistory: historyStrings,
     );
-    yield response.content;
+
+    // Stream chunks as they arrive
+    await for (final chunk in stream) {
+      yield chunk;
+    }
   }
 
   @override

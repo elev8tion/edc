@@ -216,6 +216,48 @@ class GeminiAIService {
     }
   }
 
+  /// Generate streaming response using Gemini (for real-time text display)
+  Stream<String> generateStreamingResponse({
+    required String userInput,
+    required String theme,
+    required List<BibleVerse> verses,
+    List<String>? conversationHistory,
+  }) async* {
+    if (!isReady) {
+      throw Exception('Gemini AI Service not initialized - cannot generate streaming response');
+    }
+
+    try {
+      // Find relevant examples
+      final relevantExamples = _findRelevantExamples(userInput, 5);
+
+      _logger.info('Found ${relevantExamples.length} relevant training examples', context: 'GeminiAIService');
+
+      final prompt = _buildPrompt(
+        userInput: userInput,
+        theme: theme,
+        verses: verses,
+        relevantExamples: relevantExamples,
+        conversationHistory: conversationHistory,
+      );
+
+      _logger.info('Sending streaming request to Gemini...', context: 'GeminiAIService');
+
+      final stream = _model!.generateContentStream([Content.text(prompt)]);
+
+      await for (final chunk in stream) {
+        if (chunk.text != null && chunk.text!.isNotEmpty) {
+          yield chunk.text!;
+        }
+      }
+
+      _logger.info('✅ Streaming response completed', context: 'GeminiAIService');
+    } catch (e) {
+      _logger.error('Gemini streaming error: $e', context: 'GeminiAIService');
+      rethrow;
+    }
+  }
+
   String _buildPrompt({
     required String userInput,
     required String theme,
