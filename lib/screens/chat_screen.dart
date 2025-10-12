@@ -12,6 +12,9 @@ import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
 import '../components/glass_streaming_message.dart';
+import '../components/scroll_to_bottom.dart';
+import '../components/is_typing_indicator.dart';
+import '../components/time_and_status.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 
@@ -35,6 +38,31 @@ class ChatScreen extends HookConsumerWidget {
     final streamedText = useState('');
     final sessionId = useState<String?>(null);
     final conversationService = useMemoized(() => ConversationService());
+    final canSend = useState(false);
+    final showScrollToBottom = useState(false);
+
+    // Listen to text changes to update send button state
+    useEffect(() {
+      void listener() {
+        canSend.value = messageController.text.trim().isNotEmpty;
+      }
+      messageController.addListener(listener);
+      return () => messageController.removeListener(listener);
+    }, [messageController]);
+
+    // Listen to scroll position to show/hide scroll to bottom button
+    useEffect(() {
+      void listener() {
+        if (scrollController.hasClients) {
+          final maxScroll = scrollController.position.maxScrollExtent;
+          final currentScroll = scrollController.position.pixels;
+          // Show button if scrolled up more than 200 pixels from bottom
+          showScrollToBottom.value = (maxScroll - currentScroll) > 200;
+        }
+      }
+      scrollController.addListener(listener);
+      return () => scrollController.removeListener(listener);
+    }, [scrollController]);
 
     // Watch AI service initialization state
     final aiServiceState = ref.watch(aiServiceStateProvider);
@@ -592,9 +620,14 @@ class ChatScreen extends HookConsumerWidget {
                     regenerateResponse,
                   ),
                 ),
-                _buildMessageInput(messageController, sendMessage),
+                _buildMessageInput(context, messageController, canSend.value, sendMessage),
               ],
             ),
+          ),
+          // Scroll to bottom button
+          ScrollToBottom(
+            isVisible: showScrollToBottom.value,
+            onPressed: scrollToBottom,
           ),
         ],
       ),
@@ -1000,13 +1033,11 @@ class ChatScreen extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      _formatTime(message.timestamp),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontWeight: FontWeight.w500,
-                      ),
+                    TimeAndStatus(
+                      timestamp: message.timestamp,
+                      status: message.status,
+                      showTime: true,
+                      showStatus: message.isUser, // Only show status for user messages
                     ),
                   ],
                 ),
@@ -1052,85 +1083,19 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   Widget _buildTypingIndicator() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryColor.withValues(alpha: 0.3),
-                  AppTheme.primaryColor.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: AppColors.primaryText,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Container(
-            padding: AppSpacing.cardPadding,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTypingDot(0),
-                const SizedBox(width: 4),
-                _buildTypingDot(200),
-                const SizedBox(width: 4),
-                _buildTypingDot(400),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return const GlassTypingIndicator();
   }
 
-  Widget _buildTypingDot(int delay) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: AppColors.tertiaryText,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    ).animate(onPlay: (controller) => controller.repeat()).fadeIn(
-          duration: AppAnimations.slow,
-          delay: delay.ms,
-        );
-  }
+  Widget _buildMessageInput(BuildContext context, TextEditingController messageController, bool canSend, void Function(String) sendMessage) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-  Widget _buildMessageInput(TextEditingController messageController, void Function(String) sendMessage) {
     return Container(
-      padding: AppSpacing.screenPadding,
+      padding: EdgeInsets.only(
+        left: AppSpacing.screenPadding.left,
+        right: AppSpacing.screenPadding.right,
+        top: AppSpacing.screenPadding.top,
+        bottom: bottomPadding > 0 ? bottomPadding + AppSpacing.sm : AppSpacing.screenPadding.bottom,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -1168,9 +1133,10 @@ class ChatScreen extends HookConsumerWidget {
                     vertical: 15,
                   ),
                 ),
-                maxLines: null,
+                minLines: 1,
+                maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
-                onSubmitted: sendMessage,
+                onSubmitted: canSend ? sendMessage : null,
               ),
             ),
           ),
@@ -1178,29 +1144,36 @@ class ChatScreen extends HookConsumerWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryColor,
-                  AppTheme.primaryColor.withValues(alpha: 0.8),
-                ],
+                colors: canSend
+                    ? [
+                        AppTheme.primaryColor,
+                        AppTheme.primaryColor.withValues(alpha: 0.8),
+                      ]
+                    : [
+                        Colors.grey.withValues(alpha: 0.3),
+                        Colors.grey.withValues(alpha: 0.2),
+                      ],
               ),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.3),
                 width: 1,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: canSend
+                  ? [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [],
             ),
             child: IconButton(
-              onPressed: () => sendMessage(messageController.text),
-              icon: const Icon(
+              onPressed: canSend ? () => sendMessage(messageController.text) : null,
+              icon: Icon(
                 Icons.send,
-                color: AppColors.primaryText,
+                color: canSend ? AppColors.primaryText : AppColors.tertiaryText,
                 size: 20,
               ),
             ),
