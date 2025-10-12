@@ -11,7 +11,6 @@ import '../components/gradient_background.dart';
 import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
-import '../components/modern_message_bubble.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 
@@ -582,7 +581,7 @@ class ChatScreen extends HookConsumerWidget {
                 // AI Service initialization status banner
                 _buildAIStatusBanner(aiServiceState),
                 Expanded(
-                  child: _buildMessagesList(scrollController, messages.value, isTyping.value, regenerateResponse),
+                  child: _buildMessagesList(context, scrollController, messages.value, isTyping.value, regenerateResponse),
                 ),
                 _buildMessageInput(messageController, sendMessage),
               ],
@@ -819,6 +818,7 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   Widget _buildMessagesList(
+    BuildContext context,
     ScrollController scrollController,
     List<ChatMessage> messages,
     bool isTyping,
@@ -828,27 +828,206 @@ class ChatScreen extends HookConsumerWidget {
       controller: scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       itemCount: messages.length + (isTyping ? 1 : 0),
-      itemBuilder: (context, index) {
+      itemBuilder: (listContext, index) {
         if (index == messages.length && isTyping) {
           return _buildTypingIndicator();
         }
 
-        final message = messages[index];
-
-        // Use ModernMessageBubble for better UI and regenerate functionality
-        return ModernMessageBubble(
-          message: message,
-          showTimestamp: index == messages.length - 1 ||
-              (index < messages.length - 1 &&
-               messages[index + 1].type != message.type),
-          onRegenerateResponse: message.isAI
-              ? () => onRegenerateResponse(index)
-              : null,
-        ).animate()
-          .fadeIn(duration: AppAnimations.normal, delay: (index * 50).ms)
-          .slideX(begin: message.isUser ? 0.3 : -0.3);
+        return _buildMessageBubble(context, messages[index], index, onRegenerateResponse);
       },
     );
+  }
+
+  Widget _buildMessageBubble(
+    BuildContext context,
+    ChatMessage message,
+    int index,
+    Future<void> Function(int) onRegenerateResponse,
+  ) {
+    return GestureDetector(
+      onLongPress: message.isAI
+          ? () {
+              // Show options for regenerate
+              showCustomBottomSheet(
+                context: context,
+                title: 'Message Options',
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryColor.withValues(alpha: 0.3),
+                              AppTheme.primaryColor.withValues(alpha: 0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(Icons.refresh, color: AppTheme.primaryColor),
+                      ),
+                      title: const Text(
+                        'Regenerate Response',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryText,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Generate a new response to this message',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.secondaryText,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        onRegenerateResponse(index);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            }
+          : null,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          mainAxisAlignment:
+              message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!message.isUser) ...[
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryColor.withValues(alpha: 0.3),
+                      AppTheme.primaryColor.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: AppColors.primaryText,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+            ],
+            Flexible(
+              child: Container(
+                padding: AppSpacing.cardPadding,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: message.isUser
+                        ? [
+                            AppTheme.primaryColor.withValues(alpha: 0.8),
+                            AppTheme.primaryColor.withValues(alpha: 0.6),
+                          ]
+                        : [
+                            Colors.white.withValues(alpha: 0.2),
+                            Colors.white.withValues(alpha: 0.1),
+                          ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(message.isUser ? 20 : 8),
+                    topRight: Radius.circular(message.isUser ? 8 : 20),
+                    bottomLeft: const Radius.circular(20),
+                    bottomRight: const Radius.circular(20),
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      message.content,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.primaryText,
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      _formatTime(message.timestamp),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (message.isUser) ...[
+              const SizedBox(width: AppSpacing.md),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.goldColor.withValues(alpha: 0.3),
+                      AppTheme.goldColor.withValues(alpha: 0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.person,
+                  color: AppColors.primaryText,
+                  size: 20,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ).animate().fadeIn(duration: AppAnimations.normal, delay: (index * 100).ms).slideX(
+            begin: message.isUser ? 0.3 : -0.3,
+          ),
+    );
+  }
+
+  String _formatTime(DateTime dateTime) {
+    final hour = dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
+    final period = dateTime.hour >= 12 ? 'PM' : 'AM';
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    return '$hour:$minute $period';
   }
 
   Widget _buildTypingIndicator() {
