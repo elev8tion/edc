@@ -113,8 +113,6 @@ class EverydayChristianApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.navigatorKey,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
       initialRoute: AppRoutes.splash, // Fixed: Always start with splash for proper init
       onGenerateRoute: _generateRoute,
       builder: (context, child) {

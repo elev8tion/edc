@@ -43,7 +43,7 @@ Everyday Christian is a **100% local-first** pastoral counseling app that provid
 - 💾 **SQLite database** (26 MB, 31,103 verses)
 - 🔐 **Biometric authentication** (Face ID, Touch ID)
 - 📊 **Progress tracking** (reading streaks, prayer stats)
-- 🌙 **Dark mode** support
+- 🎨 **Beautiful glassmorphic UI** with modern design language
 - 📴 **Offline-first** (no internet required)
 
 ---
