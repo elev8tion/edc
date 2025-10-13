@@ -54,3 +54,4 @@ docs/
 .env
 .env.*
 !.env.example
+assets/asset_bible.db
