@@ -460,8 +460,8 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
             gradient: LinearGradient(
               colors: isFavorite
                   ? [
-                      AppTheme.goldColor.withValues(alpha: 0.3),
-                      AppTheme.goldColor.withValues(alpha: 0.2),
+                      Colors.red.withValues(alpha: 0.3),
+                      Colors.red.withValues(alpha: 0.2),
                     ]
                   : [
                       Colors.white.withValues(alpha: 0.15),
@@ -473,7 +473,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isFavorite
-                  ? AppTheme.goldColor.withValues(alpha: 0.5)
+                  ? Colors.red.withValues(alpha: 0.5)
                   : Colors.white.withValues(alpha: 0.3),
               width: 1.5,
             ),
@@ -483,7 +483,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
               size: ResponsiveUtils.iconSize(context, 18),
-              color: isFavorite ? AppTheme.goldColor : Colors.white.withValues(alpha: 0.7),
+              color: isFavorite ? Colors.red : Colors.white.withValues(alpha: 0.7),
             ),
             onPressed: () => _toggleFavorite(verse),
           ),
@@ -531,7 +531,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
             SnackBar(
               content: Row(
                 children: [
-                  Icon(Icons.favorite, color: AppTheme.goldColor, size: ResponsiveUtils.iconSize(context, 20)),
+                  Icon(Icons.favorite, color: Colors.red, size: ResponsiveUtils.iconSize(context, 20)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text('Added to Verse Library!'),
