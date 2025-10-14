@@ -210,16 +210,33 @@ class DatabaseMigrator {
   /// Set schema version
   static Future<void> _setVersion(Database db, int version) async {
     try {
-      await db.insert(
-        'user_settings',
-        {
-          'key': _migrationKey,
-          'value': version.toString(),
-          'created_at': DateTime.now().millisecondsSinceEpoch,
-          'updated_at': DateTime.now().millisecondsSinceEpoch,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      // First check if created_at column exists
+      final columns = await db.rawQuery('PRAGMA table_info(user_settings)');
+      final hasCreatedAt = columns.any((col) => col['name'] == 'created_at');
+
+      if (hasCreatedAt) {
+        await db.insert(
+          'user_settings',
+          {
+            'key': _migrationKey,
+            'value': version.toString(),
+            'created_at': DateTime.now().millisecondsSinceEpoch,
+            'updated_at': DateTime.now().millisecondsSinceEpoch,
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      } else {
+        // Old schema without created_at column
+        await db.insert(
+          'user_settings',
+          {
+            'key': _migrationKey,
+            'value': version.toString(),
+            'updated_at': DateTime.now().millisecondsSinceEpoch,
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
     } catch (e) {
       debugPrint('⚠️  Error setting schema version: $e');
     }
