@@ -761,46 +761,7 @@ class ChatScreen extends HookConsumerWidget {
       child: Row(
         children: [
           const GlassmorphicFABMenu(),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  'Biblical AI Guidance',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryText,
-                    shadows: const [
-                      Shadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                  maxLines: 1,
-                  minFontSize: 16,
-                  maxFontSize: 24,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                AutoSizeText(
-                  'Gemini AI',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                    color: AppColors.secondaryText,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  minFontSize: 9,
-                  maxFontSize: 14,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+          const Spacer(),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
