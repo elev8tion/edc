@@ -4,7 +4,6 @@ import 'theme/app_theme.dart';
 
 // Import all duplicate screens
 import 'screens/chat_screen.dart' as screens_chat;
-import 'features/chat/screens/chat_screen.dart' as features_chat;
 import 'screens/home_screen.dart';
 import 'screens/prayer_journal_screen.dart';
 import 'screens/verse_library_screen.dart';

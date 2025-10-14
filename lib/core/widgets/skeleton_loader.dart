@@ -11,8 +11,8 @@ class SkeletonLoader extends StatelessWidget {
     super.key,
     this.width = double.infinity,
     this.height = 20,
-    BorderRadius? borderRadius,
-  }) : borderRadius = borderRadius ?? AppRadius.smallRadius;
+    this.borderRadius = const BorderRadius.all(Radius.circular(AppRadius.xs)),
+  });
 
   @override
   Widget build(BuildContext context) {

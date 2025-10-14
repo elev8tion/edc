@@ -155,7 +155,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                       borderRadius: AppRadius.mediumRadius,
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Continue to App',
                     style: TextStyle(
                       fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
