@@ -211,7 +211,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
   }
 
   Widget _buildThemeFilter(List<String> themes, String selectedTheme) {
-    final displayThemes = ['All', ...themes];
+    if (themes.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
@@ -250,32 +250,149 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           const SizedBox(height: 8),
           SizedBox(
             height: ResponsiveUtils.scaleSize(context, 36, minScale: 0.9, maxScale: 1.2),
-            child: ListView.builder(
+            child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: AppSpacing.horizontalXl,
-              itemCount: displayThemes.length,
-              itemBuilder: (context, index) {
-                final theme = displayThemes[index];
-                final isSelected = theme == selectedTheme;
-
-                return Container(
-                  margin: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              children: [
+                // "All" filter chip
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
                   child: GestureDetector(
                     onTap: () {
-                      ref.read(selectedThemeProvider.notifier).state = theme;
+                      ref.read(selectedThemeProvider.notifier).state = 'All';
                     },
-                    child: CategoryBadge(
-                      text: theme == 'All' ? theme : theme.substring(0, 1).toUpperCase() + theme.substring(1),
-                      isSelected: isSelected,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: selectedTheme == 'All'
+                            ? LinearGradient(
+                                colors: [
+                                  AppTheme.primaryColor.withValues(alpha: 0.4),
+                                  AppTheme.primaryColor.withValues(alpha: 0.2),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : LinearGradient(
+                                colors: [
+                                  Colors.white.withValues(alpha: 0.15),
+                                  Colors.white.withValues(alpha: 0.05),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: selectedTheme == 'All'
+                              ? AppTheme.primaryColor
+                              : Colors.white.withValues(alpha: 0.2),
+                          width: selectedTheme == 'All' ? 2 : 1,
+                        ),
+                        boxShadow: selectedTheme == 'All'
+                            ? [
+                                BoxShadow(
+                                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  spreadRadius: 0,
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.grid_view,
+                            size: ResponsiveUtils.iconSize(context, 16),
+                            color: selectedTheme == 'All'
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'All',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                              fontWeight: FontWeight.w600,
+                              color: selectedTheme == 'All'
+                                  ? Colors.white
+                                  : Colors.white.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ).animate().fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
-              },
+                  ).animate().fadeIn(duration: AppAnimations.slow, delay: 600.ms).scale(begin: const Offset(0.8, 0.8)),
+                ),
+                // Theme filter chips
+                ...themes.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final theme = entry.value;
+                  final isSelected = theme == selectedTheme;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        ref.read(selectedThemeProvider.notifier).state = theme;
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          gradient: isSelected
+                              ? LinearGradient(
+                                  colors: [
+                                    AppTheme.primaryColor.withValues(alpha: 0.4),
+                                    AppTheme.primaryColor.withValues(alpha: 0.2),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                              : LinearGradient(
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.15),
+                                    Colors.white.withValues(alpha: 0.05),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppTheme.primaryColor
+                                : Colors.white.withValues(alpha: 0.2),
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    spreadRadius: 0,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Text(
+                          theme,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ),
+                    ).animate().fadeIn(duration: AppAnimations.slow, delay: (700 + index * 50).ms).scale(begin: const Offset(0.8, 0.8)),
+                  );
+                }),
+              ],
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: (400).ms);
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: 400.ms);
   }
 
   Widget _buildTabBar() {

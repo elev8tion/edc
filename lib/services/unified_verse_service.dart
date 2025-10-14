@@ -262,36 +262,35 @@ class UnifiedVerseService {
 
   /// Get all available themes from verses
   Future<List<String>> getAllThemes() async {
-    final database = await _db.database;
-
-    // Get all distinct themes from verses
-    final results = await database.rawQuery('''
-      SELECT DISTINCT themes FROM bible_verses
-      WHERE themes IS NOT NULL AND themes != '[]'
-    ''');
-
-    // Parse JSON themes and collect all unique theme strings
-    final Set<String> allThemes = {};
-    for (final row in results) {
-      try {
-        final themesJson = row['themes'];
-        if (themesJson is String && themesJson.isNotEmpty) {
-          final List<dynamic> themesList = jsonDecode(themesJson);
-          for (final theme in themesList) {
-            if (theme is String && theme.isNotEmpty) {
-              allThemes.add(theme.toLowerCase());
-            }
-          }
-        }
-      } catch (e) {
-        // Skip malformed JSON
-        continue;
-      }
-    }
-
-    // Return sorted list of themes
-    final sortedThemes = allThemes.toList()..sort();
-    return sortedThemes;
+    // Return curated list of biblical themes for verse filtering
+    // These align with common Christian spiritual needs and situations
+    return [
+      'Faith',
+      'Hope',
+      'Love',
+      'Peace',
+      'Strength',
+      'Comfort',
+      'Courage',
+      'Wisdom',
+      'Forgiveness',
+      'Grace',
+      'Joy',
+      'Trust',
+      'Healing',
+      'Protection',
+      'Guidance',
+      'Patience',
+      'Perseverance',
+      'Salvation',
+      'Prayer',
+      'Praise',
+      'Thanksgiving',
+      'Redemption',
+      'Victory',
+      'Rest',
+      'Blessing',
+    ];
   }
 
   /// Get verses for specific situation/emotion
