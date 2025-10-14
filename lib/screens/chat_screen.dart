@@ -13,6 +13,7 @@ import '../components/base_bottom_sheet.dart';
 import '../components/glass_effects/glass_dialog.dart';
 import '../components/glass_card.dart';
 import '../components/glass_streaming_message.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../components/scroll_to_bottom.dart';
 import '../components/is_typing_indicator.dart';
 import '../components/time_and_status.dart';
@@ -759,25 +760,7 @@ class ChatScreen extends HookConsumerWidget {
       padding: AppSpacing.screenPadding,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: () => NavigationService.pop(),
-            ),
-          ),
+          const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(

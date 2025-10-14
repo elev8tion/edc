@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/blur_dropdown.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
@@ -47,25 +49,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: AppSpacing.screenPadding,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: () => NavigationService.pop(),
-            ),
-          ),
+          const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Text(
@@ -724,8 +708,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _exportUserData() {
-    _showSnackBar('Data export started - you will be notified when complete');
+  Future<void> _exportUserData() async {
+    try {
+      final prayerService = ref.read(prayerServiceProvider);
+      final exportText = await prayerService.exportPrayerJournal();
+
+      if (exportText.isEmpty) {
+        _showSnackBar('No prayer data to export');
+        return;
+      }
+
+      await Share.share(
+        exportText,
+        subject: 'Prayer Journal Export',
+      );
+
+      _showSnackBar('📤 Prayer journal exported successfully');
+    } catch (e) {
+      _showSnackBar('Failed to export: $e');
+    }
   }
 
   void _showHelpDialog() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -10,6 +11,10 @@ import '../components/blur_dropdown.dart';
 import '../components/blur_popup_menu.dart';
 import '../components/category_filter_chip.dart';
 import '../components/glass_fab.dart';
+import '../components/base_bottom_sheet.dart';
+import '../components/glass_effects/glass_dialog.dart';
+import '../components/glass_card.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../widgets/category_management_dialog.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/responsive_utils.dart';
@@ -18,6 +23,7 @@ import '../core/navigation/navigation_service.dart';
 import '../core/models/prayer_request.dart';
 import '../core/models/prayer_category.dart';
 import '../core/providers/prayer_providers.dart';
+import '../core/providers/app_providers.dart';
 import '../core/providers/category_providers.dart';
 import '../core/widgets/skeleton_loader.dart';
 import '../utils/responsive_utils.dart';
@@ -84,25 +90,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
       padding: AppSpacing.screenPadding,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: () => NavigationService.pop(),
-            ),
-          ),
+          const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
@@ -128,6 +116,26 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ],
             ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.more_vert, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
+              onPressed: _showPrayerOptions,
+            ),
+          ),
+          const SizedBox(width: 8),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -1110,5 +1118,226 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  // Export prayer journal to text
+  Future<void> _exportPrayerJournal() async {
+    try {
+      final prayerService = ref.read(prayerServiceProvider);
+      final exportText = await prayerService.exportPrayerJournal();
+
+      if (exportText.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No prayers to export')),
+          );
+        }
+        return;
+      }
+
+      if (mounted) {
+        showGlassDialog(
+          context: context,
+          child: GlassContainer(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.download, color: AppTheme.primaryColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AutoSizeText(
+                        'Export Prayer Journal',
+                        style: TextStyle(
+                          color: AppColors.primaryText,
+                          fontWeight: FontWeight.w700,
+                          fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 400),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: SelectableText(
+                      exportText,
+                      style: TextStyle(
+                        color: AppColors.primaryText,
+                        fontFamily: 'monospace',
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GlassDialogButton(
+                      text: 'Close',
+                      onTap: () => Navigator.pop(context),
+                    ),
+                    GlassDialogButton(
+                      text: 'Share',
+                      isPrimary: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Share.share(
+                          exportText,
+                          subject: 'Prayer Journal Export',
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to export: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Share prayer journal directly
+  Future<void> _sharePrayerJournal() async {
+    try {
+      final prayerService = ref.read(prayerServiceProvider);
+      final exportText = await prayerService.exportPrayerJournal();
+
+      if (exportText.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No prayers to share')),
+          );
+        }
+        return;
+      }
+
+      await Share.share(
+        exportText,
+        subject: 'Prayer Journal',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('📤 Prayer journal shared'),
+            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to share: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Show prayer options menu
+  void _showPrayerOptions() {
+    showCustomBottomSheet(
+      context: context,
+      title: 'Prayer Journal Options',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.primaryColor.withValues(alpha: 0.3),
+                    AppTheme.primaryColor.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.download, color: AppTheme.primaryColor),
+            ),
+            title: const Text(
+              'Export Prayer Journal',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryText,
+              ),
+            ),
+            subtitle: Text(
+              'View and copy prayer journal text',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                color: AppColors.secondaryText,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              _exportPrayerJournal();
+            },
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.accentColor.withValues(alpha: 0.3),
+                    AppTheme.accentColor.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.share, color: AppTheme.accentColor),
+            ),
+            title: const Text(
+              'Share Prayer Journal',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryText,
+              ),
+            ),
+            subtitle: Text(
+              'Share via messages, email, or other apps',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                color: AppColors.secondaryText,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              _sharePrayerJournal();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

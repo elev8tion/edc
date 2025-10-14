@@ -10,6 +10,7 @@ import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
 import '../components/category_badge.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/providers/app_providers.dart';
 import '../core/navigation/navigation_service.dart';
@@ -85,59 +86,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildHeader() {
     return Padding(
       padding: AppSpacing.horizontalXl,
-      child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$greeting, $userName!',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryText,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
-                  const SizedBox(height: 4),
-                  Text(
-                    'How can I encourage you today?',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                      color: AppColors.secondaryText,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideX(begin: -0.3),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Container(
-              width: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
-              height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.goldColor.withValues(alpha: 0.6),
-                  width: 1.5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // FAB on left
+          const GlassmorphicFABMenu(),
+          // Greeting centered
+          Expanded(
+            child: Center(
+              child: Text(
+                '$greeting, $userName!',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryText,
                 ),
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                overflow: TextOverflow.ellipsis,
+              ).animate().fadeIn(duration: AppAnimations.slow),
+            ),
+          ),
+          // Profile on right
+          Container(
+            width: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
+            height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppTheme.goldColor.withValues(alpha: 0.6),
+                width: 1.5,
               ),
-              child: Icon(
-                Icons.person,
-                color: AppColors.primaryText,
-                size: ResponsiveUtils.iconSize(context, 20),
-              ),
-            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal).scale(begin: const Offset(0.8, 0.8)),
-          ],
-        ),
-      ],
+              color: AppTheme.primaryColor.withValues(alpha: 0.3),
+            ),
+            child: Icon(
+              Icons.person,
+              color: AppColors.primaryText,
+              size: ResponsiveUtils.iconSize(context, 20),
+            ),
+          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal).scale(begin: const Offset(0.8, 0.8)),
+        ],
       ),
     );
   }

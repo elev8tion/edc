@@ -204,4 +204,84 @@ class PrayerService {
       'answer_description': prayer.answerDescription,
     };
   }
+
+  /// Export prayer journal as formatted text
+  Future<String> exportPrayerJournal() async {
+    try {
+      final allPrayers = await getAllPrayers();
+      final buffer = StringBuffer();
+
+      buffer.writeln('Prayer Journal Export');
+      buffer.writeln('Date: ${DateTime.now().toString().split('.')[0]}');
+      buffer.writeln('Total Prayers: ${allPrayers.length}');
+      buffer.writeln('=' * 50);
+      buffer.writeln();
+
+      // Group prayers by status
+      final activePrayers = allPrayers.where((p) => !p.isAnswered).toList();
+      final answeredPrayers = allPrayers.where((p) => p.isAnswered).toList();
+
+      // Active Prayers Section
+      if (activePrayers.isNotEmpty) {
+        buffer.writeln('ACTIVE PRAYERS (${activePrayers.length})');
+        buffer.writeln('=' * 50);
+        buffer.writeln();
+
+        for (final prayer in activePrayers) {
+          buffer.writeln('[${prayer.title}]');
+          buffer.writeln('Category: ${prayer.categoryId}');
+          buffer.writeln('Date Created: ${_formatDate(prayer.dateCreated)}');
+          buffer.writeln();
+          buffer.writeln(prayer.description);
+          buffer.writeln();
+          buffer.writeln('-' * 50);
+          buffer.writeln();
+        }
+      }
+
+      // Answered Prayers Section
+      if (answeredPrayers.isNotEmpty) {
+        buffer.writeln('ANSWERED PRAYERS (${answeredPrayers.length})');
+        buffer.writeln('=' * 50);
+        buffer.writeln();
+
+        for (final prayer in answeredPrayers) {
+          buffer.writeln('[${prayer.title}] ✓');
+          buffer.writeln('Category: ${prayer.categoryId}');
+          buffer.writeln('Date Created: ${_formatDate(prayer.dateCreated)}');
+          if (prayer.dateAnswered != null) {
+            buffer.writeln('Date Answered: ${_formatDate(prayer.dateAnswered!)}');
+          }
+          buffer.writeln();
+          buffer.writeln('Request:');
+          buffer.writeln(prayer.description);
+
+          if (prayer.answerDescription != null && prayer.answerDescription!.isNotEmpty) {
+            buffer.writeln();
+            buffer.writeln('Answer:');
+            buffer.writeln(prayer.answerDescription);
+          }
+
+          buffer.writeln();
+          buffer.writeln('-' * 50);
+          buffer.writeln();
+        }
+      }
+
+      if (allPrayers.isEmpty) {
+        buffer.writeln('No prayers in journal yet.');
+      }
+
+      _logger.info('Exported ${allPrayers.length} prayers', context: 'PrayerService');
+      return buffer.toString();
+    } catch (e) {
+      _logger.error('Failed to export prayer journal: $e', context: 'PrayerService');
+      return '';
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} '
+        '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
 }

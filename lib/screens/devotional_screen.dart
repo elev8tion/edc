@@ -5,6 +5,7 @@ import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
 import '../components/glass_button.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
 import '../core/providers/app_providers.dart';
@@ -88,25 +89,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
       padding: AppSpacing.screenPadding,
       child: Row(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: () => NavigationService.pop(),
-            ),
-          ),
+          const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
