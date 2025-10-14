@@ -312,9 +312,6 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
   }
 
   Widget _buildTabBar() {
-    final oldTestamentBooks = _getOldTestamentBooks();
-    final newTestamentBooks = _getNewTestamentBooks();
-
     return Container(
       margin: AppSpacing.horizontalXl,
       child: FrostedGlassCard(
@@ -337,9 +334,9 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
             fontWeight: FontWeight.w600,
             fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
           ),
-          tabs: [
-            Tab(text: 'Old Testament (${oldTestamentBooks.length})'),
-            Tab(text: 'New Testament (${newTestamentBooks.length})'),
+          tabs: const [
+            Tab(text: 'Old Testament'),
+            Tab(text: 'New Testament'),
           ],
         ),
       ),

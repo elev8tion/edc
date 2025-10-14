@@ -6,6 +6,7 @@ import '../components/frosted_glass_card.dart';
 import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
 import '../core/navigation/navigation_service.dart';
+import '../core/providers/app_providers.dart';
 import '../services/bible_chapter_service.dart';
 import '../models/bible_verse.dart';
 import '../utils/responsive_utils.dart';
@@ -425,6 +426,10 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                           ),
                         ),
                       ),
+
+                      // Favorite button
+                      const SizedBox(width: 8),
+                      _buildFavoriteButton(verse),
                     ],
                   ),
                 );
@@ -434,6 +439,116 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildFavoriteButton(BibleVerse verse) {
+    if (verse.id == null) return const SizedBox.shrink();
+
+    return FutureBuilder<bool>(
+      future: ref.read(unifiedVerseServiceProvider).isVerseFavorite(verse.id!),
+      builder: (context, snapshot) {
+        final isFavorite = snapshot.data ?? false;
+
+        return Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isFavorite
+                  ? [
+                      AppTheme.goldColor.withValues(alpha: 0.3),
+                      AppTheme.goldColor.withValues(alpha: 0.2),
+                    ]
+                  : [
+                      Colors.white.withValues(alpha: 0.15),
+                      Colors.white.withValues(alpha: 0.1),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isFavorite
+                  ? AppTheme.goldColor.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+          ),
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              size: ResponsiveUtils.iconSize(context, 18),
+              color: isFavorite ? AppTheme.goldColor : Colors.white.withValues(alpha: 0.7),
+            ),
+            onPressed: () => _toggleFavorite(verse),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _toggleFavorite(BibleVerse verse) async {
+    if (verse.id == null) return;
+
+    try {
+      final verseService = ref.read(unifiedVerseServiceProvider);
+      final wasFavorite = await verseService.isVerseFavorite(verse.id!);
+
+      if (wasFavorite) {
+        await verseService.removeFromFavorites(verse.id!);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.heart_broken, color: Colors.white, size: ResponsiveUtils.iconSize(context, 20)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Removed from Verse Library'),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.grey.shade700,
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } else {
+        await verseService.addToFavorites(verse.id!);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.favorite, color: AppTheme.goldColor, size: ResponsiveUtils.iconSize(context, 20)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Added to Verse Library!'),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.green.shade700,
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+
+      // Trigger UI update
+      setState(() {});
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildCompleteButton() {
