@@ -12,6 +12,8 @@ import '../components/glassmorphic_fab_menu.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/time_picker/time_range_sheet.dart';
+import '../widgets/time_picker/time_range_sheet_style.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -548,26 +550,57 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       minute: int.parse(parts[1]),
     );
 
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: initialTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppTheme.primaryColor,
-              onPrimary: Colors.white,
-              surface: Color(0xFF1E1E1E),
-              onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF1E1E1E),
-          ),
-          child: child!,
-        );
-      },
+    // Custom glassmorphic time picker style matching app theme
+    final customStyle = TimeRangeSheetStyle(
+      // Glassmorphic background with transparency
+      sheetBackgroundColor: const Color(0xFF1A1A2E).withValues(alpha: 0.95),
+
+      // Button colors matching app theme
+      buttonColor: AppTheme.primaryColor,
+      cancelButtonColor: Colors.grey.shade700,
+      buttonTextColor: Colors.white,
+      cancelButtonTextColor: Colors.white,
+
+      // Text colors for visibility
+      labelTextColor: Colors.white.withValues(alpha: 0.9),
+      selectedTimeTextColor: Colors.white,
+      pickerTextColor: Colors.white.withValues(alpha: 0.3),
+      selectedPickerTextColor: Colors.white,
+
+      // Corner radius matching app design
+      cornerRadius: AppRadius.xl,
+      buttonCornerRadius: AppRadius.md,
+
+      // Sheet dimensions
+      sheetHeight: 450,
+      pickerItemHeight: 45,
+      buttonHeight: 50,
+
+      // Padding and spacing
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      buttonPadding: const EdgeInsets.all(AppSpacing.md),
+
+      // Use 12-hour format to match display
+      use24HourFormat: false,
+
+      // Custom button text
+      confirmButtonText: 'Set Time',
+      cancelButtonText: 'Cancel',
+
+      // Enable haptic feedback
+      enableHapticFeedback: true,
     );
 
-    if (picked != null) {
+    final result = await showTimeRangeSheet(
+      context: context,
+      initialStartTime: initialTime,
+      style: customStyle,
+      singlePicker: true, // Only need one time, not a range
+      allowInvalidRange: true, // Not relevant for single picker
+    );
+
+    if (result != null) {
+      final picked = result.startTime; // In single picker mode, use startTime
       final hour = picked.hour.toString().padLeft(2, '0');
       final minute = picked.minute.toString().padLeft(2, '0');
       onChanged('$hour:$minute');
