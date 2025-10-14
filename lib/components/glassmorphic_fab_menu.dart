@@ -233,7 +233,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
         });
       },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.cardRadius,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
           child: Container(
@@ -241,7 +241,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
             height: 52, // Fixed height for precise 2px gap calculation
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.cardRadius,
               gradient: LinearGradient(
                 colors: [
                   Colors.white.withValues(alpha: 0.2),
@@ -273,13 +273,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                       decoration: TextDecoration.none,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          offset: const Offset(0, 1),
-                          blurRadius: 2,
-                        ),
-                      ],
+                      shadows: AppTheme.textShadowSubtle,
                     ),
                   ),
                 ),
@@ -288,7 +282,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: option.color.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.xs + 2),
                     border: Border.all(
                       color: option.color.withValues(alpha: 0.4),
                       width: 1,
@@ -321,7 +315,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
         child: GestureDetector(
           onTap: _toggleMenu,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
@@ -340,7 +334,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
                     color: AppTheme.goldColor.withValues(alpha: 0.6),
                     width: 1.5,
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

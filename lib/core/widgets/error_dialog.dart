@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../error/app_error.dart';
+import '../../theme/app_theme.dart';
 
 /// User-friendly error dialog widget
 class ErrorDialog extends StatelessWidget {
@@ -18,7 +19,7 @@ class ErrorDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       title: Row(
         children: [
@@ -107,7 +108,7 @@ class ErrorDialog extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.smallRadius,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +173,7 @@ class InlineErrorWidget extends StatelessWidget {
           color: _getBorderColor(),
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

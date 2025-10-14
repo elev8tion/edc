@@ -246,7 +246,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                     Colors.white.withValues(alpha: 0.1),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(AppRadius.xl + 1),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
@@ -291,7 +291,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                     Colors.white.withValues(alpha: 0.1),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(AppRadius.xl + 1),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
@@ -320,7 +320,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
           controller: _tabController,
           indicator: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
             border: Border.all(
               color: AppTheme.primaryColor,
               width: 1,
@@ -404,7 +404,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                       Colors.white.withValues(alpha: 0.15),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.3),
                     width: 1.5,
@@ -463,7 +463,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                 const Color(0xFF16213e).withValues(alpha: 0.95),
               ],
             ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
           ),
           child: Column(
             children: [
@@ -473,7 +473,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                 height: 4,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppRadius.xs / 4),
                 ),
               ),
               Padding(
@@ -517,7 +517,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                               Colors.white.withValues(alpha: 0.1),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.mediumRadius,
                           border: Border.all(
                             color: Colors.white.withValues(alpha: 0.3),
                             width: 1.5,

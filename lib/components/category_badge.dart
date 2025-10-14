@@ -74,7 +74,7 @@ class CategoryBadge extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.largeCardRadius,
           border: Border.all(
             color: isSelected ? color : color.withValues(alpha: 0.6),
             width: isSelected ? 2.5 : 2,
@@ -129,7 +129,7 @@ class CategoryBadge extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadius.xs - 2),
         border: Border.all(color: color, width: 1),
       ),
       child: Center(

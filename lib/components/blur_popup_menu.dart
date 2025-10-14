@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 /// Data model for popup menu items
 class BlurPopupMenuItem {
@@ -71,7 +72,7 @@ class _BlurPopupMenuState extends State<BlurPopupMenu> {
                 child: Material(
                   color: Colors.transparent,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: AppRadius.largeCardRadius,
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                       child: Container(
@@ -79,7 +80,7 @@ class _BlurPopupMenuState extends State<BlurPopupMenu> {
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white.withValues(alpha: 0.1)
                               : Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.largeCardRadius,
                           border: Border.all(
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white24
@@ -115,9 +116,9 @@ class _BlurPopupMenuState extends State<BlurPopupMenu> {
   Widget _buildMenuItem(BlurPopupMenuItem item) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: AppRadius.largeCardRadius,
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.largeCardRadius,
         onTap: () {
           widget.onSelected(item.value);
           _removeMenu();

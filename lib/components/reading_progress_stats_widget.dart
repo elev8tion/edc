@@ -105,7 +105,7 @@ class ReadingProgressStatsWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: iconColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                 ),
                 child: Icon(
                   icon,
@@ -166,7 +166,7 @@ class ReadingProgressStatsWidget extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
             ),
             child: Icon(
               Icons.calendar_month,

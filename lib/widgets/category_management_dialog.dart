@@ -64,7 +64,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                 controller: _tabController,
                 indicator: BoxDecoration(
                   color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: AppTheme.primaryColor,
                     width: 1,
@@ -139,7 +139,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
         ),
@@ -151,7 +151,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
             height: 40,
             decoration: BoxDecoration(
               color: category.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.smallRadius,
               border: Border.all(
                 color: category.color.withValues(alpha: 0.5),
               ),
@@ -245,7 +245,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -280,7 +280,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                         color: isSelected
                             ? selectedColor.withValues(alpha: 0.3)
                             : Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.smallRadius,
                         border: Border.all(
                           color: isSelected
                               ? selectedColor
@@ -423,7 +423,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.mediumRadius,
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -458,7 +458,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                               color: isSelected
                                   ? selectedColor.withValues(alpha: 0.3)
                                   : Colors.white.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: AppRadius.smallRadius,
                               border: Border.all(
                                 color: isSelected
                                     ? selectedColor
@@ -669,7 +669,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: AppRadius.largeCardRadius,
                         border: Border.all(
                           color: Colors.red,
                           width: 2,
@@ -679,7 +679,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () => Navigator.of(context).pop(true),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.largeCardRadius,
                           child: Container(
                             height: 48,
                             alignment: Alignment.center,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_theme.dart';
 
 /// Theme configuration for the Flipz app
 ///
@@ -103,7 +104,7 @@ class AppTheme {
             elevation: 2,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.smallRadius,
             ),
           ),
         ),
@@ -113,7 +114,7 @@ class AppTheme {
             side: const BorderSide(color: primaryColor, width: 2),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.smallRadius,
             ),
           ),
         ),
@@ -130,30 +131,30 @@ class AppTheme {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
             borderSide: const BorderSide(color: border),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
             borderSide: const BorderSide(color: border),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
             borderSide: const BorderSide(color: secondaryColor, width: 2),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
             borderSide: const BorderSide(color: errorColor),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
             borderSide: const BorderSide(color: errorColor, width: 2),
           ),
         ),
         cardTheme: CardThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
           ),
           color: secondaryBackground,
         ),
@@ -171,7 +172,7 @@ class AppTheme {
       begin: const AlignmentDirectional(0.98, -1.0),
       end: const AlignmentDirectional(-0.98, 1.0),
     ),
-    borderRadius: BorderRadius.circular(32.0),
+    borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
     border: Border.all(
       color: border,
       width: 2,
@@ -189,7 +190,7 @@ class AppTheme {
       begin: const AlignmentDirectional(0.98, -1.0),
       end: const AlignmentDirectional(-0.98, 1.0),
     ),
-    borderRadius: BorderRadius.circular(32.0),
+    borderRadius: BorderRadius.circular(AppRadius.xxl + 4),
     border: Border.all(
       color: border,
       width: 2,
@@ -197,7 +198,7 @@ class AppTheme {
   );
 
   // Standard dropdown menu properties
-  static const BorderRadius dropdownMenuBorderRadius = BorderRadius.all(Radius.circular(16));
+  static const BorderRadius dropdownMenuBorderRadius = BorderRadius.all(Radius.circular(AppRadius.md));
   static const EdgeInsets dropdownPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
   // Blur dropdown text styles

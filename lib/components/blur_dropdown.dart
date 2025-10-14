@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class BlurDropdown extends StatefulWidget {
   final String value;
@@ -52,13 +53,13 @@ class _BlurDropdownState extends State<BlurDropdown> {
                 child: Material(
                   color: Colors.transparent,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: AppRadius.largeCardRadius,
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
                       child: Container(
                         constraints: const BoxConstraints(maxHeight: 300),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.largeCardRadius,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white.withValues(alpha: 0.1)
                               : Colors.white.withValues(alpha: 0.2),
@@ -135,13 +136,13 @@ class _BlurDropdownState extends State<BlurDropdown> {
           }
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.largeCardRadius,
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: AppRadius.largeCardRadius,
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.1)
                     : Colors.white.withValues(alpha: 0.2),

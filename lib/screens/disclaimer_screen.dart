@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/responsive_utils.dart';
+import '../theme/app_theme.dart';
 
 class DisclaimerScreen extends StatefulWidget {
   const DisclaimerScreen({Key? key}) : super(key: key);
@@ -107,7 +108,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: _agreedToTerms ? Colors.blue.shade400 : Colors.grey.shade300,
                     width: 2,
@@ -151,7 +152,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                     disabledBackgroundColor: Colors.grey.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.mediumRadius,
                     ),
                   ),
                   child: const Text(
@@ -180,7 +181,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade200,

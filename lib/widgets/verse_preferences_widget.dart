@@ -210,7 +210,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mediumRadius,
                   ),
                 ),
                 child: const Text(
@@ -267,7 +267,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
                     )
                   : null,
               color: isSelected ? null : Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.cardRadius,
               border: Border.all(
                 color: isSelected
                     ? AppTheme.goldColor
@@ -306,7 +306,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withOpacity(0.2),
         ),

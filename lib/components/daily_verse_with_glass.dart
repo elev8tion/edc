@@ -53,7 +53,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.cardRadius,
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.3),
               width: 1,
@@ -80,7 +80,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                           AppTheme.goldColor.withValues(alpha: 0.1),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.mediumRadius,
                       border: Border.all(
                         color: AppTheme.goldColor.withValues(alpha: 0.4),
                         width: 1,
@@ -100,13 +100,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            offset: const Offset(0, 2),
-                            blurRadius: 4,
-                          ),
-                        ],
+                        shadows: AppTheme.textShadowStrong,
                       ),
                     ),
                   ),
@@ -117,7 +111,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.1),
                     width: 1,
@@ -134,13 +128,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                         fontStyle: FontStyle.italic,
                         height: 1.6,
                         fontWeight: FontWeight.w500,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            offset: const Offset(0, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
+                        shadows: AppTheme.textShadowSubtle,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -153,13 +141,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                             fontSize: 14,
                             color: AppTheme.goldColor,
                             fontWeight: FontWeight.w700,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                offset: const Offset(0, 1),
-                                blurRadius: 2,
-                              ),
-                            ],
+                            shadows: AppTheme.textShadowSubtle,
                           ),
                         ),
                         const CategoryBadge(

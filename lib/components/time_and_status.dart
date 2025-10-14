@@ -29,13 +29,7 @@ class TimeAndStatus extends StatelessWidget {
       fontSize: 11,
       color: Colors.white.withValues(alpha: 0.6),
       fontWeight: FontWeight.w500,
-      shadows: [
-        Shadow(
-          color: Colors.black.withValues(alpha: 0.3),
-          offset: const Offset(0, 1),
-          blurRadius: 2,
-        ),
-      ],
+      shadows: AppTheme.textShadowSubtle,
     );
 
     return Row(
@@ -86,13 +80,7 @@ class TimeAndStatus extends StatelessWidget {
       icon,
       size: 12,
       color: color,
-      shadows: [
-        Shadow(
-          color: Colors.black.withValues(alpha: 0.3),
-          offset: const Offset(0, 1),
-          blurRadius: 2,
-        ),
-      ],
+      shadows: AppTheme.textShadowSubtle,
     );
   }
 

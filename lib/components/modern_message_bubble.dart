@@ -98,8 +98,8 @@ class ModernMessageBubble extends StatelessWidget {
               ? null
               : Theme.of(context).cardColor,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
+            topLeft: const Radius.circular(AppRadius.lg),
+            topRight: const Radius.circular(AppRadius.lg),
             bottomLeft: Radius.circular(message.isUser ? 20 : 4),
             bottomRight: Radius.circular(message.isUser ? 4 : 20),
           ),
@@ -160,7 +160,7 @@ class ModernMessageBubble extends StatelessWidget {
               Colors.grey.shade800.withValues(alpha: 0.95),
             ],
           ),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         ),
         child: SafeArea(
           child: Column(
@@ -172,7 +172,7 @@ class ModernMessageBubble extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 12, bottom: 20),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppRadius.xs / 4),
                 ),
               ),
               ListTile(
@@ -268,7 +268,7 @@ class ModernVerseCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -280,7 +280,7 @@ class ModernVerseCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(
                 color: AppTheme.primaryColor.withValues(alpha: 0.2),
                 width: 1,
@@ -295,7 +295,7 @@ class ModernVerseCard extends StatelessWidget {
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.smallRadius,
                       ),
                       child: Icon(
                         Icons.auto_stories,
@@ -342,7 +342,7 @@ class ModernVerseCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.mediumRadius,
                         ),
                         child: Text(
                           theme,

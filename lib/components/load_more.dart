@@ -29,7 +29,7 @@ class LoadMore extends StatelessWidget {
                 Colors.white.withValues(alpha: 0.05),
               ],
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.2),
               width: 1,

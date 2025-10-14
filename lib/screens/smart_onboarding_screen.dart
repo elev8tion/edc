@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../services/smart_model_manager.dart';
 import '../services/hybrid_ai_service.dart';
 import '../utils/responsive_utils.dart';
+import '../theme/app_theme.dart';
 
 /// Smart onboarding that downloads AI model in background
 class SmartOnboardingScreen extends ConsumerStatefulWidget {
@@ -156,7 +157,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
                       width: index == _currentPage ? 24 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadius.xs / 2),
                         color: index == _currentPage
                             ? Theme.of(context).primaryColor
                             : Colors.grey.withOpacity(0.3),
@@ -178,7 +179,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                 ),
               ),
               child: Text(

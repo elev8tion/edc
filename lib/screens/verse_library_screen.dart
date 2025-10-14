@@ -142,7 +142,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           Container(
             decoration: BoxDecoration(
               gradient: AppGradients.glassStrong,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -268,7 +268,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                         gradient: selectedTheme == 'All'
                             ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
                             : AppGradients.glassMedium,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: AppRadius.largeCardRadius,
                         border: Border.all(
                           color: selectedTheme == 'All'
                               ? AppTheme.primaryColor
@@ -329,7 +329,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                           gradient: isSelected
                               ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
                               : AppGradients.glassMedium,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.largeCardRadius,
                           border: Border.all(
                             color: isSelected
                                 ? AppTheme.primaryColor
@@ -391,7 +391,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           controller: _tabController,
           indicator: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
             border: Border.all(
               color: AppTheme.primaryColor,
               width: 1,
@@ -660,7 +660,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.smallRadius,
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.2),
                       ),
@@ -782,7 +782,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 gradient: AppGradients.customColored(AppTheme.primaryColor),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
               child: Icon(Icons.info_outline, color: AppTheme.primaryColor),
             ),

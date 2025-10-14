@@ -256,7 +256,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: AppGradients.glassMedium,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.cardRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
           width: 1,
@@ -278,7 +278,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
             ),
             child: Icon(
               icon,
@@ -342,7 +342,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
         gradient: AppGradients.glassMedium,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.cardRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
           width: 1,
@@ -364,7 +364,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
             ),
             child: Icon(
               icon,
@@ -677,7 +677,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
           gradient: AppGradients.glassMedium,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.2),
             width: 1,
@@ -698,7 +698,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
               child: Icon(
                 icon,
@@ -737,7 +737,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         padding: AppSpacing.screenPaddingLarge,
       decoration: BoxDecoration(
         gradient: AppGradients.glassStrong,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.cardRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.3),
           width: 1,
@@ -759,7 +759,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: AppGradients.goldAccent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: AppTheme.goldColor.withValues(alpha: 0.4),
                     width: 1,
@@ -790,7 +790,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.1),
                 width: 1,

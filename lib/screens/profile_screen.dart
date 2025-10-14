@@ -229,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     AppTheme.goldColor,
                   ],
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
                 child: Text(
                   'Edit Profile',
@@ -334,7 +334,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
             ),
             child: Icon(
               icon,
@@ -424,7 +424,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: achievement.isUnlocked
                     ? achievement.color.withValues(alpha: 0.2)
                     : Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
               child: Icon(
                 achievement.icon,
@@ -475,7 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (!achievement.isUnlocked && achievement.progress != null) ...[
                     const SizedBox(height: AppSpacing.sm),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(AppRadius.xs / 2),
                       child: LinearProgressIndicator(
                         value: achievement.progress! / achievement.total!,
                         backgroundColor: Colors.white.withValues(alpha: 0.1),
@@ -631,7 +631,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mediumRadius,
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -659,7 +659,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mediumRadius,
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -690,7 +690,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             backgroundColor: AppTheme.primaryColor,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.mediumRadius,
                             ),
                           ),
                         );

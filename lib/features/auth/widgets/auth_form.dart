@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/frosted_glass.dart';
 import '../../../components/glass_button.dart';
+import '../../../theme/app_theme.dart';
 
 class AuthForm extends ConsumerStatefulWidget {
   const AuthForm({super.key});
@@ -105,7 +106,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                           ? AppTheme.goldColor.withValues(alpha: 0.15)
                           : Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: AppRadius.buttonRadius,
                       ),
                     ),
                     child: Text(
@@ -126,7 +127,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                           ? AppTheme.goldColor.withValues(alpha: 0.15)
                           : Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: AppRadius.buttonRadius,
                       ),
                     ),
                     child: Text(
@@ -154,11 +155,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: AppRadius.buttonRadius,
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: AppRadius.buttonRadius,
                     borderSide: BorderSide(color: AppTheme.goldColor, width: 2),
                   ),
                 ),
@@ -179,11 +180,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: AppRadius.buttonRadius,
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: AppRadius.buttonRadius,
                   borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
@@ -214,11 +215,11 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: AppRadius.buttonRadius,
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: AppRadius.buttonRadius,
                   borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
@@ -283,7 +284,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.5)),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(28),
+                                  borderRadius: AppRadius.buttonRadius,
                                 ),
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                               ),

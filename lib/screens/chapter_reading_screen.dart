@@ -181,7 +181,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                   Colors.white.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -274,7 +274,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
             child: Container(
               height: 4,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppRadius.xs / 4),
                 color: Colors.white.withValues(alpha: 0.2),
               ),
               child: FractionallySizedBox(
@@ -282,7 +282,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                 widthFactor: (_currentChapterIndex + 1) / totalChapters,
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.xs / 4),
                     gradient: LinearGradient(
                       colors: [
                         AppTheme.primaryColor,
@@ -390,7 +390,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: AppRadius.smallRadius,
                               border: Border.all(
                                 color: Colors.white.withValues(alpha: 0.3),
                                 width: 1.5,
@@ -470,7 +470,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.smallRadius,
             border: Border.all(
               color: isFavorite
                   ? Colors.red.withValues(alpha: 0.5)

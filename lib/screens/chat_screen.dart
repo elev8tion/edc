@@ -416,7 +416,7 @@ class ChatScreen extends HookConsumerWidget {
                     constraints: const BoxConstraints(maxHeight: 400),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.mediumRadius,
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.2),
                       ),
@@ -541,7 +541,7 @@ class ChatScreen extends HookConsumerWidget {
                       AppTheme.primaryColor.withValues(alpha: 0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                 ),
                 child: Icon(Icons.download, color: AppTheme.primaryColor),
               ),
@@ -575,7 +575,7 @@ class ChatScreen extends HookConsumerWidget {
                       AppTheme.accentColor.withValues(alpha: 0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                 ),
                 child: Icon(Icons.share, color: AppTheme.accentColor),
               ),
@@ -771,7 +771,7 @@ class ChatScreen extends HookConsumerWidget {
                   Colors.white.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -792,7 +792,7 @@ class ChatScreen extends HookConsumerWidget {
                   Colors.white.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -813,7 +813,7 @@ class ChatScreen extends HookConsumerWidget {
                   AppTheme.goldColor.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: AppTheme.goldColor.withValues(alpha: 0.4),
                 width: 1,
@@ -889,7 +889,7 @@ class ChatScreen extends HookConsumerWidget {
                               AppTheme.primaryColor.withValues(alpha: 0.1),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.mediumRadius,
                         ),
                         child: Icon(Icons.refresh, color: AppTheme.primaryColor),
                       ),
@@ -935,7 +935,7 @@ class ChatScreen extends HookConsumerWidget {
                       AppTheme.primaryColor.withValues(alpha: 0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: AppTheme.primaryColor.withValues(alpha: 0.3),
                     width: 1,
@@ -969,8 +969,8 @@ class ChatScreen extends HookConsumerWidget {
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(message.isUser ? 20 : 8),
                     topRight: Radius.circular(message.isUser ? 8 : 20),
-                    bottomLeft: const Radius.circular(20),
-                    bottomRight: const Radius.circular(20),
+                    bottomLeft: const Radius.circular(AppRadius.lg),
+                    bottomRight: const Radius.circular(AppRadius.lg),
                   ),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.3),
@@ -1023,7 +1023,7 @@ class ChatScreen extends HookConsumerWidget {
                       AppTheme.goldColor.withValues(alpha: 0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: AppTheme.goldColor.withValues(alpha: 0.3),
                     width: 1,
@@ -1076,7 +1076,7 @@ class ChatScreen extends HookConsumerWidget {
                     Colors.white.withValues(alpha: 0.1),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(AppRadius.xl + 1),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
@@ -1123,7 +1123,7 @@ class ChatScreen extends HookConsumerWidget {
                         Colors.grey.withValues(alpha: 0.2),
                       ],
               ),
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(AppRadius.xl + 1),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.3),
                 width: 1,
@@ -1308,7 +1308,7 @@ class ChatScreen extends HookConsumerWidget {
                           Colors.red.withValues(alpha: 0.6),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 20),
@@ -1327,7 +1327,7 @@ class ChatScreen extends HookConsumerWidget {
                           Colors.white.withValues(alpha: 0.05),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.2),
                         width: 1,
@@ -1344,7 +1344,7 @@ class ChatScreen extends HookConsumerWidget {
                               AppTheme.goldColor.withValues(alpha: 0.1),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.mediumRadius,
                           border: Border.all(
                             color: AppTheme.goldColor.withValues(alpha: 0.4),
                             width: 1,

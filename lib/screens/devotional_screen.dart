@@ -214,7 +214,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             padding: AppSpacing.screenPadding,
             decoration: BoxDecoration(
               gradient: AppGradients.glassVeryStrong,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.3),
                 width: 1.5,
@@ -307,7 +307,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               padding: AppSpacing.cardPadding,
               decoration: BoxDecoration(
                 color: Colors.green.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
                 border: Border.all(
                   color: Colors.green.withValues(alpha: 0.4),
                 ),
@@ -473,7 +473,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             value: (_currentDay + 1) / devotionals.length,
             backgroundColor: Colors.white.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.xs / 2),
           ),
           const SizedBox(height: AppSpacing.lg),
           // Responsive 7-column grid using LayoutBuilder for precise sizing
@@ -503,7 +503,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                       : isCompleted
                           ? Colors.green.withValues(alpha: 0.2)
                           : Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                   border: Border.all(
                     color: isCurrent
                         ? AppTheme.primaryColor

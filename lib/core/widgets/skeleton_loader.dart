@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../theme/app_theme.dart';
 
 class SkeletonLoader extends StatelessWidget {
   final double width;
@@ -10,8 +11,8 @@ class SkeletonLoader extends StatelessWidget {
     super.key,
     this.width = double.infinity,
     this.height = 20,
-    this.borderRadius = const BorderRadius.all(Radius.circular(8)),
-  });
+    BorderRadius? borderRadius,
+  }) : borderRadius = borderRadius ?? AppRadius.smallRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +37,10 @@ class SkeletonChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SkeletonLoader(
+    return SkeletonLoader(
       width: 80,
       height: 36,
-      borderRadius: BorderRadius.all(Radius.circular(18)),
+      borderRadius: BorderRadius.circular(AppRadius.md + 2), // 18
     );
   }
 }

@@ -26,7 +26,7 @@ class FeatureCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.cardRadius,
           border: Border.all(
             color: AppTheme.goldColor.withValues(alpha: 0.6),
             width: 2.0,
@@ -34,13 +34,13 @@ class FeatureCard extends StatelessWidget {
           boxShadow: AppTheme.elevatedShadow,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.md + 2),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 40.0, sigmaY: 40.0),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(AppRadius.md + 2),
                 gradient: LinearGradient(
                   colors: [
                     Colors.white.withValues(alpha: 0.15),
@@ -54,14 +54,14 @@ class FeatureCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.xs + 2),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.03),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
                         border: Border.all(
                           color: AppTheme.goldColor.withValues(alpha: 0.5),
                           width: 1.5,
@@ -126,14 +126,14 @@ class QuickActionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.03),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               boxShadow: AppTheme.cardShadow,
               border: Border.all(
                 color: AppTheme.goldColor.withValues(alpha: 0.3),
@@ -145,14 +145,14 @@ class QuickActionCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.xs + 2),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.03),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.xs + 2),
                     border: Border.all(
                       color: AppTheme.goldColor.withValues(alpha: 0.3),
                       width: 1,
@@ -206,14 +206,14 @@ class StatsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.03),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             boxShadow: AppTheme.cardShadow,
             border: Border.all(
               color: AppTheme.goldColor.withValues(alpha: 0.4),

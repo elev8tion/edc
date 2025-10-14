@@ -128,7 +128,7 @@ class CalendarHeatmapWidget extends StatelessWidget {
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(AppRadius.xs / 4),
           border: isToday
               ? Border.all(
                   color: Colors.white.withValues(alpha: 0.8),
@@ -174,7 +174,7 @@ class CalendarHeatmapWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: colorForCount(count),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppRadius.xs / 4),
       ),
     );
   }

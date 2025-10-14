@@ -81,7 +81,7 @@ class GlassDialogButton extends StatelessWidget {
             begin: const AlignmentDirectional(-1, 0.5),
             end: const AlignmentDirectional(1, -0.5),
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.largeCardRadius,
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.3),
             width: 2,

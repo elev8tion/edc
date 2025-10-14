@@ -97,7 +97,7 @@ class GlassTypingIndicator extends StatelessWidget {
                   AppTheme.primaryColor.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: AppTheme.primaryColor.withValues(alpha: 0.3),
                 width: 1,
@@ -123,10 +123,10 @@ class GlassTypingIndicator extends StatelessWidget {
                   ],
                 ),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
+                  topLeft: Radius.circular(AppRadius.xs),
+                  topRight: Radius.circular(AppRadius.lg),
+                  bottomLeft: Radius.circular(AppRadius.lg),
+                  bottomRight: Radius.circular(AppRadius.lg),
                 ),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.3),

@@ -101,7 +101,7 @@ class SplashScreen extends HookConsumerWidget {
                                 width: 120,
                                 height: 120,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
+                                  borderRadius: AppRadius.largeCardRadius,
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppTheme.primaryColor.withValues(alpha: 0.3),
@@ -111,7 +111,7 @@ class SplashScreen extends HookConsumerWidget {
                                   ],
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(24),
+                                  borderRadius: AppRadius.largeCardRadius,
                                   child: Image.asset(
                                     'assets/images/logo.png',
                                     fit: BoxFit.contain,
@@ -119,7 +119,7 @@ class SplashScreen extends HookConsumerWidget {
                                       // Fallback if logo not found
                                       return Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: AppRadius.largeCardRadius,
                                           color: AppTheme.goldColor,
                                         ),
                                         child: Icon(

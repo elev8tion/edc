@@ -121,7 +121,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
           tabAlignment: TabAlignment.center,
           indicator: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
             border: Border.all(
               color: AppTheme.primaryColor,
               width: 1,
@@ -494,7 +494,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
             value: progress,
             backgroundColor: Colors.white.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.xs / 2),
           ),
           const SizedBox(height: AppSpacing.sm),
           progressAsync.when(
@@ -534,7 +534,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mediumRadius,
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.3),
                     width: 1.5,
@@ -605,7 +605,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
                     color: reading.isCompleted
                         ? Colors.green.withValues(alpha: 0.2)
                         : AppTheme.primaryColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smallRadius,
                   ),
                   child: Icon(
                     reading.isCompleted ? Icons.check : Icons.circle_outlined,
@@ -707,7 +707,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
                 value: (plan.completedReadings / plan.totalReadings).clamp(0.0, 1.0),
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.xs / 2),
               ),
               if (progressPercentageAsync != null) ...[
                 const SizedBox(height: AppSpacing.sm),
@@ -744,7 +744,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
                       padding: AppSpacing.horizontalLg,
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.mediumRadius,
                         border: Border.all(
                           color: Colors.red.withValues(alpha: 0.3),
                         ),

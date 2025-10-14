@@ -87,7 +87,7 @@ class CategoryStatisticsWidget extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: stat.categoryColor.withValues(alpha: 0.3),
         ),
@@ -101,7 +101,7 @@ class CategoryStatisticsWidget extends ConsumerWidget {
                 height: 36,
                 decoration: BoxDecoration(
                   color: stat.categoryColor.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                   border: Border.all(
                     color: stat.categoryColor.withValues(alpha: 0.5),
                   ),
@@ -140,7 +140,7 @@ class CategoryStatisticsWidget extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mediumRadius,
                     border: Border.all(
                       color: Colors.green.withValues(alpha: 0.5),
                     ),
@@ -192,7 +192,7 @@ class CategoryStatisticsWidget extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.smallRadius,
           border: Border.all(
             color: color.withValues(alpha: 0.3),
           ),

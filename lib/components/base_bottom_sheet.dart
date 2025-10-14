@@ -51,7 +51,7 @@ class BaseBottomSheet extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 12),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.xs / 4),
                   ),
                 ),
               if (title != null)

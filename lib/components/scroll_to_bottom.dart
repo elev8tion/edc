@@ -35,7 +35,7 @@ class ScrollToBottom extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(AppRadius.pill / 3.33),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.3),
             width: 1,
@@ -56,7 +56,7 @@ class ScrollToBottom extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(AppRadius.pill / 3.33),
             onTap: onPressed,
             child: Container(
               padding: const EdgeInsets.all(14),

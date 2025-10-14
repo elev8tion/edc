@@ -101,7 +101,7 @@ class VerseBottomSheet extends ConsumerWidget {
             const Color(0xFF0F172A).withValues(alpha: 0.98),
           ],
         ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -275,7 +275,7 @@ class VerseBottomSheet extends ConsumerWidget {
                   Colors.white.withValues(alpha: 0.05),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -309,7 +309,7 @@ class VerseBottomSheet extends ConsumerWidget {
                   Colors.white.withValues(alpha: 0.02),
                 ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: isTargetVerse
               ? AppTheme.primaryColor.withValues(alpha: 0.5)
@@ -433,7 +433,7 @@ class VerseBottomSheet extends ConsumerWidget {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 elevation: 4,
               ),
@@ -468,7 +468,7 @@ class VerseBottomSheet extends ConsumerWidget {
             Colors.white.withValues(alpha: 0.08),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
           width: 1,
@@ -557,7 +557,7 @@ class VerseBottomSheet extends ConsumerWidget {
           backgroundColor: AppTheme.primaryColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
           ),
           margin: const EdgeInsets.all(16),
           duration: const Duration(seconds: 2),

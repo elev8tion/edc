@@ -119,7 +119,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           Container(
             decoration: BoxDecoration(
               gradient: AppGradients.glassStrong,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -134,7 +134,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           Container(
             decoration: BoxDecoration(
               gradient: AppGradients.glassStrong,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
                 width: 1,
@@ -164,7 +164,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           controller: _tabController,
           indicator: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mediumRadius,
             border: Border.all(
               color: AppTheme.primaryColor,
               width: 1,
@@ -256,7 +256,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                                     end: Alignment.bottomRight,
                                   )
                                 : AppGradients.glassMedium,
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: AppRadius.largeCardRadius,
                             border: Border.all(
                               color: selectedCategory == null
                                   ? AppTheme.primaryColor
@@ -533,7 +533,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.smallRadius,
                     ),
                     child: Icon(
                       Icons.check_circle,
@@ -599,7 +599,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                   border: Border.all(
                     color: Colors.green.withValues(alpha: 0.3),
                   ),
@@ -728,7 +728,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                             filled: true,
                             fillColor: Colors.white.withValues(alpha: 0.1),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.mediumRadius,
                               borderSide: BorderSide.none,
                             ),
                           ),
@@ -781,7 +781,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.mediumRadius,
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -902,7 +902,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     filled: true,
                     fillColor: Colors.white.withValues(alpha: 0.1),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.mediumRadius,
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -1013,7 +1013,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: AppRadius.largeCardRadius,
                         border: Border.all(
                           color: Colors.red,
                           width: 2,
@@ -1023,7 +1023,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () => Navigator.of(context).pop(true),
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: AppRadius.largeCardRadius,
                           child: Container(
                             height: 48,
                             alignment: Alignment.center,
@@ -1148,7 +1148,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                   constraints: const BoxConstraints(maxHeight: 400),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mediumRadius,
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.2),
                     ),
@@ -1262,7 +1262,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     AppTheme.primaryColor.withValues(alpha: 0.1),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
               child: Icon(Icons.download, color: AppTheme.primaryColor),
             ),
@@ -1296,7 +1296,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     AppTheme.accentColor.withValues(alpha: 0.1),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
               ),
               child: Icon(Icons.share, color: AppTheme.accentColor),
             ),

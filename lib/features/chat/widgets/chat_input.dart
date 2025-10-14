@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
+import '../../../theme/app_theme.dart';
 
 /// Widget for chat message input with suggestions and controls
 class ChatInput extends StatefulWidget {
@@ -177,7 +178,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => _selectSuggestion(suggestion),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.smallRadius,
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

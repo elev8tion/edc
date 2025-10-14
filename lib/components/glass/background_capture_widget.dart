@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'base_shader.dart';
 import 'shader_painter.dart';
+import '../theme/app_theme.dart';
 
 class BackgroundCaptureWidget extends StatefulWidget {
   const BackgroundCaptureWidget({
@@ -75,7 +76,7 @@ class _BackgroundCaptureWidgetState extends State<BackgroundCaptureWidget>
       width: widget.width,
       height: widget.height,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadius.xs - 2),
         child: _buildWidgetContent(),
       ),
     );

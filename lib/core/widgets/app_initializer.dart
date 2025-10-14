@@ -99,7 +99,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.cardRadius,
                             boxShadow: [
                               BoxShadow(
                                 color: AppTheme.primaryColor.withOpacity(0.3),
@@ -109,14 +109,14 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                             ],
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.cardRadius,
                             child: Image.asset(
                               'assets/images/logo.png',
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: AppRadius.cardRadius,
                                     color: AppTheme.goldColor,
                                   ),
                                   child: const Icon(
@@ -243,7 +243,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.mediumRadius,
                       border: Border.all(
                         color: Colors.white.withOpacity(0.1),
                       ),
@@ -416,7 +416,7 @@ class _ErrorScreen extends StatelessWidget {
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.mediumRadius,
                                 ),
                                 elevation: 4,
                               ),
@@ -440,7 +440,7 @@ class _ErrorScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.mediumRadius,
                         border: Border.all(
                           color: Colors.white.withOpacity(0.1),
                         ),

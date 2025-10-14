@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/crisis_detection_service.dart';
+import '../../theme/app_theme.dart';
 
 /// Non-dismissible crisis intervention dialog
 class CrisisDialog extends StatelessWidget {
@@ -25,7 +26,7 @@ class CrisisDialog extends StatelessWidget {
       child: AlertDialog(
         backgroundColor: Colors.red.shade50,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           side: BorderSide(color: Colors.red.shade400, width: 2),
         ),
         title: Row(
@@ -75,7 +76,7 @@ class CrisisDialog extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                   border: Border.all(color: Colors.orange.shade300),
                 ),
                 child: Row(
@@ -112,7 +113,7 @@ class CrisisDialog extends StatelessWidget {
                 backgroundColor: Colors.grey.shade700,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smallRadius,
                 ),
               ),
               child: const Text(
@@ -151,7 +152,7 @@ class CrisisDialog extends StatelessWidget {
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.smallRadius,
           ),
         ),
       ),
@@ -207,7 +208,7 @@ class CrisisDialog extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.smallRadius,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Row(

@@ -92,13 +92,7 @@ class VerseCard extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.white,
-            shadows: [
-              Shadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                offset: const Offset(0, 1),
-                blurRadius: 2,
-              ),
-            ],
+            shadows: AppTheme.textShadowSubtle,
           ),
         ),
       ),
@@ -120,13 +114,7 @@ class VerseCard extends StatelessWidget {
         fontWeight: FontWeight.w400,
         color: textColor,
         letterSpacing: 0.3,
-        shadows: [
-          Shadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            offset: const Offset(0, 1),
-            blurRadius: 2,
-          ),
-        ],
+        shadows: AppTheme.textShadowSubtle,
       ),
       textAlign: TextAlign.left,
     );
@@ -247,13 +235,7 @@ class VerseCardWithReference extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: Colors.white.withValues(alpha: 0.95),
                     letterSpacing: 0.3,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                      ),
-                    ],
+                    shadows: AppTheme.textShadowSubtle,
                   ),
                 ),
               ),

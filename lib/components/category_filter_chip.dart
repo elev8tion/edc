@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/models/prayer_category.dart';
+import '../theme/app_theme.dart';
 
 class CategoryFilterChip extends StatelessWidget {
   final PrayerCategory category;
@@ -37,7 +38,7 @@ class CategoryFilterChip extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.largeCardRadius,
           border: Border.all(
             color: isSelected
                 ? category.color

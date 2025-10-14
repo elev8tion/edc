@@ -48,7 +48,7 @@ class AppTheme {
         elevation: 8,
         shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: AppRadius.buttonRadius,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
@@ -57,21 +57,21 @@ class AppTheme {
         ),
       ),
     ),
-    cardTheme: const CardThemeData(
+    cardTheme: CardThemeData(
       elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(24)),
+        borderRadius: AppRadius.largeCardRadius,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.grey.shade50,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.largeCardRadius,
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.largeCardRadius,
         borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -82,7 +82,7 @@ class AppTheme {
       foregroundColor: Colors.white,
       elevation: 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
     ),
   );
@@ -130,7 +130,7 @@ class AppTheme {
         elevation: 8,
         shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: AppRadius.buttonRadius,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
@@ -142,19 +142,19 @@ class AppTheme {
     cardTheme: CardThemeData(
       elevation: 4,
       color: Colors.grey.shade900,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: AppRadius.largeCardRadius,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.grey.shade800,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.largeCardRadius,
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.largeCardRadius,
         borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -165,7 +165,7 @@ class AppTheme {
       foregroundColor: Colors.white,
       elevation: 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
     ),
   );
@@ -223,31 +223,52 @@ class AppTheme {
     ),
   ];
 
+  // Standardized text shadows for consistent styling
+  static const List<Shadow> textShadowSubtle = [
+    Shadow(
+      color: Color(0x26000000), // 15% opacity
+      offset: Offset(0, 1),
+      blurRadius: 2.0,
+    ),
+  ];
+
+  static const List<Shadow> textShadowMedium = [
+    Shadow(
+      color: Color(0x4D000000), // 30% opacity
+      offset: Offset(0, 1),
+      blurRadius: 3.0,
+    ),
+  ];
+
+  static const List<Shadow> textShadowStrong = [
+    Shadow(
+      color: Color(0x66000000), // 40% opacity
+      offset: Offset(0, 2),
+      blurRadius: 4.0,
+    ),
+  ];
+
+  static const List<Shadow> textShadowBold = [
+    Shadow(
+      color: Color(0x80000000), // 50% opacity
+      offset: Offset(0, 2),
+      blurRadius: 6.0,
+    ),
+  ];
+
   // Text styles optimized for glass components
   static const TextStyle headingStyle = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
     color: Colors.white,
-    shadows: [
-      Shadow(
-        offset: Offset(0, 1),
-        blurRadius: 3.0,
-        color: Color.fromARGB(100, 0, 0, 0),
-      ),
-    ],
+    shadows: textShadowMedium,
   );
 
   static const TextStyle subheadingStyle = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: Colors.white,
-    shadows: [
-      Shadow(
-        offset: Offset(0, 1),
-        blurRadius: 2.0,
-        color: Color.fromARGB(80, 0, 0, 0),
-      ),
-    ],
+    shadows: textShadowSubtle,
   );
 
   static const TextStyle bodyStyle = TextStyle(
@@ -284,7 +305,7 @@ class AppTheme {
       width: 1,
     ),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: AppRadius.buttonRadius,
     ),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     textStyle: const TextStyle(
@@ -299,7 +320,7 @@ class AppTheme {
     elevation: 8,
     shadowColor: primaryColor.withValues(alpha: 0.4),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: AppRadius.buttonRadius,
     ),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     textStyle: const TextStyle(

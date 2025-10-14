@@ -70,7 +70,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               gradient: AppGradients.goldAccent,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.xs + 2),
               border: Border.all(
                 color: AppTheme.goldColor.withValues(alpha: 0.4),
                 width: 1,
@@ -245,7 +245,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     startAlpha: 0.3,
                     endAlpha: 0.1,
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.xs + 2),
                   border: Border.all(
                     color: AppTheme.primaryColor.withValues(alpha: 0.3),
                     width: 1,
@@ -282,7 +282,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -339,7 +339,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -411,7 +411,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -458,12 +458,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showTimePicker(value, onChanged),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.mediumRadius,
           child: Container(
             padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
@@ -475,7 +475,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smallRadius,
                   ),
                   child: Icon(
                     Icons.access_time,
@@ -569,12 +569,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.mediumRadius,
           child: Container(
             padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.1),
                 width: 1,
@@ -586,7 +586,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smallRadius,
                   ),
                   child: Icon(
                     icon,
@@ -637,7 +637,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mediumRadius,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -758,7 +758,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         backgroundColor: AppTheme.primaryColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.xs + 2),
         ),
       ),
     );

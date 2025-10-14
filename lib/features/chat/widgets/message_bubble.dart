@@ -6,6 +6,7 @@ import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
 import 'verse_card.dart';
+import '../../../theme/app_theme.dart';
 
 /// Widget that displays a single chat message in a bubble
 class MessageBubble extends StatelessWidget {
@@ -223,7 +224,7 @@ class MessageBubble extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppRadius.xs / 4),
               ),
             ),
 

@@ -88,7 +88,7 @@ class _GlassStreamingMessageState extends State<GlassStreamingMessage>
                   AppTheme.primaryColor.withValues(alpha: 0.1),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: AppTheme.primaryColor.withValues(alpha: 0.3),
                 width: 1,
@@ -119,10 +119,10 @@ class _GlassStreamingMessageState extends State<GlassStreamingMessage>
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
+                      topLeft: Radius.circular(AppRadius.xs),
+                      topRight: Radius.circular(AppRadius.lg),
+                      bottomLeft: Radius.circular(AppRadius.lg),
+                      bottomRight: Radius.circular(AppRadius.lg),
                     ),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.3),
@@ -144,10 +144,10 @@ class _GlassStreamingMessageState extends State<GlassStreamingMessage>
                         Positioned.fill(
                           child: ClipRRect(
                             borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(8),
-                              topRight: Radius.circular(20),
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                              topLeft: Radius.circular(AppRadius.xs),
+                              topRight: Radius.circular(AppRadius.lg),
+                              bottomLeft: Radius.circular(AppRadius.lg),
+                              bottomRight: Radius.circular(AppRadius.lg),
                             ),
                             child: Transform.translate(
                               offset: Offset(_shimmerAnimation.value * 100, 0),
@@ -190,13 +190,7 @@ class _GlassStreamingMessageState extends State<GlassStreamingMessage>
                                 fontStyle: widget.streamedText.isEmpty
                                     ? FontStyle.italic
                                     : FontStyle.normal,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withValues(alpha: 0.3),
-                                    offset: const Offset(0, 1),
-                                    blurRadius: 2,
-                                  ),
-                                ],
+                                shadows: AppTheme.textShadowSubtle,
                               ),
                             ),
                           ),
@@ -210,7 +204,7 @@ class _GlassStreamingMessageState extends State<GlassStreamingMessage>
                                 height: 16,
                                 decoration: BoxDecoration(
                                   color: AppTheme.primaryColor,
-                                  borderRadius: BorderRadius.circular(1),
+                                  borderRadius: BorderRadius.circular(AppRadius.xs / 8),
                                 ),
                               )
                                   .animate(onPlay: (controller) => controller.repeat())

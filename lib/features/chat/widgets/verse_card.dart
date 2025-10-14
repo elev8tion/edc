@@ -5,6 +5,7 @@ import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
 import '../../../components/category_badge.dart';
+import '../../../theme/app_theme.dart';
 
 /// Beautiful card widget for displaying Bible verses
 class VerseCard extends StatelessWidget {
@@ -63,7 +64,7 @@ class VerseCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: AppTheme.primaryColor.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.smallRadius,
             border: Border.all(
               color: AppTheme.primaryColor.withValues(alpha: 0.3),
               width: 1,
@@ -189,7 +190,7 @@ class VerseCard extends StatelessWidget {
           color: isSelected
               ? AppTheme.primaryColor.withValues(alpha: 0.2)
               : Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.smallRadius,
           border: Border.all(
             color: isSelected
                 ? AppTheme.primaryColor.withValues(alpha: 0.4)
@@ -236,7 +237,7 @@ class VerseCard extends StatelessWidget {
         backgroundColor: AppTheme.primaryColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.mediumRadius,
         ),
       ),
     );
@@ -281,7 +282,7 @@ class CompactVerseCard extends StatelessWidget {
               Colors.white.withValues(alpha: 0.05),
             ],
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.2),
             width: 1,

@@ -36,7 +36,7 @@ class GlassButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: isLoading ? null : onPressed,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: AppRadius.buttonRadius,
             child: Center(
               child: isLoading
                 ? (loadingWidget ?? const SizedBox(
