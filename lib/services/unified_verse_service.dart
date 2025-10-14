@@ -165,13 +165,39 @@ class UnifiedVerseService {
   }
 
   /// Add verse to favorites
-  Future<void> addToFavorites(int verseId, {String? note, List<String>? tags}) async {
+  Future<void> addToFavorites(int verseId, {String? note, List<String>? tags, String? text, String? reference, String? category}) async {
     final database = await _db.database;
+
+    // Get verse details if not provided
+    String verseText = text ?? '';
+    String verseReference = reference ?? '';
+    String verseCategory = category ?? 'general';
+
+    if (text == null || reference == null) {
+      final verseResults = await database.query(
+        'bible_verses',
+        where: 'id = ?',
+        whereArgs: [verseId],
+        limit: 1,
+      );
+
+      if (verseResults.isNotEmpty) {
+        final verseData = verseResults.first;
+        verseText = verseData['text'] as String? ?? '';
+        verseReference = verseData['reference'] as String? ??
+            '${verseData['book']} ${verseData['chapter']}:${verseData['verse']}';
+        verseCategory = verseData['category'] as String? ?? 'general';
+      }
+    }
 
     await database.insert(
       'favorite_verses',
       {
+        'id': '${verseId}_${DateTime.now().millisecondsSinceEpoch}',
         'verse_id': verseId,
+        'text': verseText,
+        'reference': verseReference,
+        'category': verseCategory,
         'note': note,
         'tags': tags != null ? jsonEncode(tags) : null,
         'date_added': DateTime.now().millisecondsSinceEpoch,

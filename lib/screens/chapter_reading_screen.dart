@@ -516,7 +516,12 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
           );
         }
       } else {
-        await verseService.addToFavorites(verse.id!);
+        await verseService.addToFavorites(
+          verse.id!,
+          text: verse.text,
+          reference: verse.reference,
+          category: verse.category,
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
