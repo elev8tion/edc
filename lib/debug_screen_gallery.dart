@@ -105,7 +105,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.mediumRadius,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -159,7 +159,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smallRadius,
                   ),
                   child: IconButton(
                     onPressed: currentIndex > 0 ? _previousScreen : null,
@@ -175,7 +175,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smallRadius,
                   ),
                   child: IconButton(
                     onPressed: currentIndex < screens.length - 1 ? _nextScreen : null,
@@ -197,7 +197,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.red.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.smallRadius,
               ),
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),

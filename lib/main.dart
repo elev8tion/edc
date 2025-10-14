@@ -132,7 +132,7 @@ class EverydayChristianApp extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.orange,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.mediumRadius,
                         ),
                         child: const Text(
                           'DEV',

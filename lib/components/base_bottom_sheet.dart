@@ -23,7 +23,7 @@ class BaseBottomSheet extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(32),
+        top: Radius.circular(AppRadius.xxl + 4),
       ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
@@ -34,7 +34,7 @@ class BaseBottomSheet extends StatelessWidget {
                 ? Colors.white.withValues(alpha: 0.1)
                 : Colors.white.withValues(alpha: 0.2),
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(32),
+              top: Radius.circular(AppRadius.xxl + 4),
             ),
             border: Border.all(
               color: isDark ? Colors.white24 : Colors.white54,
