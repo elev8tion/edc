@@ -10,7 +10,7 @@ import '../logging/app_logger.dart';
 /// Unified database helper with all tables in one schema
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 4;
+  static const int _databaseVersion = 5;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -87,57 +87,7 @@ class DatabaseHelper {
     try {
       _logger.info('Creating database schema v$version', context: 'DatabaseHelper');
 
-      // ==================== VERSES TABLES ====================
-
-      // Main verses table
-      await db.execute('''
-        CREATE TABLE verses (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          book TEXT NOT NULL,
-          chapter INTEGER NOT NULL,
-          verse_number INTEGER NOT NULL,
-          text TEXT NOT NULL,
-          translation TEXT NOT NULL DEFAULT 'ESV',
-          themes TEXT,
-          created_at INTEGER,
-          UNIQUE(book, chapter, verse_number, translation)
-        )
-      ''');
-
-      // FTS5 virtual table for verse search
-      await db.execute('''
-        CREATE VIRTUAL TABLE verses_fts USING fts5(
-          text,
-          book,
-          themes,
-          content='verses',
-          content_rowid='id'
-        )
-      ''');
-
-      // Triggers to maintain FTS index
-      await db.execute('''
-        CREATE TRIGGER verses_fts_insert AFTER INSERT ON verses BEGIN
-          INSERT INTO verses_fts(rowid, text, book, themes)
-          VALUES (new.id, new.text, new.book, new.themes);
-        END
-      ''');
-
-      await db.execute('''
-        CREATE TRIGGER verses_fts_delete AFTER DELETE ON verses BEGIN
-          INSERT INTO verses_fts(verses_fts, rowid, text, book, themes)
-          VALUES ('delete', old.id, old.text, old.book, old.themes);
-        END
-      ''');
-
-      await db.execute('''
-        CREATE TRIGGER verses_fts_update AFTER UPDATE ON verses BEGIN
-          INSERT INTO verses_fts(verses_fts, rowid, text, book, themes)
-          VALUES ('delete', old.id, old.text, old.book, old.themes);
-          INSERT INTO verses_fts(rowid, text, book, themes)
-          VALUES (new.id, new.text, new.book, new.themes);
-        END
-      ''');
+      // ==================== BIBLE VERSES TABLES ====================
 
       // Bible verses table (full Bible storage)
       await db.execute('''
@@ -431,7 +381,6 @@ class DatabaseHelper {
 
       // Insert default data
       await _insertDefaultSettings(db);
-      await _insertSampleVerses(db);
       await _insertVersePreferences(db);
       await _insertDefaultPrayerCategories(db);
       await _insertDefaultReadingPlans(db);
@@ -551,6 +500,25 @@ class DatabaseHelper {
         _logger.error('Failed to migrate created_at: $e');
       }
     }
+
+    if (oldVersion < 5) {
+      try {
+        // v4→v5: Remove duplicate "verses" table and use only "bible_verses"
+        // Drop old verses table and its FTS index
+        _logger.info('Migrating v4→v5: Removing duplicate verses table');
+
+        await db.execute('DROP TRIGGER IF EXISTS verses_fts_insert');
+        await db.execute('DROP TRIGGER IF EXISTS verses_fts_delete');
+        await db.execute('DROP TRIGGER IF EXISTS verses_fts_update');
+        await db.execute('DROP TABLE IF EXISTS verses_fts');
+        await db.execute('DROP TABLE IF EXISTS verses');
+
+        _logger.info('✅ Migration v4→v5 complete: Removed verses table, using bible_verses only');
+      } catch (e) {
+        _logger.error('Migration v4→v5 failed: $e');
+        // Continue - table may not exist in fresh installs
+      }
+    }
   }
 
   /// Handle database open
@@ -578,46 +546,6 @@ class DatabaseHelper {
 
     for (final setting in defaultSettings) {
       await db.insert('user_settings', setting);
-    }
-  }
-
-  Future<void> _insertSampleVerses(Database db) async {
-    final sampleVerses = [
-      {
-        'book': 'Jeremiah',
-        'chapter': 29,
-        'verse_number': 11,
-        'text': 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
-        'translation': 'ESV',
-        'themes': '["hope", "future", "guidance", "trust"]'
-      },
-      {
-        'book': 'Philippians',
-        'chapter': 4,
-        'verse_number': 13,
-        'text': 'I can do all things through him who strengthens me.',
-        'translation': 'ESV',
-        'themes': '["strength", "perseverance", "faith", "encouragement"]'
-      },
-    ];
-
-    for (final verse in sampleVerses) {
-      await db.insert('verses', verse);
-    }
-
-    // Favorite verses
-    final favorites = [
-      {
-        'id': '1',
-        'text': 'For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope.',
-        'reference': 'Jeremiah 29:11',
-        'category': 'Hope',
-        'date_added': DateTime.now().millisecondsSinceEpoch,
-      },
-    ];
-
-    for (final verse in favorites) {
-      await db.insert('favorite_verses', verse);
     }
   }
 
@@ -913,9 +841,9 @@ class DatabaseHelper {
         if (query != null && query.isNotEmpty) {
           String sql = '''
             SELECT v.*
-            FROM verses v
-            INNER JOIN verses_fts fts ON v.id = fts.rowid
-            WHERE verses_fts MATCH ?
+            FROM bible_verses v
+            INNER JOIN bible_verses_fts fts ON v.id = fts.rowid
+            WHERE bible_verses_fts MATCH ?
           ''';
           List<dynamic> args = [query];
 
@@ -925,7 +853,7 @@ class DatabaseHelper {
           }
 
           if (translation != null) {
-            sql += ' AND v.translation = ?';
+            sql += ' AND v.version = ?';
             args.add(translation);
           }
 
@@ -949,12 +877,12 @@ class DatabaseHelper {
 
         if (translation != null) {
           if (whereClause.isNotEmpty) whereClause += ' AND ';
-          whereClause += 'translation = ?';
+          whereClause += 'version = ?';
           whereArgs.add(translation);
         }
 
         return await db.query(
-          'verses',
+          'bible_verses',
           where: whereClause.isNotEmpty ? whereClause : null,
           whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
           orderBy: 'RANDOM()',

@@ -54,11 +54,10 @@ void main() async {
     debugPrint('Gemini AI Service initialization failed: $e');
   });
 
-  // Initialize notification service
-  // This will request permissions and allow notifications to be scheduled
-  // 🔧 COMMENTED OUT: Prevents test screen from being booted during app initialization
-  // final container = ProviderContainer();
-  // await container.read(initializeAppProvider.future);
+  // Initialize notification service and Bible data
+  // This will request permissions, schedule notifications, and load Bible on first launch
+  final container = ProviderContainer();
+  await container.read(initializeAppProvider.future);
 
   // 🔧 TEMPORARY: Reset database to fix schema migration issues
   // This ensures all new tables (prayer_streak_activity, etc.) are created
