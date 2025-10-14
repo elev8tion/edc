@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -95,13 +96,15 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   'Daily Devotional',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: AppColors.primaryText,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
                 Row(

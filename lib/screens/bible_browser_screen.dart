@@ -17,9 +17,10 @@ class BibleBrowserScreen extends ConsumerStatefulWidget {
   ConsumerState<BibleBrowserScreen> createState() => _BibleBrowserScreenState();
 }
 
-class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
+class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with TickerProviderStateMixin {
   final BibleChapterService _bibleService = BibleChapterService();
   final TextEditingController _searchController = TextEditingController();
+  late TabController _tabController;
 
   List<String> _allBooks = [];
   List<String> _filteredBooks = [];
@@ -101,11 +102,13 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _loadBooks();
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -169,10 +172,17 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
               children: [
                 _buildHeader(),
                 _buildSearchBar(),
+                _buildTabBar(),
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : _buildBibleBrowser(),
+                      : TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildTestamentView(_getOldTestamentBooks()),
+                            _buildTestamentView(_getNewTestamentBooks()),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -193,22 +203,26 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   'Bible Browser',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: AppColors.primaryText,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(
+                AutoSizeText(
                   'Read any chapter freely',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -297,11 +311,43 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
     );
   }
 
-  Widget _buildBibleBrowser() {
+  Widget _buildTabBar() {
     final oldTestamentBooks = _getOldTestamentBooks();
     final newTestamentBooks = _getNewTestamentBooks();
 
-    if (oldTestamentBooks.isEmpty && newTestamentBooks.isEmpty) {
+    return Container(
+      margin: AppSpacing.horizontalXl,
+      child: FrostedGlassCard(
+        padding: const EdgeInsets.all(4),
+        child: TabBar(
+          controller: _tabController,
+          indicator: BoxDecoration(
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.primaryColor,
+              width: 1,
+            ),
+          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+          ),
+          tabs: [
+            Tab(text: 'Old Testament (${oldTestamentBooks.length})'),
+            Tab(text: 'New Testament (${newTestamentBooks.length})'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTestamentView(List<String> books) {
+    if (books.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(40),
@@ -336,38 +382,10 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
       );
     }
 
-    return SingleChildScrollView(
+    return ListView.builder(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (oldTestamentBooks.isNotEmpty) ...[
-            Text(
-              'Old Testament',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
-                fontWeight: FontWeight.w700,
-                color: AppColors.primaryText,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...oldTestamentBooks.map((book) => _buildBookCard(book)),
-            const SizedBox(height: 24),
-          ],
-          if (newTestamentBooks.isNotEmpty) ...[
-            Text(
-              'New Testament',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
-                fontWeight: FontWeight.w700,
-                color: AppColors.primaryText,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...newTestamentBooks.map((book) => _buildBookCard(book)),
-          ],
-        ],
-      ),
+      itemCount: books.length,
+      itemBuilder: (context, index) => _buildBookCard(books[index]),
     );
   }
 
@@ -403,13 +421,15 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(
+                child: AutoSizeText(
                   book,
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryText,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Icon(

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -113,22 +114,26 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   'Verse Library',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                     fontWeight: FontWeight.w800,
                     color: AppColors.primaryText,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
-                Text(
+                AutoSizeText(
                   'Find comfort in God\'s word',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: AppColors.secondaryText,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),

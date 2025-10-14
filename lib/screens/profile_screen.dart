@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -119,13 +120,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const GlassmorphicFABMenu(),
             const SizedBox(width: AppSpacing.lg),
             Expanded(
-              child: Text(
+              child: AutoSizeText(
                 'Profile',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                   fontWeight: FontWeight.w800,
                   color: AppColors.primaryText,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
             ),
             GestureDetector(

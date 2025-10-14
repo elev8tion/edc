@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../core/services/verse_service.dart';
 import '../core/services/database_service.dart';
 import '../core/models/bible_verse.dart';
@@ -131,12 +132,14 @@ class _DailyVerseScreenState extends State<DailyVerseScreen> {
               color: AppTheme.goldColor,
             ),
             const SizedBox(height: 16),
-            Text(
+            AutoSizeText(
               'No verse available',
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 24),
             ElevatedButton(

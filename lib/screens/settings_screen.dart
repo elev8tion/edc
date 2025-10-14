@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
@@ -52,7 +53,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
-            child: Text(
+            child: AutoSizeText(
               'Settings',
               style: TextStyle(
                 fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
@@ -66,6 +67,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                 ],
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Container(
