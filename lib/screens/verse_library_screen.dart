@@ -133,6 +133,25 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               ],
             ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.2),
+                  Colors.white.withValues(alpha: 0.1),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.more_vert, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
+              onPressed: _showVerseOptions,
+            ),
+          ),
         ],
       ),
     );
@@ -192,34 +211,71 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
   }
 
   Widget _buildThemeFilter(List<String> themes, String selectedTheme) {
-    final displayThemes = ['All', ...themes.take(10)];
+    final displayThemes = ['All', ...themes];
 
     return Container(
-      height: ResponsiveUtils.scaleSize(context, 50, minScale: 0.9, maxScale: 1.2),
-      margin: AppSpacing.verticalLg,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: AppSpacing.horizontalXl,
-        itemCount: displayThemes.length,
-        itemBuilder: (context, index) {
-          final theme = displayThemes[index];
-          final isSelected = theme == selectedTheme;
-
-          return Container(
-            margin: const EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: () {
-                ref.read(selectedThemeProvider.notifier).state = theme;
-              },
-              child: CategoryBadge(
-                text: theme == 'All' ? theme : theme.substring(0, 1).toUpperCase() + theme.substring(1),
-                isSelected: isSelected,
-              ),
+      margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: Row(
+              children: [
+                Text(
+                  'Filter by Theme',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondaryText,
+                  ),
+                ),
+                const Spacer(),
+                if (selectedTheme != 'All')
+                  TextButton(
+                    onPressed: () {
+                      ref.read(selectedThemeProvider.notifier).state = 'All';
+                    },
+                    child: Text(
+                      'Clear Filter',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
-        },
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: ResponsiveUtils.scaleSize(context, 36, minScale: 0.9, maxScale: 1.2),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: AppSpacing.horizontalXl,
+              itemCount: displayThemes.length,
+              itemBuilder: (context, index) {
+                final theme = displayThemes[index];
+                final isSelected = theme == selectedTheme;
+
+                return Container(
+                  margin: const EdgeInsets.only(right: 12),
+                  child: GestureDetector(
+                    onTap: () {
+                      ref.read(selectedThemeProvider.notifier).state = theme;
+                    },
+                    child: CategoryBadge(
+                      text: theme == 'All' ? theme : theme.substring(0, 1).toUpperCase() + theme.substring(1),
+                      isSelected: isSelected,
+                    ),
+                  ),
+                ).animate().fadeIn(duration: AppAnimations.slow, delay: (600 + index * 100).ms).scale(begin: const Offset(0.8, 0.8));
+              },
+            ),
+          ),
+        ],
       ),
-    );
+    ).animate().fadeIn(duration: AppAnimations.slow, delay: (400).ms);
   }
 
   Widget _buildTabBar() {
@@ -620,6 +676,50 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             const SizedBox(height: AppSpacing.xl),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showVerseOptions() {
+    showCustomBottomSheet(
+      context: context,
+      title: 'Verse Library Options',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.primaryColor.withValues(alpha: 0.3),
+                    AppTheme.primaryColor.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.info_outline, color: AppTheme.primaryColor),
+            ),
+            title: const Text(
+              'About Verse Library',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryText,
+              ),
+            ),
+            subtitle: Text(
+              'Browse and search Bible verses by theme',
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                color: AppColors.secondaryText,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
     );
   }

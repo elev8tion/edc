@@ -227,7 +227,15 @@ class UnifiedVerseService {
       columns: ['verse_id'],
     );
 
-    return results.map((row) => row['verse_id'] as int).toSet();
+    return results
+        .map((row) {
+          final id = row['verse_id'];
+          if (id == null) return null;
+          // Handle SQLite returning num type
+          return id is int ? id : (id as num).toInt();
+        })
+        .whereType<int>()
+        .toSet();
   }
 
   /// Update favorite note or tags
@@ -254,9 +262,36 @@ class UnifiedVerseService {
 
   /// Get all available themes from verses
   Future<List<String>> getAllThemes() async {
-    // Return empty list since themes are now managed separately through categories
-    // The verses table has a themes column but it's used for AI matching, not display
-    return [];
+    final database = await _db.database;
+
+    // Get all distinct themes from verses
+    final results = await database.rawQuery('''
+      SELECT DISTINCT themes FROM verses
+      WHERE themes IS NOT NULL AND themes != '[]'
+    ''');
+
+    // Parse JSON themes and collect all unique theme strings
+    final Set<String> allThemes = {};
+    for (final row in results) {
+      try {
+        final themesJson = row['themes'];
+        if (themesJson is String && themesJson.isNotEmpty) {
+          final List<dynamic> themesList = jsonDecode(themesJson);
+          for (final theme in themesList) {
+            if (theme is String && theme.isNotEmpty) {
+              allThemes.add(theme.toLowerCase());
+            }
+          }
+        }
+      } catch (e) {
+        // Skip malformed JSON
+        continue;
+      }
+    }
+
+    // Return sorted list of themes
+    final sortedThemes = allThemes.toList()..sort();
+    return sortedThemes;
   }
 
   /// Get verses for specific situation/emotion

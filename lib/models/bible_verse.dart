@@ -56,20 +56,22 @@ class BibleVerse {
     }
 
     return BibleVerse(
-      id: map['id']?.toInt(),
-      book: map['book'] ?? '',
-      chapter: map['chapter']?.toInt() ?? 0,
-      verseNumber: (map['verse_number'] ?? map['verse'])?.toInt() ?? 0,
-      text: map['text'] ?? '',
-      translation: map['translation'] ?? 'ESV',
+      id: map['id'] as int?,
+      book: map['book'] as String? ?? '',
+      chapter: map['chapter'] as int? ?? 0,
+      verseNumber: (map['verse_number'] ?? map['verse']) as int? ?? 0,
+      text: map['text'] as String? ?? '',
+      translation: map['translation'] as String? ?? 'ESV',
       reference: reference,
       themes: themesList,
-      category: map['category'] ?? 'general',
+      category: map['category'] as String? ?? 'general',
       createdAt: map['created_at'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(map['created_at'])
+        ? DateTime.fromMillisecondsSinceEpoch((map['created_at'] as num).toInt())
         : null,
-      snippet: map['snippet'],
-      relevanceScore: map['relevance_score']?.toDouble() ?? map['rank']?.toDouble(),
+      snippet: map['snippet'] as String?,
+      relevanceScore: map['relevance_score'] != null
+        ? (map['relevance_score'] as num).toDouble()
+        : (map['rank'] != null ? (map['rank'] as num).toDouble() : null),
       isFavorite: isFavorite,
     );
   }
@@ -92,7 +94,11 @@ class BibleVerse {
 
   /// Create verse from JSON
   factory BibleVerse.fromJson(Map<String, dynamic> json) {
-    final reference = '${json['book']} ${json['chapter']}:${json['verse'] ?? json['verse_number']}';
+    final chapter = json['chapter'] != null ? (json['chapter'] as num).toInt() : 0;
+    final verse = (json['verse'] ?? json['verse_number']) != null
+        ? ((json['verse'] ?? json['verse_number']) as num).toInt()
+        : 0;
+    final reference = '${json['book']} $chapter:$verse';
 
     List<String> themesList = [];
     if (json['themes'] != null) {
@@ -108,17 +114,17 @@ class BibleVerse {
     }
 
     return BibleVerse(
-      id: json['id']?.toInt(),
-      book: json['book'] ?? '',
-      chapter: json['chapter']?.toInt() ?? 0,
-      verseNumber: (json['verse'] ?? json['verse_number'])?.toInt() ?? 0,
-      text: json['text'] ?? '',
-      translation: json['translation'] ?? 'ESV',
+      id: json['id'] != null ? (json['id'] as num).toInt() : null,
+      book: json['book'] as String? ?? '',
+      chapter: chapter,
+      verseNumber: verse,
+      text: json['text'] as String? ?? '',
+      translation: json['translation'] as String? ?? 'ESV',
       reference: reference,
       themes: themesList,
-      category: json['category'] ?? 'general',
+      category: json['category'] as String? ?? 'general',
       createdAt: json['created_at'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(json['created_at'])
+        ? DateTime.fromMillisecondsSinceEpoch((json['created_at'] as num).toInt())
         : null,
     );
   }

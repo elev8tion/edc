@@ -62,25 +62,38 @@ class CategoryBadge extends StatelessWidget {
         padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              color.withValues(alpha: 0.4),
-              color.withValues(alpha: 0.2),
-            ],
+            colors: isSelected
+                ? [
+                    color.withValues(alpha: 0.5),
+                    color.withValues(alpha: 0.3),
+                  ]
+                : [
+                    color.withValues(alpha: 0.25),
+                    color.withValues(alpha: 0.15),
+                  ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: color,
-            width: 2,
+            color: isSelected ? color : color.withValues(alpha: 0.6),
+            width: isSelected ? 2.5 : 2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.3),
-              blurRadius: 8,
-              spreadRadius: 0,
-            ),
-          ],
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.4),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.2),
+                    blurRadius: 6,
+                    spreadRadius: 0,
+                  ),
+                ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
