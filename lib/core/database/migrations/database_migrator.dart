@@ -220,6 +220,7 @@ class DatabaseMigrator {
           {
             'key': _migrationKey,
             'value': version.toString(),
+            'type': 'int',
             'created_at': DateTime.now().millisecondsSinceEpoch,
             'updated_at': DateTime.now().millisecondsSinceEpoch,
           },
@@ -232,6 +233,7 @@ class DatabaseMigrator {
           {
             'key': _migrationKey,
             'value': version.toString(),
+            'type': 'int',
             'updated_at': DateTime.now().millisecondsSinceEpoch,
           },
           conflictAlgorithm: ConflictAlgorithm.replace,

@@ -39,7 +39,7 @@ extension PrayerCategoryExtension on PrayerCategory {
       'is_default': isDefault ? 1 : 0,
       'is_active': isActive ? 1 : 0,
       'display_order': displayOrder,
-      'date_created': dateCreated.millisecondsSinceEpoch,
+      'created_at': dateCreated.millisecondsSinceEpoch,
       'date_modified': dateModified?.millisecondsSinceEpoch,
     };
   }
@@ -54,7 +54,7 @@ extension PrayerCategoryExtension on PrayerCategory {
       isDefault: (map['is_default'] as int) == 1,
       isActive: (map['is_active'] as int) == 1,
       displayOrder: map['display_order'] as int,
-      dateCreated: DateTime.fromMillisecondsSinceEpoch(map['date_created'] as int),
+      dateCreated: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
       dateModified: map['date_modified'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['date_modified'] as int)
           : null,
