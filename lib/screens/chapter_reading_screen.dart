@@ -361,7 +361,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                 style: TextStyle(
                   fontSize: ResponsiveUtils.fontSize(context, 28, minSize: 24, maxSize: 32),
                   fontWeight: FontWeight.w800,
-                  color: Colors.black,
+                  color: Colors.white,
                   letterSpacing: -0.5,
                 ),
               ),
