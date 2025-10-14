@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/blur_dropdown.dart';
@@ -59,13 +60,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryText,
-                shadows: [
-                  Shadow(
-                    color: Colors.black26,
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
+                shadows: AppTheme.textShadowStrong,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -74,12 +69,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.goldColor.withValues(alpha: 0.3),
-                  AppTheme.goldColor.withValues(alpha: 0.1),
-                ],
-              ),
+              gradient: AppGradients.goldAccent,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: AppTheme.goldColor.withValues(alpha: 0.4),
@@ -250,11 +240,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor.withValues(alpha: 0.3),
-                      AppTheme.primaryColor.withValues(alpha: 0.1),
-                    ],
+                  gradient: AppGradients.customColored(
+                    AppTheme.primaryColor,
+                    startAlpha: 0.3,
+                    endAlpha: 0.1,
                   ),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -275,13 +264,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryText,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black26,
-                      offset: Offset(0, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  shadows: AppTheme.textShadowSubtle,
                 ),
               ),
             ],

@@ -9,6 +9,7 @@ import '../components/glass_button.dart';
 import '../components/glassmorphic_fab_menu.dart';
 import '../components/category_badge.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import '../core/providers/app_providers.dart';
 import '../core/models/devotional.dart';
 import '../core/navigation/navigation_service.dart';
@@ -212,14 +213,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           Container(
             padding: AppSpacing.screenPadding,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.25),
-                  Colors.white.withValues(alpha: 0.15),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: AppGradients.glassVeryStrong,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.3),

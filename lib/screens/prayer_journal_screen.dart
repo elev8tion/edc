@@ -19,6 +19,7 @@ import '../widgets/category_management_dialog.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/responsive_utils.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/models/prayer_request.dart';
 import '../core/models/prayer_category.dart';
@@ -26,7 +27,6 @@ import '../core/providers/prayer_providers.dart';
 import '../core/providers/app_providers.dart';
 import '../core/providers/category_providers.dart';
 import '../core/widgets/skeleton_loader.dart';
-import '../utils/responsive_utils.dart';
 
 class PrayerJournalScreen extends ConsumerStatefulWidget {
   const PrayerJournalScreen({super.key});
@@ -118,12 +118,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
+              gradient: AppGradients.glassStrong,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -138,12 +133,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
           const SizedBox(width: 8),
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
+              gradient: AppGradients.glassStrong,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -265,14 +255,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   )
-                                : LinearGradient(
-                                    colors: [
-                                      Colors.white.withValues(alpha: 0.15),
-                                      Colors.white.withValues(alpha: 0.05),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
+                                : AppGradients.glassMedium,
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
                               color: selectedCategory == null

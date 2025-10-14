@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import 'chat_screen.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
@@ -254,14 +255,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         width: ResponsiveUtils.scaleSize(context, 140, minScale: 0.9, maxScale: 1.2),
         padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.15),
-            Colors.white.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppGradients.glassMedium,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
@@ -301,13 +295,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 16, maxSize: 22),
                 fontWeight: FontWeight.w800,
                 color: AppColors.primaryText,
-                shadows: [
-                  Shadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    offset: const Offset(0, 2),
-                    blurRadius: 4,
-                  ),
-                ],
+                shadows: AppTheme.textShadowStrong,
               ),
               maxLines: 1,
               minFontSize: 14,
@@ -326,13 +314,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      offset: const Offset(0, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  shadows: AppTheme.textShadowSubtle,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -359,14 +341,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         width: ResponsiveUtils.scaleSize(context, 140, minScale: 0.9, maxScale: 1.2),
         padding: AppSpacing.screenPadding,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.15),
-            Colors.white.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppGradients.glassMedium,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.2),
@@ -416,13 +391,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fontSize: ResponsiveUtils.fontSize(context, 9, minSize: 8, maxSize: 11),
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      offset: const Offset(0, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  shadows: AppTheme.textShadowSubtle,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -631,13 +600,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
               fontWeight: FontWeight.w700,
               color: AppColors.primaryText,
-              shadows: [
-                Shadow(
-                  color: Colors.black26,
-                  offset: const Offset(0, 2),
-                  blurRadius: 4,
-                ),
-              ],
+              shadows: AppTheme.textShadowStrong,
             ),
           ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
         ),
@@ -713,14 +676,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           width: ResponsiveUtils.scaleSize(context, 100, minScale: 0.9, maxScale: 1.2),
           padding: AppSpacing.cardPadding,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.white.withValues(alpha: 0.15),
-              Colors.white.withValues(alpha: 0.05),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: AppGradients.glassMedium,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.2),
@@ -758,13 +714,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      offset: const Offset(0, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  shadows: AppTheme.textShadowSubtle,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -786,14 +736,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Container(
         padding: AppSpacing.screenPaddingLarge,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.2),
-            Colors.white.withValues(alpha: 0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppGradients.glassStrong,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.3),
@@ -815,12 +758,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.goldColor.withValues(alpha: 0.3),
-                      AppTheme.goldColor.withValues(alpha: 0.1),
-                    ],
-                  ),
+                  gradient: AppGradients.goldAccent,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: AppTheme.goldColor.withValues(alpha: 0.4),
@@ -841,13 +779,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryText,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
+                    shadows: AppTheme.textShadowStrong,
                   ),
                 ),
               ),
@@ -875,13 +807,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     fontStyle: FontStyle.italic,
                     height: 1.6,
                     fontWeight: FontWeight.w500,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                      ),
-                    ],
+                    shadows: AppTheme.textShadowSubtle,
                   ),
                   maxLines: 5,
                   minFontSize: 12,
@@ -899,13 +825,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                           color: AppTheme.goldColor,
                           fontWeight: FontWeight.w700,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              offset: const Offset(0, 1),
-                              blurRadius: 2,
-                            ),
-                          ],
+                          shadows: AppTheme.textShadowSubtle,
                         ),
                         maxLines: 1,
                         minFontSize: 10,

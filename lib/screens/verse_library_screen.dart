@@ -13,6 +13,7 @@ import '../components/glassmorphic_fab_menu.dart';
 import '../components/category_badge.dart';
 import '../components/base_bottom_sheet.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import '../core/navigation/navigation_service.dart';
 import '../models/bible_verse.dart';
 import '../core/providers/app_providers.dart';
@@ -140,12 +141,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.white.withValues(alpha: 0.1),
-                ],
-              ),
+              gradient: AppGradients.glassStrong,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -270,22 +266,8 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         gradient: selectedTheme == 'All'
-                            ? LinearGradient(
-                                colors: [
-                                  AppTheme.primaryColor.withValues(alpha: 0.4),
-                                  AppTheme.primaryColor.withValues(alpha: 0.2),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              )
-                            : LinearGradient(
-                                colors: [
-                                  Colors.white.withValues(alpha: 0.15),
-                                  Colors.white.withValues(alpha: 0.05),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                            ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
+                            : AppGradients.glassMedium,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: selectedTheme == 'All'
@@ -345,22 +327,8 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           gradient: isSelected
-                              ? LinearGradient(
-                                  colors: [
-                                    AppTheme.primaryColor.withValues(alpha: 0.4),
-                                    AppTheme.primaryColor.withValues(alpha: 0.2),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                              : LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0.15),
-                                    Colors.white.withValues(alpha: 0.05),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                              ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
+                              : AppGradients.glassMedium,
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: isSelected
@@ -813,12 +781,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryColor.withValues(alpha: 0.3),
-                    AppTheme.primaryColor.withValues(alpha: 0.1),
-                  ],
-                ),
+                gradient: AppGradients.customColored(AppTheme.primaryColor),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(Icons.info_outline, color: AppTheme.primaryColor),

@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_gradients.dart';
 import '../core/navigation/navigation_service.dart';
 import '../models/chat_message.dart';
 import '../providers/ai_provider.dart';
@@ -993,13 +994,7 @@ class ChatScreen extends HookConsumerWidget {
                         color: AppColors.primaryText,
                         height: 1.4,
                         fontWeight: FontWeight.w500,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            offset: const Offset(0, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
+                        shadows: AppTheme.textShadowSubtle,
                       ),
                       minFontSize: 12,
                       maxFontSize: 17,
