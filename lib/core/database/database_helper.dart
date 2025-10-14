@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import '../error/error_handler.dart';
 import '../error/app_error.dart';
 import '../logging/app_logger.dart';
+import 'migrations/database_migrator.dart';
 
 /// Unified database helper with all tables in one schema
 class DatabaseHelper {
@@ -361,6 +362,7 @@ class DatabaseHelper {
           key TEXT PRIMARY KEY,
           value TEXT NOT NULL,
           type TEXT NOT NULL,
+          created_at INTEGER,
           updated_at INTEGER
         )
       ''');
@@ -523,7 +525,20 @@ class DatabaseHelper {
 
   /// Handle database open
   Future<void> _onOpen(Database db) async {
+    // Enable foreign keys
     await db.execute('PRAGMA foreign_keys = ON');
+
+    // Run database migrations
+    try {
+      await DatabaseMigrator.migrate(db);
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Database migration failed',
+        context: 'DatabaseHelper._onOpen',
+        stackTrace: stackTrace,
+      );
+      // Don't throw - allow app to continue with existing schema
+    }
   }
 
   Future<void> _insertDefaultSettings(Database db) async {
