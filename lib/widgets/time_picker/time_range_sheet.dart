@@ -535,7 +535,23 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
             Expanded(
               flex: 1,
               child: _buildAmPmToggle(context, theme, isPM, (isNewPM) {
-                final newHour = isNewPM ? (time.hour % 12) + 12 : time.hour % 12;
+                // Don't do anything if clicking the already-selected option
+                if (isNewPM == isPM) return;
+
+                // Convert hour based on new AM/PM selection
+                int newHour;
+                final currentHour12 = time.hour % 12; // Get hour in 12-hour format (0-11)
+
+                if (isNewPM) {
+                  // Converting to PM: add 12 to the 12-hour format
+                  // Special case: if hour is 0 (12 AM), it becomes 12 (12 PM)
+                  newHour = currentHour12 == 0 ? 12 : currentHour12 + 12;
+                } else {
+                  // Converting to AM: use 12-hour format directly
+                  // Special case handled: 12 PM (hour 12) becomes 12 AM (hour 0)
+                  newHour = currentHour12;
+                }
+
                 final newTime = TimeOfDay(hour: newHour, minute: minute);
                 if (isStart) {
                   _updateStartTime(newTime);
@@ -603,7 +619,23 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
                   Expanded(
                     flex: 1,
                     child: _buildAmPmToggle(context, theme, isPM, (isNewPM) {
-                      final newHour = isNewPM ? (time.hour % 12) + 12 : time.hour % 12;
+                      // Don't do anything if clicking the already-selected option
+                      if (isNewPM == isPM) return;
+
+                      // Convert hour based on new AM/PM selection
+                      int newHour;
+                      final currentHour12 = time.hour % 12; // Get hour in 12-hour format (0-11)
+
+                      if (isNewPM) {
+                        // Converting to PM: add 12 to the 12-hour format
+                        // Special case: if hour is 0 (12 AM), it becomes 12 (12 PM)
+                        newHour = currentHour12 == 0 ? 12 : currentHour12 + 12;
+                      } else {
+                        // Converting to AM: use 12-hour format directly
+                        // Special case handled: 12 PM (hour 12) becomes 12 AM (hour 0)
+                        newHour = currentHour12;
+                      }
+
                       final newTime = TimeOfDay(hour: newHour, minute: minute);
                       _updateStartTime(newTime);
                     }),
@@ -702,7 +734,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
             () => onChanged(false),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(height: 16),
         Expanded(
           child: _buildAmPmButton(
             context,
