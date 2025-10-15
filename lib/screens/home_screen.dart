@@ -96,14 +96,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // Greeting centered
           Expanded(
             child: Center(
-              child: Text(
-                '$greeting, $userName!',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primaryText,
-                ),
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$greeting,',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$userName!',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryText,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ).animate().fadeIn(duration: AppAnimations.slow),
             ),
           ),
