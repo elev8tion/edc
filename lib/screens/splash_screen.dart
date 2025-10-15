@@ -15,6 +15,9 @@ import 'disclaimer_screen.dart';
 class SplashScreen extends HookConsumerWidget {
   const SplashScreen({super.key});
 
+  // Static flag to prevent double navigation
+  static bool _hasNavigated = false;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundKey = useMemoized(() => GlobalKey());
@@ -42,9 +45,19 @@ class SplashScreen extends HookConsumerWidget {
 
     // Navigate to next screen after delay and check disclaimer
     useEffect(() {
+      // Guard against double navigation
+      if (_hasNavigated) return null;
+
       Future.delayed(const Duration(seconds: 3), () async {
+        // Double-check before navigation
+        if (_hasNavigated) return;
+
         // Check if user has agreed to disclaimer
         final hasAgreed = await DisclaimerScreen.hasAgreedToDisclaimer();
+
+        // Final check and set flag
+        if (_hasNavigated) return;
+        _hasNavigated = true;
 
         if (!hasAgreed) {
           // Show disclaimer first

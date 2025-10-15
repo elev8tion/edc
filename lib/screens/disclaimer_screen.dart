@@ -40,6 +40,7 @@ class DisclaimerScreen extends StatefulWidget {
 
 class _DisclaimerScreenState extends State<DisclaimerScreen> {
   bool _agreedToTerms = false;
+  bool _isNavigating = false;
 
   @override
   Widget build(BuildContext context) {
@@ -296,13 +297,17 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
   }
 
   Future<void> _onContinue() async {
+    // Prevent double navigation
+    if (_isNavigating) return;
+    _isNavigating = true;
+
     // Save agreement to preferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(DisclaimerScreen._disclaimerAgreedKey, true);
 
     if (mounted) {
-      // Navigate to home screen
-      Navigator.of(context).pushReplacementNamed('/home');
+      // Navigate to onboarding screen (fixed: was going to /home)
+      Navigator.of(context).pushReplacementNamed('/onboarding');
     }
   }
 }

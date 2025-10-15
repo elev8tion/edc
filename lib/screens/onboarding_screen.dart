@@ -18,10 +18,16 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _showFeatures = false;
   final GlobalKey _backgroundKey = GlobalKey();
+  bool _hasInitialized = false;
+  bool _isNavigating = false;
 
   @override
   void initState() {
     super.initState();
+    // Guard against double initialization
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+
     // Smoothly show features after screen loads
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
@@ -121,10 +127,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     GlassButton(
                       text: 'Begin Your Journey',
                       onPressed: () {
+                        // Prevent double navigation
+                        if (_isNavigating) return;
+                        _isNavigating = true;
+
                         _triggerFeatureAnimations();
                         // Navigate after a short delay to let animations play
                         Future.delayed(const Duration(milliseconds: 1200), () {
-                          NavigationService.pushNamed(AppRoutes.auth);
+                          if (mounted) {
+                            NavigationService.pushNamed(AppRoutes.auth);
+                          }
                         });
                       },
                     ),
@@ -133,7 +145,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                     // Skip option
                     TextButton(
-                      onPressed: () => NavigationService.pushNamed(AppRoutes.home),
+                      onPressed: () {
+                        // Prevent double navigation
+                        if (_isNavigating) return;
+                        _isNavigating = true;
+                        NavigationService.pushNamed(AppRoutes.home);
+                      },
                       child: Text(
                         'Continue as Guest',
                         style: TextStyle(

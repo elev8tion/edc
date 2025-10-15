@@ -24,10 +24,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     with TickerProviderStateMixin {
   bool _showContent = false;
   final GlobalKey _backgroundKey = GlobalKey();
+  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    // Guard against double initialization
+    if (_hasInitialized) return;
+    _hasInitialized = true;
+
     // Show content with slight delay for smooth appearance
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
