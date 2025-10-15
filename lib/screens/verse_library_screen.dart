@@ -161,51 +161,65 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
   Widget _buildSearchBar() {
     return Container(
       margin: AppSpacing.horizontalXl,
-      child: GlassCard(
-        borderRadius: 24,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: TextField(
-          controller: _searchController,
-          onChanged: (value) {
-            // Cancel previous timer
-            _debounceTimer?.cancel();
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.2),
+            Colors.white.withValues(alpha: 0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.xl + 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) {
+          // Cancel previous timer
+          _debounceTimer?.cancel();
 
-            // Start new timer - only update search after 300ms of no typing
-            _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-              ref.read(searchQueryProvider.notifier).state = value;
-            });
-          },
-          style: TextStyle(
-            color: AppColors.primaryText,
+          // Start new timer - only update search after 300ms of no typing
+          _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+            ref.read(searchQueryProvider.notifier).state = value;
+          });
+        },
+        style: TextStyle(
+          color: AppColors.primaryText,
+          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+        ),
+        decoration: InputDecoration(
+          hintText: 'Search verses or references...',
+          hintStyle: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
             fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
           ),
-          decoration: InputDecoration(
-            hintText: 'Search verses or references...',
-            hintStyle: TextStyle(
-              color: Colors.white.withValues(alpha: 0.5),
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-            ),
-            filled: true,
-            fillColor: Colors.transparent,
-            border: InputBorder.none,
-            contentPadding: AppSpacing.verticalMd,
-            prefixIcon: Icon(
-              Icons.search,
-              color: AppColors.secondaryText,
-            ),
-            suffixIcon: _searchController.text.isNotEmpty
-                ? GestureDetector(
-                    onTap: () {
-                      _searchController.clear();
-                      ref.read(searchQueryProvider.notifier).state = '';
-                    },
-                    child: Icon(
-                      Icons.clear,
-                      color: AppColors.secondaryText,
-                    ),
-                  )
-                : null,
+          filled: true,
+          fillColor: Colors.transparent,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 15,
           ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.white.withValues(alpha: 0.7),
+            size: ResponsiveUtils.iconSize(context, 20),
+          ),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? GestureDetector(
+                  onTap: () {
+                    _searchController.clear();
+                    ref.read(searchQueryProvider.notifier).state = '';
+                  },
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.white.withValues(alpha: 0.7),
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                )
+              : null,
         ),
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal);
