@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'time_range_sheet_style.dart';
@@ -800,56 +801,93 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
       padding: _style.buttonPadding ?? const EdgeInsets.all(16),
       child: Column(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: _style.buttonHeight ?? 50,
-            child: ElevatedButton(
-              onPressed: _isValidRange ? _onConfirm : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _style.buttonColor ?? theme.primaryColor,
-                foregroundColor: _style.buttonTextColor ?? Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                _style.confirmButtonText ?? 'Use these times',
-                style: _style.buttonTextStyle ??
-                    TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: _style.fontFamily,
-                    ),
-              ),
-            ),
+          _buildGlassButton(
+            context: context,
+            theme: theme,
+            text: _style.confirmButtonText ?? 'Use these times',
+            onPressed: _isValidRange ? _onConfirm : null,
+            isPrimary: true,
           ),
           SizedBox(height: _style.buttonSpacing ?? 12),
-          SizedBox(
-            width: double.infinity,
-            height: _style.buttonHeight ?? 50,
-            child: ElevatedButton(
-              onPressed: _onCancel,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _style.cancelButtonColor ?? theme.disabledColor,
-                foregroundColor: _style.cancelButtonTextColor ?? Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
-                ),
-                elevation: 0,
+          _buildGlassButton(
+            context: context,
+            theme: theme,
+            text: _style.cancelButtonText ?? 'Cancel',
+            onPressed: _onCancel,
+            isPrimary: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds a glass-styled button matching the app's GlassButton component
+  Widget _buildGlassButton({
+    required BuildContext context,
+    required ThemeData theme,
+    required String text,
+    required VoidCallback? onPressed,
+    required bool isPrimary,
+  }) {
+    final borderColor = isPrimary
+        ? const Color(0xFF9C7FFF) // AppTheme.primaryColor
+        : Colors.white.withValues(alpha: 0.3);
+
+    final textColor = onPressed != null
+        ? (_style.buttonTextColor ?? Colors.white)
+        : Colors.white.withValues(alpha: 0.3);
+
+    return SizedBox(
+      width: double.infinity,
+      height: _style.buttonHeight ?? 56,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.15),
+                  Colors.white.withValues(alpha: 0.05),
+                ],
+                begin: const AlignmentDirectional(0.98, -1.0),
+                end: const AlignmentDirectional(-0.98, 1.0),
               ),
-              child: Text(
-                _style.cancelButtonText ?? 'Cancel',
-                style: _style.buttonTextStyle ??
-                    TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: _style.fontFamily,
-                    ),
+              borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
+              border: Border.all(
+                color: borderColor,
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onPressed,
+                borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
+                child: Center(
+                  child: Text(
+                    text,
+                    style: _style.buttonTextStyle ??
+                        TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                          fontFamily: _style.fontFamily,
+                        ),
+                  ),
+                ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

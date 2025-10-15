@@ -14,6 +14,7 @@ import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/time_picker/time_range_sheet.dart';
 import '../widgets/time_picker/time_range_sheet_style.dart';
+import '../components/glass_card.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -550,16 +551,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       minute: int.parse(parts[1]),
     );
 
-    // Custom glassmorphic time picker style matching app theme
+    // Custom glassmorphic time picker style matching app theme components
     final customStyle = TimeRangeSheetStyle(
-      // Glassmorphic background with transparency
-      sheetBackgroundColor: const Color(0xFF1A1A2E).withValues(alpha: 0.95),
+      // Match GlassBottomSheet - transparent background (blur from wrapper)
+      sheetBackgroundColor: Colors.transparent,
 
-      // Button colors matching app theme
-      buttonColor: AppTheme.primaryColor,
-      cancelButtonColor: Colors.grey.shade700,
+      // Button styling matching GlassButton component
+      buttonColor: Colors.transparent, // GlassButton uses gradient, not solid color
+      cancelButtonColor: Colors.transparent,
       buttonTextColor: Colors.white,
-      cancelButtonTextColor: Colors.white,
+      cancelButtonTextColor: Colors.white.withValues(alpha: 0.7),
 
       // Text colors for visibility
       labelTextColor: Colors.white.withValues(alpha: 0.9),
@@ -567,14 +568,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       pickerTextColor: Colors.white.withValues(alpha: 0.3),
       selectedPickerTextColor: Colors.white,
 
-      // Corner radius matching app design
-      cornerRadius: AppRadius.xl,
-      buttonCornerRadius: AppRadius.md,
+      // Corner radius matching GlassButton (28) and GlassBottomSheet (24)
+      cornerRadius: 24, // Sheet corner radius
+      buttonCornerRadius: 28, // Button corner radius like GlassButton
 
       // Sheet dimensions
       sheetHeight: 450,
       pickerItemHeight: 45,
-      buttonHeight: 50,
+      buttonHeight: 56, // Match GlassButton height
 
       // Padding and spacing
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -591,12 +592,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       enableHapticFeedback: true,
     );
 
-    final result = await showTimeRangeSheet(
+    final result = await showGlassBottomSheet<TimeRangeData>(
       context: context,
-      initialStartTime: initialTime,
-      style: customStyle,
-      singlePicker: true, // Only need one time, not a range
-      allowInvalidRange: true, // Not relevant for single picker
+      isScrollControlled: true,
+      child: TimeRangeSheet(
+        initialStartTime: initialTime,
+        style: customStyle,
+        singlePicker: true,
+        allowInvalidRange: true,
+        onConfirm: (start, end) {
+          Navigator.of(context).pop(TimeRangeData(
+            startTime: start,
+            endTime: end,
+          ));
+        },
+        onCancel: () => Navigator.of(context).pop(),
+      ),
     );
 
     if (result != null) {
