@@ -96,6 +96,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 AutoSizeText(
                   'Daily Devotional',
@@ -110,55 +111,69 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    streakAsync.when(
-                      data: (streak) => Row(
-                        children: [
-                          Icon(
-                            Icons.local_fire_department,
-                            color: streak > 0 ? Colors.orange : Colors.white.withValues(alpha: 0.5),
-                            size: ResponsiveUtils.iconSize(context, 16),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$streak day streak',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                              color: AppColors.secondaryText,
-                              fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: streakAsync.when(
+                        data: (streak) => Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.local_fire_department,
+                              color: streak > 0 ? Colors.orange : Colors.white.withValues(alpha: 0.5),
+                              size: ResponsiveUtils.iconSize(context, 16),
                             ),
-                          ),
-                        ],
-                      ),
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, __) => const SizedBox.shrink(),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    totalCompletedAsync.when(
-                      data: (total) => Text(
-                        '$total completed',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                          color: AppColors.secondaryText,
-                          fontWeight: FontWeight.w500,
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: AutoSizeText(
+                                '$streak day streak',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 8, maxSize: 14),
+                                  color: AppColors.secondaryText,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                minFontSize: 8,
+                              ),
+                            ),
+                          ],
                         ),
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
                       ),
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, __) => const SizedBox.shrink(),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Flexible(
+                      child: totalCompletedAsync.when(
+                        data: (total) => AutoSizeText(
+                          '$total completed',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 8, maxSize: 14),
+                            color: AppColors.secondaryText,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          minFontSize: 8,
+                        ),
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      ),
                     ),
                   ],
                 ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),
           ),
+          const SizedBox(width: AppSpacing.md),
           ClearGlassCard(
             padding: const EdgeInsets.all(AppSpacing.md),
-            child: Text(
+            child: AutoSizeText(
               'Day ${_currentDay + 1}',
               style: TextStyle(
                 color: AppColors.primaryText,
                 fontWeight: FontWeight.w600,
                 fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal),
         ],
