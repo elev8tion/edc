@@ -250,30 +250,9 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
         children: [
           // Error message outside the sheet
           if (_shouldShowError) _buildErrorMessage(context, theme),
-          // Main sheet container
-          Container(
+          // Main sheet container - transparent to allow GlassBottomSheet blur
+          SizedBox(
             height: _style.sheetHeight ?? (isTablet ? 500 : 450),
-            decoration: BoxDecoration(
-              color: _style.sheetBackgroundColor ?? theme.scaffoldBackgroundColor,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(_style.cornerRadius ?? 20),
-              ),
-              boxShadow: _style.shadow != null
-                  ? [_style.shadow!]
-                  : [
-                      BoxShadow(
-                        color: _style.shadowColor ?? Colors.black26,
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
-              border: _style.borderSide != null
-                  ? Border.all(
-                      color: _style.borderSide!.color,
-                      width: _style.borderSide!.width,
-                    )
-                  : null,
-            ),
             child: Column(
               children: [
                 _buildHeader(context, theme),
@@ -749,7 +728,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
     );
   }
 
-  /// Builds an AM/PM toggle button with consistent styling
+  /// Builds an AM/PM toggle button with glass styling
   Widget _buildAmPmButton(
     BuildContext context,
     ThemeData theme,
@@ -757,6 +736,10 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
     bool isSelected,
     VoidCallback onTap,
   ) {
+    final borderColor = isSelected
+        ? const Color(0xFF9C7FFF) // AppTheme.primaryColor for selected
+        : Colors.white.withValues(alpha: 0.3); // Subtle border for unselected
+
     return GestureDetector(
       onTap: () {
         onTap();
@@ -764,31 +747,53 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
           HapticFeedback.selectionClick();
         }
       },
-      child: Container(
-        height: (_style.pickerItemHeight ?? 50) * 0.8, // Match picker height proportion
-        decoration: BoxDecoration(
-          color: isSelected ? (_style.sheetBackgroundColor ?? theme.scaffoldBackgroundColor) : Colors.transparent,
-          borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: (_style.shadowColor ?? Colors.black).withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: isSelected
-                  ? (_style.selectedTimeTextColor ?? theme.textTheme.headlineSmall?.color)
-                  : (_style.selectedTimeTextColor ?? theme.textTheme.headlineSmall?.color?.withValues(alpha: 0.5)),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              fontFamily: _style.fontFamily,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+          child: Container(
+            height: (_style.pickerItemHeight ?? 50) * 0.8,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isSelected
+                    ? [
+                        Colors.white.withValues(alpha: 0.15),
+                        Colors.white.withValues(alpha: 0.05),
+                      ]
+                    : [
+                        Colors.white.withValues(alpha: 0.08),
+                        Colors.white.withValues(alpha: 0.02),
+                      ],
+                begin: const AlignmentDirectional(0.98, -1.0),
+                end: const AlignmentDirectional(-0.98, 1.0),
+              ),
+              borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
+              border: Border.all(
+                color: borderColor,
+                width: 2,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: isSelected
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.5),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: _style.fontFamily,
+                ),
+              ),
             ),
           ),
         ),

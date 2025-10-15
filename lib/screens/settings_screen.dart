@@ -14,6 +14,7 @@ import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/time_picker/time_range_sheet.dart';
 import '../widgets/time_picker/time_range_sheet_style.dart';
+import '../widgets/time_picker/models/time_range_data.dart';
 import '../components/glass_card.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -595,18 +596,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final result = await showGlassBottomSheet<TimeRangeData>(
       context: context,
       isScrollControlled: true,
-      child: TimeRangeSheet(
-        initialStartTime: initialTime,
-        style: customStyle,
-        singlePicker: true,
-        allowInvalidRange: true,
-        onConfirm: (start, end) {
-          Navigator.of(context).pop(TimeRangeData(
-            startTime: start,
-            endTime: end,
-          ));
-        },
-        onCancel: () => Navigator.of(context).pop(),
+      child: GlassBottomSheet(
+        child: TimeRangeSheet(
+          initialStartTime: initialTime,
+          style: customStyle,
+          singlePicker: true,
+          allowInvalidRange: true,
+          onConfirm: (start, end) {
+            Navigator.of(context).pop(TimeRangeData(
+              startTime: start,
+              endTime: end,
+            ));
+          },
+          onCancel: () => Navigator.of(context).pop(),
+        ),
       ),
     );
 
