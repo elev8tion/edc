@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -6,8 +7,10 @@ import '../components/frosted_glass_card.dart';
 import '../components/glassmorphic_fab_menu.dart';
 import '../core/navigation/navigation_service.dart';
 import '../services/bible_chapter_service.dart';
+import '../models/bible_verse.dart';
 import '../theme/app_theme.dart';
 import '../utils/responsive_utils.dart';
+import '../utils/bible_reference_parser.dart';
 
 /// Free Bible Browser - allows users to browse and read any Bible chapter
 class BibleBrowserScreen extends ConsumerStatefulWidget {
@@ -21,10 +24,13 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
   final BibleChapterService _bibleService = BibleChapterService();
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
+  Timer? _debounceTimer;
 
   List<String> _allBooks = [];
   List<String> _filteredBooks = [];
+  List<BibleVerse> _verseSearchResults = [];
   bool _isLoading = true;
+  bool _isSearchingVerses = false;
   String _searchQuery = '';
 
   // Bible structure - maps book names to testament
@@ -108,6 +114,7 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -137,14 +144,82 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
   }
 
   void _filterBooks(String query) {
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
     setState(() {
       _searchQuery = query;
+
       if (query.isEmpty) {
         _filteredBooks = _allBooks;
+        _verseSearchResults = [];
+        _isSearchingVerses = false;
+        return;
+      }
+
+      // Step 1: Check if input looks like a Bible reference
+      if (BibleReferenceParser.looksLikeReference(query)) {
+        final parsed = BibleReferenceParser.parse(query);
+
+        if (parsed != null) {
+          // Direct reference lookup - instant results
+          _isSearchingVerses = true;
+          _filteredBooks = [];
+
+          _bibleService
+              .getVersesByReference(
+            parsed.book,
+            parsed.chapter,
+            parsed.startVerse,
+            endVerse: parsed.endVerse,
+          )
+              .then((verses) {
+            if (mounted) {
+              setState(() {
+                _verseSearchResults = verses;
+                _isSearchingVerses = false;
+              });
+            }
+          }).catchError((e) {
+            if (mounted) {
+              setState(() {
+                _verseSearchResults = [];
+                _isSearchingVerses = false;
+              });
+            }
+          });
+          return;
+        }
+      }
+
+      // Step 2: Filter books (existing logic)
+      _filteredBooks = _allBooks
+          .where((book) => book.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+
+      // Step 3: If no books match, fall back to FTS5 verse search
+      if (_filteredBooks.isEmpty) {
+        _isSearchingVerses = true;
+        _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+          try {
+            final verses = await _bibleService.searchVerses(query, limit: 50);
+            if (mounted) {
+              setState(() {
+                _verseSearchResults = verses;
+                _isSearchingVerses = false;
+              });
+            }
+          } catch (e) {
+            if (mounted) {
+              setState(() {
+                _isSearchingVerses = false;
+              });
+            }
+          }
+        });
       } else {
-        _filteredBooks = _allBooks
-            .where((book) => book.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+        _verseSearchResults = [];
+        _isSearchingVerses = false;
       }
     });
   }
@@ -161,6 +236,11 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
         .toList();
   }
 
+  /// Check if we should show search overlay
+  bool get _showSearchOverlay {
+    return _searchQuery.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,15 +252,25 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
               children: [
                 _buildHeader(),
                 _buildSearchBar(),
+                // TabBar always visible
                 _buildTabBar(),
                 Expanded(
                   child: _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : TabBarView(
-                          controller: _tabController,
+                      : Stack(
                           children: [
-                            _buildTestamentView(_getOldTestamentBooks()),
-                            _buildTestamentView(_getNewTestamentBooks()),
+                            // Background: TabBarView always rendered
+                            TabBarView(
+                              controller: _tabController,
+                              children: [
+                                _buildTestamentView(_getOldTestamentBooks()),
+                                _buildTestamentView(_getNewTestamentBooks()),
+                              ],
+                            ),
+
+                            // Foreground: Search overlay (when active)
+                            if (_showSearchOverlay)
+                              _buildSearchOverlay(),
                           ],
                         ),
                 ),
@@ -189,6 +279,41 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
           ),
         ],
       ),
+    );
+  }
+
+  /// Build search overlay that covers TabBarView
+  Widget _buildSearchOverlay() {
+    return Positioned.fill(
+      child: _isSearchingVerses
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Searching verses...',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : (_filteredBooks.isNotEmpty
+              ? _buildFilteredBooks()
+              : _buildVerseResults()),
+    );
+  }
+
+  /// Build filtered books list (shown when books match search)
+  Widget _buildFilteredBooks() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: _filteredBooks.length,
+      itemBuilder: (context, index) => _buildBookCard(_filteredBooks[index]),
     );
   }
 
@@ -255,6 +380,8 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
               child: TextField(
                 controller: _searchController,
                 onChanged: _filterBooks,
+                textCapitalization: TextCapitalization.none,
+                autocorrect: false,
                 style: TextStyle(
                   color: AppColors.primaryText,
                   fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
@@ -537,6 +664,138 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
                     );
                   },
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVerseResults() {
+    if (_verseSearchResults.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: ResponsiveUtils.iconSize(context, 64),
+                color: Colors.white.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No verses found',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Try a different search term',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Text(
+            '${_verseSearchResults.length} verses found',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+              fontWeight: FontWeight.w600,
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _verseSearchResults.length,
+            itemBuilder: (context, index) => _buildVerseCard(_verseSearchResults[index]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerseCard(BibleVerse verse) {
+    final reference = '${verse.book} ${verse.chapter}:${verse.verseNumber}';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: () {
+          NavigationService.goToChapterReading(
+            book: verse.book,
+            startChapter: verse.chapter,
+            endChapter: verse.chapter,
+          );
+        },
+        child: FrostedGlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.goldColor.withValues(alpha: 0.3),
+                          AppTheme.goldColor.withValues(alpha: 0.15),
+                        ],
+                      ),
+                      borderRadius: AppRadius.smallRadius,
+                      border: Border.all(
+                        color: AppTheme.goldColor.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      reference,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.white.withValues(alpha: 0.6),
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                verse.text,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                  color: AppColors.primaryText,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

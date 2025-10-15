@@ -165,4 +165,88 @@ class BibleChapterService {
 
     return results.isNotEmpty;
   }
+
+  /// Search verses by content using Full-Text Search
+  Future<List<BibleVerse>> searchVerses(
+    String query, {
+    String version = 'WEB',
+    String language = 'en',
+    int limit = 50,
+  }) async {
+    if (query.trim().isEmpty) return [];
+
+    final database = await _db.database;
+
+    // Use FTS5 MATCH for full-text search
+    final results = await database.rawQuery('''
+      SELECT bv.id, bv.book, bv.chapter, bv.verse, bv.text, bv.version,
+             bv.reference, bv.themes, bv.category
+      FROM bible_verses_fts fts
+      JOIN bible_verses bv ON fts.rowid = bv.id
+      WHERE fts.bible_verses_fts MATCH ?
+        AND bv.version = ?
+        AND bv.language = ?
+      ORDER BY bv.book, bv.chapter, bv.verse
+      LIMIT ?
+    ''', [query, version, language, limit]);
+
+    return results.map((map) {
+      return BibleVerse.fromMap({
+        'id': map['id'],
+        'book': map['book'],
+        'chapter': map['chapter'],
+        'verse_number': map['verse'],
+        'text': map['text'],
+        'translation': map['version'],
+        'reference': map['reference'],
+        'themes': map['themes'],
+        'category': map['category'],
+      });
+    }).toList();
+  }
+
+  /// Get specific verse(s) by reference (e.g., John 3:16 or Gen 1:1-3)
+  Future<List<BibleVerse>> getVersesByReference(
+    String book,
+    int chapter,
+    int startVerse, {
+    int? endVerse,
+    String version = 'WEB',
+    String language = 'en',
+  }) async {
+    final database = await _db.database;
+
+    String whereClause = 'book = ? AND chapter = ? AND verse >= ? AND version = ? AND language = ?';
+    List<dynamic> whereArgs = [book, chapter, startVerse, version, language];
+
+    if (endVerse != null) {
+      whereClause += ' AND verse <= ?';
+      whereArgs.insert(3, endVerse);
+    } else {
+      // Single verse lookup
+      whereClause = 'book = ? AND chapter = ? AND verse = ? AND version = ? AND language = ?';
+      whereArgs[2] = startVerse;
+    }
+
+    final results = await database.query(
+      'bible_verses',
+      where: whereClause,
+      whereArgs: whereArgs,
+      orderBy: 'verse ASC',
+    );
+
+    return results.map((map) {
+      return BibleVerse.fromMap({
+        'id': map['id'],
+        'book': map['book'],
+        'chapter': map['chapter'],
+        'verse_number': map['verse'],
+        'text': map['text'],
+        'translation': map['version'],
+        'reference': map['reference'],
+        'themes': map['themes'],
+        'category': map['category'],
+      });
+    }).toList();
+  }
 }
