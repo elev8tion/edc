@@ -10,21 +10,20 @@
 
 ## 📱 About
 
-Everyday Christian is a **100% local-first** pastoral counseling app that provides:
+Everyday Christian is a pastoral counseling app that provides:
 
-- 🤖 **AI-powered pastoral guidance** using on-device TensorFlow Lite LSTM
+- 🤖 **AI-powered pastoral guidance** using Google Gemini 2.0 Flash
 - 📖 **31,103 Bible verses** from the World English Bible (WEB) translation
 - 🛡️ **Crisis detection & intervention** (suicide, self-harm, abuse)
 - 🎨 **Beautiful glassmorphic UI** with modern Flutter design
-- 🌍 **Bilingual support** (English & Spanish)
-- 🔒 **Complete privacy** - zero cloud dependencies, no data collection
+- 🔒 **Local data storage** - Bible verses and user data stored on device
 
 ---
 
 ## ✨ Features
 
 ### Core Functionality
-- **AI Chat:** Character-level LSTM trained on 19,750 pastoral examples
+- **AI Chat (Premium - $35/year):** Google Gemini 2.0 Flash enhanced with 19,750 pastoral training examples - 150 messages/month
 - **Daily Verse:** Smart verse selection based on user preferences
 - **Devotionals:** Structured reading plans and devotional content
 - **Prayer Journal:** Track prayers with categories and streaks
@@ -39,12 +38,29 @@ Everyday Christian is a **100% local-first** pastoral counseling app that provid
 - ✅ Legal disclaimers (not professional counseling)
 
 ### Technical Features
-- 🚀 **On-device AI inference** (<5s response time)
+- 🚀 **Fast AI responses** powered by Gemini 2.0 Flash API
 - 💾 **SQLite database** (26 MB, 31,103 verses)
 - 🔐 **Biometric authentication** (Face ID, Touch ID)
 - 📊 **Progress tracking** (reading streaks, prayer stats)
 - 🎨 **Beautiful glassmorphic UI** with modern design language
-- 📴 **Offline-first** (no internet required)
+- 📴 **Offline Bible access** (AI chat requires internet)
+
+---
+
+## 💳 Pricing
+
+### Free Version
+- ✅ Daily verse, Bible search, prayer journal, reading plans, devotionals
+- ✅ All features except AI pastoral chat
+
+### Premium - $35/Year
+- ✅ **3-day free trial** (5 AI messages/day during trial)
+- ✅ **AI pastoral chat** - 150 messages/month after trial
+- ✅ **Gemini 2.0 Flash** with 19,750 pastoral training examples
+- ✅ Cancel anytime
+
+**Cost per message:** $0.0003
+**Profit margin:** 98.5%
 
 ---
 
@@ -54,14 +70,15 @@ Everyday Christian is a **100% local-first** pastoral counseling app that provid
 - **Frontend:** Flutter 3.0+ (Dart 3.0+)
 - **State Management:** Riverpod 2.4.9
 - **Database:** SQLite (sqflite 2.3.0)
-- **AI/ML:** TensorFlow Lite 0.11.0
+- **AI/ML:** Google Generative AI (Gemini 2.0 Flash)
 - **Storage:** SharedPreferences + FlutterSecureStorage
 
 ### AI System
-- **Theme Classifier:** 751 KB TFLite model (75 theme categories)
-- **Text Generator:** 8.1 MB LSTM model (2-layer, 1536 units, 86-char vocab)
-- **Training Data:** 19,750 pastoral guidance examples
+- **AI Model:** Google Gemini 2.0 Flash API
+- **Training Context:** 19,750 pastoral guidance examples for RAG (Retrieval-Augmented Generation)
+- **Theme Detection:** Keyword-based classification (75 theme categories)
 - **Bible Database:** 31,103 verses (WEB translation)
+- **Response Generation:** Contextual responses with relevant Bible verses
 
 ### Project Structure
 ```
@@ -192,17 +209,45 @@ open coverage/html/index.html
 
 ## 🛡️ Privacy & Security
 
-### Data Collection
-- ✅ **Zero data collection** - all processing happens on-device
-- ✅ **No analytics** - we don't track you
-- ✅ **No cloud services** - no external API calls
-- ✅ **Local storage only** - SQLite + SharedPreferences
+### Privacy-First Design
+
+**Unlike other religious apps, we don't monetize your spiritual journey.**
+
+In recent years, major faith apps have faced scandals:
+- Pray.com suffered data breaches exposing millions of users
+- Muslim Pro sold user location data to military contractors
+- Popular apps mine prayers as "business assets" for data brokers
+
+**Everyday Christian is different:**
+
+### What We DON'T Collect
+- ❌ **No user accounts** - download and use immediately, no sign-up required
+- ❌ **No personal information** - no emails, names, phone numbers, or profiles
+- ❌ **No location tracking** - we don't track where you pray or worship
+- ❌ **No user analytics** - we don't monitor your behavior or app usage
+- ❌ **No data monetization** - your prayers are never sold to data brokers
+- ❌ **No social features** - no sharing that could expose your spiritual struggles
+
+### What Stays On Your Device
+- ✅ **All Bible verses** - 31,103 verses stored locally (works offline)
+- ✅ **All prayers** - your prayer journal stays on your device
+- ✅ **All favorites & bookmarks** - stored in local SQLite database
+- ✅ **All settings & preferences** - stored locally with SharedPreferences
+- ✅ **All reading history** - never leaves your phone
+
+### Third-Party Services
+- ⚠️ **AI Chat uses Google Gemini API** - when you use the AI chat feature, your messages are sent to Google's servers for AI processing. Google may collect: message content, IP address, and timestamps. However, we do NOT send any user identifier, account info, or link messages to your identity. Each request is anonymous from your perspective.
 
 ### Security Features
-- 🔐 Biometric authentication (Face ID, Touch ID)
-- 🔒 FlutterSecureStorage for sensitive data
-- 🛡️ Crisis detection & intervention
-- ⚠️ Content filtering (harmful theology)
+- 🔐 **Biometric authentication** - protect access with Face ID or Touch ID
+- 🔒 **Secure local storage** - FlutterSecureStorage for sensitive data
+- 🛡️ **Crisis detection** - built-in safeguards for mental health emergencies
+- ⚠️ **Content filtering** - automatic detection of harmful theology
+
+### Your Data, Your Control
+- **No cloud sync** means no data breach risk from our servers (we don't have any)
+- **No account** means no password to leak or credentials to steal
+- **Uninstall = complete deletion** - all data removed when you delete the app
 
 ---
 
