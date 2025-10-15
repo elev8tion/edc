@@ -60,32 +60,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const GlassmorphicFABMenu(),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
-            child: AutoSizeText(
-              'Settings',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
-                fontWeight: FontWeight.w700,
-                color: AppColors.primaryText,
-                shadows: AppTheme.textShadowStrong,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              gradient: AppGradients.goldAccent,
-              borderRadius: BorderRadius.circular(AppRadius.xs + 2),
-              border: Border.all(
-                color: AppTheme.goldColor.withValues(alpha: 0.4),
-                width: 1,
-              ),
-            ),
-            child: Icon(
-              Icons.settings,
-              color: AppColors.primaryText,
-              size: ResponsiveUtils.iconSize(context, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  'Settings',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryText,
+                    shadows: AppTheme.textShadowStrong,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                AutoSizeText(
+                  'Customize your app experience',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                    color: AppColors.secondaryText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],

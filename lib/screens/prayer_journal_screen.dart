@@ -116,40 +116,6 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: AppGradients.glassStrong,
-              borderRadius: AppRadius.mediumRadius,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.more_vert, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: _showPrayerOptions,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              gradient: AppGradients.glassStrong,
-              borderRadius: AppRadius.mediumRadius,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.settings, color: Colors.white, size: ResponsiveUtils.iconSize(context, 24)),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const CategoryManagementDialog(),
-                );
-              },
-            ),
-          ),
         ],
       ),
     );

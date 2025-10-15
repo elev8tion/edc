@@ -120,27 +120,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const GlassmorphicFABMenu(),
             const SizedBox(width: AppSpacing.lg),
             Expanded(
-              child: AutoSizeText(
-                'Profile',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primaryText,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AutoSizeText(
+                    'Profile',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 24, minSize: 20, maxSize: 28),
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primaryText,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  AutoSizeText(
+                    'Your spiritual journey and achievements',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                      color: AppColors.secondaryText,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
-            ),
-            GestureDetector(
-              onTap: () => NavigationService.goToSettings(),
-              child: ClearGlassCard(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Icon(
-                  Icons.settings,
-                  color: AppColors.primaryText,
-                  size: ResponsiveUtils.iconSize(context, 20),
-                ),
-              ),
             ),
           ],
         ),
