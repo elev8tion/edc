@@ -17,6 +17,7 @@ import '../widgets/time_picker/time_range_sheet.dart';
 import '../widgets/time_picker/time_range_sheet_style.dart';
 import '../widgets/time_picker/models/time_range_data.dart';
 import '../components/glass_card.dart';
+import 'subscription_settings_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -125,6 +126,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Set your preferred time for daily notifications',
                 ref.watch(notificationTimeProvider),
                 (time) => ref.read(notificationTimeProvider.notifier).setTime(time),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+          _buildSettingsSection(
+            'Subscription',
+            Icons.workspace_premium,
+            [
+              _buildNavigationTile(
+                'Manage Subscription',
+                _getSubscriptionStatus(ref),
+                Icons.arrow_forward_ios,
+                () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SubscriptionSettingsScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -823,6 +843,86 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+        ),
+      ),
+    );
+  }
+
+  /// Get subscription status text
+  String _getSubscriptionStatus(WidgetRef ref) {
+    final isPremium = ref.watch(isPremiumProvider);
+    final isInTrial = ref.watch(isInTrialProvider);
+    final remainingMessages = ref.watch(remainingMessagesProvider);
+
+    if (isPremium) {
+      return '$remainingMessages messages left this month';
+    } else if (isInTrial) {
+      return '$remainingMessages messages left today';
+    } else {
+      return 'Start your free trial';
+    }
+  }
+
+  /// Build navigation tile
+  Widget _buildNavigationTile(
+    String title,
+    String subtitle,
+    IconData trailingIcon,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.1),
+              Colors.white.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.secondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              trailingIcon,
+              size: 18,
+              color: AppColors.secondaryText,
+            ),
+          ],
         ),
       ),
     );

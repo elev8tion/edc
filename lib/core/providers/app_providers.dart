@@ -13,6 +13,7 @@ import '../services/reading_plan_progress_service.dart';
 import '../services/bible_loader_service.dart';
 import '../services/devotional_content_loader.dart';
 import '../services/preferences_service.dart';
+import '../services/subscription_service.dart';
 import '../models/devotional.dart';
 import '../models/reading_plan.dart';
 import '../../services/unified_verse_service.dart';
@@ -159,11 +160,13 @@ final connectivityStateProvider = StreamProvider.autoDispose<bool>((ref) {
 final appInitializationProvider = FutureProvider<void>((ref) async {
   final database = ref.read(databaseServiceProvider);
   final notifications = ref.read(notificationServiceProvider);
+  final subscription = ref.read(subscriptionServiceProvider);
   final bibleLoader = ref.read(bibleLoaderServiceProvider);
   final devotionalLoader = ref.read(devotionalContentLoaderProvider);
 
   await database.initialize();
   await notifications.initialize();
+  await subscription.initialize();
 
   // Load Bible on first launch
   final isWEBLoaded = await bibleLoader.isBibleLoaded('WEB');
@@ -786,4 +789,89 @@ final initializeAppProvider = FutureProvider<void>((ref) async {
       debugPrint('Failed to initialize notifications: $error');
     },
   );
+});
+
+// ============================================================================
+// SUBSCRIPTION PROVIDERS
+// ============================================================================
+
+/// Subscription Service Provider (singleton)
+final subscriptionServiceProvider = Provider<SubscriptionService>((ref) {
+  return SubscriptionService.instance;
+});
+
+/// Initialize subscription service
+final subscriptionInitProvider = FutureProvider<void>((ref) async {
+  final service = ref.read(subscriptionServiceProvider);
+  await service.initialize();
+});
+
+/// Provider for checking if user is premium subscriber
+final isPremiumProvider = Provider<bool>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.isPremium;
+});
+
+/// Provider for checking if user is in trial
+final isInTrialProvider = Provider<bool>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.isInTrial;
+});
+
+/// Provider for checking if trial has expired
+final hasTrialExpiredProvider = Provider<bool>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.hasTrialExpired;
+});
+
+/// Provider for remaining messages (trial or premium)
+final remainingMessagesProvider = Provider<int>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.remainingMessages;
+});
+
+/// Provider for messages used (trial or premium)
+final messagesUsedProvider = Provider<int>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.messagesUsed;
+});
+
+/// Provider for checking if user can send message
+final canSendMessageProvider = Provider<bool>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.canSendMessage;
+});
+
+/// Provider for trial days remaining
+final trialDaysRemainingProvider = Provider<int>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.trialDaysRemaining;
+});
+
+/// Provider for premium messages remaining this month
+final premiumMessagesRemainingProvider = Provider<int>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.premiumMessagesRemaining;
+});
+
+/// Provider for trial messages remaining today
+final trialMessagesRemainingTodayProvider = Provider<int>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return service.trialMessagesRemainingToday;
+});
+
+/// Provider for subscription status summary
+final subscriptionStatusProvider = Provider<Map<String, dynamic>>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  return {
+    'isPremium': service.isPremium,
+    'isInTrial': service.isInTrial,
+    'hasTrialExpired': service.hasTrialExpired,
+    'canSendMessage': service.canSendMessage,
+    'remainingMessages': service.remainingMessages,
+    'messagesUsed': service.messagesUsed,
+    'trialDaysRemaining': service.trialDaysRemaining,
+    'premiumMessagesRemaining': service.premiumMessagesRemaining,
+    'trialMessagesRemainingToday': service.trialMessagesRemainingToday,
+  };
 });

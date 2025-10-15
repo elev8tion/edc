@@ -7,6 +7,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
 import '../core/navigation/navigation_service.dart';
+import '../core/providers/app_providers.dart';
 import '../models/chat_message.dart';
 import '../providers/ai_provider.dart';
 import '../components/gradient_background.dart';
@@ -21,6 +22,7 @@ import '../components/time_and_status.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 import '../utils/responsive_utils.dart';
+import 'paywall_screen.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -136,6 +138,51 @@ class ChatScreen extends HookConsumerWidget {
 
     Future<void> sendMessage(String text) async {
       if (text.trim().isEmpty) return;
+
+      // Check subscription and consume message
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      final canSend = subscriptionService.canSendMessage;
+
+      if (!canSend) {
+        // Show paywall
+        if (context.mounted) {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PaywallScreen(
+                showTrialInfo: !subscriptionService.hasTrialExpired,
+              ),
+            ),
+          );
+          // If user didn't upgrade, don't send message
+          if (result != true && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  subscriptionService.hasTrialExpired
+                      ? 'Subscribe to continue using AI chat'
+                      : 'No messages remaining today',
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        }
+        return;
+      }
+
+      // Consume message credit
+      final consumed = await subscriptionService.consumeMessage();
+      if (!consumed) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to send message. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
 
       final userMessage = ChatMessage.user(
         content: text.trim(),
@@ -1058,14 +1105,69 @@ class ChatScreen extends HookConsumerWidget {
   Widget _buildMessageInput(BuildContext context, TextEditingController messageController, bool canSend, void Function(String) sendMessage) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Container(
-      padding: EdgeInsets.only(
-        left: AppSpacing.screenPadding.left,
-        right: AppSpacing.screenPadding.right,
-        top: AppSpacing.screenPadding.top,
-        bottom: bottomPadding > 0 ? bottomPadding + AppSpacing.sm : AppSpacing.screenPadding.bottom,
-      ),
-      child: Row(
+    return Consumer(
+      builder: (context, ref, child) {
+        final remainingMessages = ref.watch(remainingMessagesProvider);
+        final isPremium = ref.watch(isPremiumProvider);
+        final isInTrial = ref.watch(isInTrialProvider);
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Message counter badge
+            if (remainingMessages > 0) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.goldColor.withValues(alpha: 0.3),
+                        AppTheme.goldColor.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: AppRadius.mediumRadius,
+                    border: Border.all(
+                      color: AppTheme.goldColor.withValues(alpha: 0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        size: 14,
+                        color: AppTheme.goldColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '$remainingMessages ${isPremium ? "messages left this month" : isInTrial ? "messages left today" : "messages left"}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+            // Input row
+            Container(
+              padding: EdgeInsets.only(
+                left: AppSpacing.screenPadding.left,
+                right: AppSpacing.screenPadding.right,
+                top: AppSpacing.screenPadding.top,
+                bottom: bottomPadding > 0 ? bottomPadding + AppSpacing.sm : AppSpacing.screenPadding.bottom,
+              ),
+              child: Row(
         children: [
           Expanded(
             child: Container(
@@ -1147,9 +1249,13 @@ class ChatScreen extends HookConsumerWidget {
               ),
             ),
           ),
-        ],
-      ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3);
+                ],
+              ),
+            ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast).slideY(begin: 0.3),
+          ],
+        );
+      },
+    );
   }
 
   String _getContextualResponse(String message) {
