@@ -14,7 +14,7 @@ class AppTheme {
       seedColor: primaryColor,
       brightness: Brightness.light,
     ),
-    textTheme: GoogleFonts.interTextTheme(),
+    textTheme: GoogleFonts.plusJakartaSansTextTheme(),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -93,7 +93,7 @@ class AppTheme {
       seedColor: primaryColor,
       brightness: Brightness.dark,
     ),
-    textTheme: GoogleFonts.interTextTheme(
+    textTheme: GoogleFonts.plusJakartaSansTextTheme(
       ThemeData.dark().textTheme,
     ),
     scaffoldBackgroundColor: const Color(0xFF121212),
