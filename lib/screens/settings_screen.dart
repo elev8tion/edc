@@ -511,6 +511,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(width: AppSpacing.lg),
                 Text(
                   _formatTimeTo12Hour(value),
                   style: TextStyle(
