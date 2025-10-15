@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
 import '../components/gradient_background.dart';
@@ -743,9 +744,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Text('Cancel', style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               NavigationService.pop();
-              _showSnackBar('Cache cleared successfully');
+              // Clear disclaimer agreement to test it again
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('disclaimer_agreed');
+              _showSnackBar('Cache cleared successfully (including disclaimer agreement)');
             },
             child: Text('Clear', style: TextStyle(color: AppTheme.primaryColor)),
           ),

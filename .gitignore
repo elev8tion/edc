@@ -55,3 +55,4 @@ docs/
 .env.*
 !.env.example
 assets/asset_bible.db
+everyday_christian.db
