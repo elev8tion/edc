@@ -12,7 +12,7 @@
 
 Everyday Christian is a pastoral counseling app that provides:
 
-- 🤖 **AI-powered pastoral guidance** using Google Gemini 2.0 Flash
+- 🤖 **AI-powered pastoral guidance** using Google Gemini API
 - 📖 **31,103 Bible verses** from the World English Bible (WEB) translation
 - 🛡️ **Crisis detection & intervention** (suicide, self-harm, abuse)
 - 🎨 **Beautiful glassmorphic UI** with modern Flutter design
@@ -23,7 +23,7 @@ Everyday Christian is a pastoral counseling app that provides:
 ## ✨ Features
 
 ### Core Functionality
-- **AI Chat (Premium - $35/year):** Google Gemini 2.0 Flash enhanced with 19,750 pastoral training examples - 150 messages/month
+- **Biblical AI Chat (Premium - $35/year):** -150 messages/month with Enhanced Pastoral Model, Trained in Real World Experience
 - **Daily Verse:** Smart verse selection based on user preferences
 - **Devotionals:** Structured reading plans and devotional content
 - **Prayer Journal:** Track prayers with categories and streaks
@@ -32,13 +32,13 @@ Everyday Christian is a pastoral counseling app that provides:
 
 ### Safeguards
 - ✅ Crisis detection (suicide, self-harm, abuse keywords)
-- ✅ Account lockout system (3 strikes = 30-day ban)
+- ✅ Security lockout (3 attempts = 30-min lockout, bypass with device PIN/biometric)
 - ✅ Content filtering (prosperity gospel, hate speech)
 - ✅ Professional referrals (therapy, hotlines, legal)
 - ✅ Legal disclaimers (not professional counseling)
 
 ### Technical Features
-- 🚀 **Fast AI responses** powered by Gemini 2.0 Flash API
+- 🚀 **Fast AI responses** powered by Gemini API
 - 💾 **SQLite database** (26 MB, 31,103 verses)
 - 🔐 **Biometric authentication** (Face ID, Touch ID)
 - 📊 **Progress tracking** (reading streaks, prayer stats)
@@ -55,9 +55,10 @@ Everyday Christian is a pastoral counseling app that provides:
 
 ### Premium - $35/Year
 - ✅ **3-day free trial** (5 AI messages/day during trial)
-- ✅ **AI pastoral chat** - 150 messages/month after trial
-- ✅ **Gemini 2.0 Flash** with 19,750 pastoral training examples
-- ✅ Cancel anytime
+- ✅ **AI pastoral chat** - Enhanced Pastoral Model, Trained in Real World Experience
+150 messages/month after trial
+- ✅ **Small Payment** 1 Year access -150 messages/month after trial
+- ✅ Cancel anytime and will not renew
 
 **Cost per message:** $0.0003
 **Profit margin:** 98.5%
@@ -85,7 +86,7 @@ Everyday Christian is a pastoral counseling app that provides:
 lib/
 ├── core/
 │   ├── database/        # SQLite helpers, migrations, models
-│   ├── services/        # Business logic (18 services)
+│   ├── services/        # Business logic (AppLockoutService, 18+ services)
 │   ├── providers/       # Riverpod state management
 │   └── widgets/         # Reusable UI components
 ├── features/
@@ -153,8 +154,9 @@ open coverage/html/index.html
 ```
 
 ### Test Coverage
-- **49 test files** (unit, widget, integration)
+- **50+ test files** (unit, widget, integration)
 - Comprehensive service tests (database, AI, auth, safeguards)
+- AppLockoutService tests (18 tests covering OS authentication)
 - Mock implementations for external dependencies
 
 ---
@@ -222,6 +224,7 @@ In recent years, major faith apps have faced scandals:
 
 ### What We DON'T Collect
 - ❌ **No user accounts** - download and use immediately, no sign-up required
+- ❌ **No authentication data** - we never see your device PIN or biometric data
 - ❌ **No personal information** - no emails, names, phone numbers, or profiles
 - ❌ **No location tracking** - we don't track where you pray or worship
 - ❌ **No user analytics** - we don't monitor your behavior or app usage
@@ -239,10 +242,12 @@ In recent years, major faith apps have faced scandals:
 - ⚠️ **AI Chat uses Google Gemini API** - when you use the AI chat feature, your messages are sent to Google's servers for AI processing. Google may collect: message content, IP address, and timestamps. However, we do NOT send any user identifier, account info, or link messages to your identity. Each request is anonymous from your perspective.
 
 ### Security Features
-- 🔐 **Biometric authentication** - protect access with Face ID or Touch ID
+- 🔐 **OS-native authentication** - Uses your device's PIN, Face ID, or Touch ID
+- 🚫 **No user accounts** - No passwords to remember or data to breach
+- 🔓 **Privacy-first lockout** - After 3 wrong attempts, use device auth to unlock (no account bans)
 - 🔒 **Secure local storage** - FlutterSecureStorage for sensitive data
-- 🛡️ **Crisis detection** - built-in safeguards for mental health emergencies
-- ⚠️ **Content filtering** - automatic detection of harmful theology
+- 🛡️ **Crisis detection** - Built-in safeguards for mental health emergencies
+- ⚠️ **Content filtering** - Automatic detection of harmful theology
 
 ### Your Data, Your Control
 - **No cloud sync** means no data breach risk from our servers (we don't have any)
@@ -278,7 +283,6 @@ Proprietary - All rights reserved
 ## 🙏 Acknowledgments
 
 - **Bible Translation:** World English Bible (WEB) from eBible.org
-- **TensorFlow Lite:** On-device machine learning
 - **Flutter Team:** Excellent cross-platform framework
 - **Riverpod:** State management
 - **Claude Code:** Development assistance

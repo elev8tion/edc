@@ -418,6 +418,26 @@ class MockDatabaseHelper extends _i1.Mock implements _i7.DatabaseHelper {
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<void> initialize() => (super.noSuchMethod(
+        Invocation.method(
+          #initialize,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> resetDatabase() => (super.noSuchMethod(
+        Invocation.method(
+          #resetDatabase,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<int> insertVerse(Map<String, dynamic>? verse) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -535,7 +555,7 @@ class MockDatabaseHelper extends _i1.Mock implements _i7.DatabaseHelper {
 
   @override
   _i5.Future<int> updatePrayerRequest(
-    int? id,
+    String? id,
     Map<String, dynamic>? prayer,
   ) =>
       (super.noSuchMethod(
@@ -566,22 +586,6 @@ class MockDatabaseHelper extends _i1.Mock implements _i7.DatabaseHelper {
         returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
             <Map<String, dynamic>>[]),
       ) as _i5.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i5.Future<int> markPrayerAnswered(
-    int? id,
-    String? testimony,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #markPrayerAnswered,
-          [
-            id,
-            testimony,
-          ],
-        ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
 
   @override
   _i5.Future<void> setSetting(
@@ -619,61 +623,6 @@ class MockDatabaseHelper extends _i1.Mock implements _i7.DatabaseHelper {
         Invocation.method(
           #deleteSetting,
           [key],
-        ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
-
-  @override
-  _i5.Future<int> recordDailyVerse(
-    int? verseId,
-    DateTime? date, {
-    bool? opened = false,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #recordDailyVerse,
-          [
-            verseId,
-            date,
-          ],
-          {#opened: opened},
-        ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
-
-  @override
-  _i5.Future<int> markDailyVerseOpened(
-    int? verseId,
-    DateTime? date,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #markDailyVerseOpened,
-          [
-            verseId,
-            date,
-          ],
-        ),
-        returnValue: _i5.Future<int>.value(0),
-      ) as _i5.Future<int>);
-
-  @override
-  _i5.Future<List<Map<String, dynamic>>> getDailyVerseHistory({int? limit}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getDailyVerseHistory,
-          [],
-          {#limit: limit},
-        ),
-        returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i5.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i5.Future<int> getVerseStreak() => (super.noSuchMethod(
-        Invocation.method(
-          #getVerseStreak,
-          [],
         ),
         returnValue: _i5.Future<int>.value(0),
       ) as _i5.Future<int>);
