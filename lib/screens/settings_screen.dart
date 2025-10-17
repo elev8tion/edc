@@ -716,8 +716,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildActionTile(String title, String subtitle, IconData icon, VoidCallback onTap, {bool isDestructive = false}) {
-    final textColor = isDestructive ? Colors.red : AppColors.primaryText;
-    final subtitleColor = isDestructive ? Colors.red.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.7);
+    final textColor = AppColors.primaryText;
+    final subtitleColor = Colors.white.withValues(alpha: 0.7);
     final iconColor = isDestructive ? Colors.red : AppColors.primaryText;
     final borderColor = isDestructive ? Colors.red.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.1);
 
@@ -919,26 +919,110 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _showClearCacheDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D3748),
-        title: const Text('Clear Cache', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'This will free up storage space but may require re-downloading some content.',
-          style: TextStyle(color: Colors.white70),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.primaryColor.withValues(alpha: 0.3),
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.cleaning_services,
+                        color: AppColors.primaryText,
+                        size: ResponsiveUtils.iconSize(context, 20),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      'Clear Cache',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'This will free up storage space but may require re-downloading some content.',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Actions
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => NavigationService.pop(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    TextButton(
+                      onPressed: () async {
+                        NavigationService.pop();
+                        await _clearCache();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                        backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                      ),
+                      child: Text(
+                        'Clear',
+                        style: TextStyle(
+                          color: AppTheme.primaryColor,
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => NavigationService.pop(),
-            child: Text('Cancel', style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
-          ),
-          TextButton(
-            onPressed: () async {
-              NavigationService.pop();
-              await _clearCache();
-            },
-            child: Text('Clear', style: TextStyle(color: AppTheme.primaryColor)),
-          ),
-        ],
       ),
     );
   }
@@ -999,130 +1083,213 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D3748),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Delete All Data',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '⚠️ THIS ACTION CANNOT BE UNDONE ⚠️',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'This will permanently delete:',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _buildDeleteItem('✝️ All prayer journal entries'),
-              _buildDeleteItem('💬 All AI chat conversations'),
-              _buildDeleteItem('📖 Reading plan progress'),
-              _buildDeleteItem('🌟 Favorite verses'),
-              _buildDeleteItem('📝 Devotional completion history'),
-              _buildDeleteItem('⚙️ All app settings and preferences'),
-              _buildDeleteItem('👤 Profile picture'),
-              _buildDeleteItem('📊 All statistics and progress'),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
                   children: [
-                    Text(
-                      '⚠️ Before proceeding:',
-                      style: TextStyle(
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.red.withValues(alpha: 0.3),
+                            Colors.red.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.warning_amber_rounded,
                         color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        size: ResponsiveUtils.iconSize(context, 20),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(width: AppSpacing.md),
                     Text(
-                      '• Export your prayer journal first (Settings > Export Data)\n• This will reset the app to factory defaults\n• You will need to reconfigure all settings',
+                      'Delete All Data',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 13,
-                        height: 1.4,
+                        fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Type DELETE to confirm:',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: confirmController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Type DELETE',
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  '⚠️ THIS ACTION CANNOT BE UNDONE ⚠️',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.xl),
+
+                // Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'This will permanently delete:',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        _buildDeleteItem('✝️ All prayer journal entries'),
+                        _buildDeleteItem('💬 All AI chat conversations'),
+                        _buildDeleteItem('📖 Reading plan progress'),
+                        _buildDeleteItem('🌟 Favorite verses'),
+                        _buildDeleteItem('📝 Devotional completion history'),
+                        _buildDeleteItem('⚙️ All app settings and preferences'),
+                        _buildDeleteItem('👤 Profile picture'),
+                        _buildDeleteItem('📊 All statistics and progress'),
+                        const SizedBox(height: AppSpacing.lg),
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '⚠️ Before proceeding:',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                '• Export your prayer journal first (Settings > Export Data)\n• This will reset the app to factory defaults\n• You will need to reconfigure all settings',
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Text(
+                          'Type DELETE to confirm:',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        TextField(
+                          controller: confirmController,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Type DELETE',
+                            hintStyle: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red, width: 2),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                            contentPadding: const EdgeInsets.all(AppSpacing.md),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Actions
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        confirmController.dispose();
+                        NavigationService.pop();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    TextButton(
+                      onPressed: () async {
+                        if (confirmController.text.trim() == 'DELETE') {
+                          confirmController.dispose();
+                          NavigationService.pop();
+                          await _deleteAllData();
+                        } else {
+                          _showSnackBar('❌ You must type DELETE to confirm');
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
+                        backgroundColor: Colors.red.withValues(alpha: 0.2),
+                      ),
+                      child: Text(
+                        'Delete Everything',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              confirmController.dispose();
-              NavigationService.pop();
-            },
-            child: Text('Cancel', style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (confirmController.text.trim() == 'DELETE') {
-                confirmController.dispose();
-                NavigationService.pop();
-                await _deleteAllData();
-              } else {
-                _showSnackBar('❌ You must type DELETE to confirm');
-              }
-            },
-            child: const Text('Delete Everything', style: TextStyle(color: Colors.red)),
-          ),
-        ],
       ),
     );
   }
@@ -1154,14 +1321,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF2D3748),
-          content: Row(
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(width: 20),
-              Text('Deleting all data...', style: TextStyle(color: Colors.white)),
-            ],
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: FrostedGlassCard(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
+                  Text(
+                    'Deleting all data...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
