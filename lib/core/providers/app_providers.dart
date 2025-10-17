@@ -121,6 +121,12 @@ final activePrayersCountProvider = FutureProvider<int>((ref) async {
   return await service.getPrayerCount();
 });
 
+/// Provider for count of answered prayers
+final answeredPrayersCountProvider = FutureProvider<int>((ref) async {
+  final service = ref.watch(prayerServiceProvider);
+  return await service.getAnsweredPrayerCount();
+});
+
 /// Provider for count of active reading plans
 final activeReadingPlansCountProvider = FutureProvider<int>((ref) async {
   final plans = await ref.watch(activeReadingPlansProvider.future);

@@ -28,52 +28,59 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final String userEmail = "friend@example.com";
   final DateTime memberSince = DateTime(2024, 1, 15);
 
-  // Spiritual journey stats
-  final int totalPrayers = 42;
-  final int answeredPrayers = 12;
-  final int daysStreak = 7;
-  final int versesRead = 156;
-  final int devotionalsCompleted = 23;
-  final int readingPlansActive = 2;
-
-  // Achievements
-  final List<Achievement> achievements = [
-    Achievement(
-      title: 'Prayer Warrior',
-      description: 'Prayed for 7 days in a row',
-      icon: Icons.local_fire_department,
-      color: Colors.orange,
-      isUnlocked: true,
-    ),
-    Achievement(
-      title: 'Bible Scholar',
-      description: 'Read 100 verses',
-      icon: Icons.book,
-      color: Colors.blue,
-      isUnlocked: true,
-    ),
-    Achievement(
-      title: 'Faithful Friend',
-      description: 'Complete 30 devotionals',
-      icon: Icons.favorite,
-      color: Colors.pink,
-      isUnlocked: false,
-      progress: 23,
-      total: 30,
-    ),
-    Achievement(
-      title: 'Scripture Master',
-      description: 'Complete 5 reading plans',
-      icon: Icons.stars,
-      color: AppTheme.goldColor,
-      isUnlocked: false,
-      progress: 2,
-      total: 5,
-    ),
-  ];
+  // Build achievements list based on real stats
+  List<Achievement> _buildAchievements(int prayerStreak, int savedVerses, int devotionalsCompleted, int readingPlansActive) {
+    return [
+      Achievement(
+        title: 'Prayer Warrior',
+        description: 'Prayed for 7 days in a row',
+        icon: Icons.local_fire_department,
+        color: Colors.orange,
+        isUnlocked: prayerStreak >= 7,
+        progress: prayerStreak >= 7 ? 7 : prayerStreak,
+        total: 7,
+      ),
+      Achievement(
+        title: 'Bible Scholar',
+        description: 'Read 100 verses',
+        icon: Icons.book,
+        color: Colors.blue,
+        isUnlocked: savedVerses >= 100,
+        progress: savedVerses >= 100 ? 100 : savedVerses,
+        total: 100,
+      ),
+      Achievement(
+        title: 'Faithful Friend',
+        description: 'Complete 30 devotionals',
+        icon: Icons.favorite,
+        color: Colors.pink,
+        isUnlocked: devotionalsCompleted >= 30,
+        progress: devotionalsCompleted >= 30 ? 30 : devotionalsCompleted,
+        total: 30,
+      ),
+      Achievement(
+        title: 'Scripture Master',
+        description: 'Complete 5 reading plans',
+        icon: Icons.stars,
+        color: AppTheme.goldColor,
+        isUnlocked: readingPlansActive >= 5,
+        progress: readingPlansActive >= 5 ? 5 : readingPlansActive,
+        total: 5,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Watch all stat providers
+    final devotionalStreak = ref.watch(devotionalStreakProvider);
+    final totalPrayers = ref.watch(activePrayersCountProvider);
+    final answeredPrayers = ref.watch(answeredPrayersCountProvider);
+    final savedVerses = ref.watch(savedVersesCountProvider);
+    final devotionalsCompleted = ref.watch(totalDevotionalsCompletedProvider);
+    final prayerStreak = ref.watch(currentPrayerStreakProvider);
+    final readingPlansActive = ref.watch(activeReadingPlansCountProvider);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -95,9 +102,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           children: [
                             _buildProfileCard(),
                             const SizedBox(height: AppSpacing.xxl),
-                            _buildStatsSection(),
+                            _buildStatsSection(
+                              devotionalStreak: devotionalStreak,
+                              totalPrayers: totalPrayers,
+                              savedVerses: savedVerses,
+                              devotionalsCompleted: devotionalsCompleted,
+                            ),
                             const SizedBox(height: AppSpacing.xxl),
-                            _buildAchievementsSection(),
+                            _buildAchievementsSection(
+                              prayerStreak: prayerStreak,
+                              savedVerses: savedVerses,
+                              devotionalsCompleted: devotionalsCompleted,
+                              readingPlansActive: readingPlansActive,
+                            ),
                             const SizedBox(height: AppSpacing.xxl),
                             _buildMenuSection(),
                             const SizedBox(height: AppSpacing.xxl),
@@ -409,7 +426,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildStatsSection() {
+  Widget _buildStatsSection({
+    required AsyncValue<int> devotionalStreak,
+    required AsyncValue<int> totalPrayers,
+    required AsyncValue<int> savedVerses,
+    required AsyncValue<int> devotionalsCompleted,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -447,34 +469,50 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 desktop: 1.1,
               ),
               children: [
-            _buildStatCard(
-              'Prayer Streak',
-              '$daysStreak days',
-              Icons.local_fire_department,
-              Colors.orange,
-              700,
-            ),
-            _buildStatCard(
-              'Total Prayers',
-              '$totalPrayers',
-              Icons.favorite,
-              Colors.pink,
-              800,
-            ),
-            _buildStatCard(
-              'Verses Read',
-              '$versesRead',
-              Icons.book,
-              Colors.blue,
-              900,
-            ),
-            _buildStatCard(
-              'Devotionals',
-              '$devotionalsCompleted',
-              Icons.auto_stories,
-              Colors.purple,
-              1000,
-            ),
+                _buildStatCard(
+                  'Devotional Streak',
+                  devotionalStreak.when(
+                    data: (streak) => '$streak days',
+                    loading: () => '...',
+                    error: (_, __) => '0 days',
+                  ),
+                  Icons.local_fire_department,
+                  Colors.orange,
+                  700,
+                ),
+                _buildStatCard(
+                  'Total Prayers',
+                  totalPrayers.when(
+                    data: (count) => '$count',
+                    loading: () => '...',
+                    error: (_, __) => '0',
+                  ),
+                  Icons.favorite,
+                  Colors.pink,
+                  800,
+                ),
+                _buildStatCard(
+                  'Verses Saved',
+                  savedVerses.when(
+                    data: (count) => '$count',
+                    loading: () => '...',
+                    error: (_, __) => '0',
+                  ),
+                  Icons.book,
+                  Colors.blue,
+                  900,
+                ),
+                _buildStatCard(
+                  'Devotionals',
+                  devotionalsCompleted.when(
+                    data: (count) => '$count',
+                    loading: () => '...',
+                    error: (_, __) => '0',
+                  ),
+                  Icons.auto_stories,
+                  Colors.purple,
+                  1000,
+                ),
               ],
             );
           },
@@ -528,7 +566,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8));
   }
 
-  Widget _buildAchievementsSection() {
+  Widget _buildAchievementsSection({
+    required AsyncValue<int> prayerStreak,
+    required AsyncValue<int> savedVerses,
+    required AsyncValue<int> devotionalsCompleted,
+    required AsyncValue<int> readingPlansActive,
+  }) {
+    // Build achievements list with real data
+    final achievements = _buildAchievements(
+      prayerStreak.value ?? 0,
+      savedVerses.value ?? 0,
+      devotionalsCompleted.value ?? 0,
+      readingPlansActive.value ?? 0,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
