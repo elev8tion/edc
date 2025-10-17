@@ -278,7 +278,6 @@ Your relationship with God is sacred and private. We respect that.
 - Context maintained within single session
 - No tracking across different conversations
 - History stored locally only
-- Can be disabled completely
 
 ### Prayer Journal
 - 100% local storage
