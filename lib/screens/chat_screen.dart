@@ -21,6 +21,8 @@ import '../components/is_typing_indicator.dart';
 import '../components/time_and_status.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
+import '../core/services/crisis_detection_service.dart';
+import '../core/widgets/crisis_dialog.dart';
 import '../utils/responsive_utils.dart';
 import 'paywall_screen.dart';
 
@@ -181,6 +183,28 @@ class ChatScreen extends HookConsumerWidget {
             ),
           );
         }
+        return;
+      }
+
+      // Check for crisis keywords BEFORE sending message
+      final crisisDetectionService = CrisisDetectionService();
+      final crisisResult = crisisDetectionService.detectCrisis(text.trim());
+
+      if (crisisResult != null && context.mounted) {
+        // Crisis detected - show intervention dialog
+        crisisDetectionService.logCrisisDetection(crisisResult);
+
+        await CrisisDialog.show(
+          context,
+          crisisResult: crisisResult,
+          onAcknowledge: () {
+            debugPrint('✅ User acknowledged crisis resources');
+          },
+        );
+
+        // Do NOT send the message to AI - user needs immediate help
+        // Refund the consumed message credit since we're not sending
+        // TODO: Implement message credit refund in SubscriptionService
         return;
       }
 
