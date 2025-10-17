@@ -33,9 +33,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  // Local state for non-persisted settings
-  bool _offlineMode = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,12 +244,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             'Data & Privacy',
             Icons.security,
             [
-              _buildSwitchTile(
-                'Offline Mode',
-                'Use app without internet connection',
-                _offlineMode,
-                (value) => setState(() => _offlineMode = value),
-              ),
               _buildActionTile(
                 'Clear Cache',
                 'Free up storage space',
