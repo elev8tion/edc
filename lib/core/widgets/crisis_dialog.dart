@@ -68,7 +68,7 @@ class CrisisDialog extends StatelessWidget {
                         style: TextStyle(
                           fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                           fontWeight: FontWeight.w700,
-                          color: Colors.red,
+                          color: AppColors.primaryText,
                         ),
                       ),
                     ),
@@ -211,9 +211,9 @@ class CrisisDialog extends StatelessWidget {
         Text(
           'Additional Resources:',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-            color: Colors.white.withValues(alpha: 0.8),
+            color: AppColors.primaryText,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
