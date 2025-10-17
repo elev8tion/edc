@@ -218,7 +218,7 @@ class ReadingPlanProgressService {
   Future<void> createSampleReadings(String planId, int totalDays) async {
     try {
       final db = await _database.database;
-      // DateTime.now();
+      final startDate = DateTime.now();
 
       // Sample Bible books and chapters
       final sampleReadings = [
@@ -438,9 +438,6 @@ class ReadingPlanProgressService {
 
       if (plans.isEmpty || plans.first['start_date'] == null) return [];
 
-      final startDate = DateTime.fromMillisecondsSinceEpoch(
-        plans.first['start_date'] as int,
-      );
       final today = DateTime.now();
 
       // Get all readings scheduled before today
@@ -518,7 +515,7 @@ class ReadingPlanProgressService {
 
       if (plans.isEmpty || plans.first['start_date'] == null) return null;
 
-      // DateTime.fromMillisecondsSinceEpoch(
+      final startDate = DateTime.fromMillisecondsSinceEpoch(
         plans.first['start_date'] as int,
       );
 

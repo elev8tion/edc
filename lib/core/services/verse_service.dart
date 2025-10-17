@@ -8,19 +8,19 @@ class VerseService {
   VerseService(this._database);
 
   Future<List<BibleVerse>> getAllVerses() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query('bible_verses');
     return maps.map((map) => _verseFromMap(map)).toList();
   }
 
   Future<List<BibleVerse>> getFavoriteVerses() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query('favorite_verses');
     return maps.map((map) => _verseFromMap(map)).toList();
   }
 
   Future<List<BibleVerse>> getVersesByCategory(VerseCategory category) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query(
       'favorite_verses',
       where: 'category = ?',
@@ -33,7 +33,7 @@ class VerseService {
   Future<List<BibleVerse>> searchVerses(String query, {String? version, int limit = 50}) async {
     if (query.trim().isEmpty) return [];
 
-    // final db = await _database.database;
+    final db = await _database.database;
 
     // Save to search history
     await _saveSearchHistory(query, 'full_text');
@@ -78,8 +78,6 @@ class VerseService {
 
   /// Search by theme/topic (searches themes column if exists, or uses keywords)
   Future<List<BibleVerse>> searchByTheme(String theme, {String? version, int limit = 50}) async {
-    // final db = await _database.database;
-
     // Save to search history
     await _saveSearchHistory(theme, 'theme');
 
@@ -102,7 +100,7 @@ class VerseService {
   }
 
   Future<void> toggleFavorite(String verseId) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final verse = await db.query(
       'verses',
       where: 'id = ?',
@@ -122,7 +120,6 @@ class VerseService {
 
   /// Get smart daily verse based on user preferences and history
   Future<BibleVerse?> getVerseOfTheDay({String? forceTheme}) async {
-    // final db = await _database.database;
     final today = _getTodayTimestamp();
 
     // Check if we already selected a verse for today
@@ -177,7 +174,7 @@ class VerseService {
 
   /// Check if we already selected a verse for today
   Future<BibleVerse?> _getTodaySelectedVerse(int todayTimestamp) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.rawQuery('''
       SELECT bv.* FROM bible_verses bv
       INNER JOIN daily_verse_history dvh ON bv.id = dvh.verse_id
@@ -199,7 +196,7 @@ class VerseService {
 
   /// Get user verse preferences
   Future<Map<String, String>> _getVersePreferences() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query('verse_preferences');
 
     final prefs = <String, String>{};
@@ -211,7 +208,7 @@ class VerseService {
 
   /// Get verse IDs shown in the last N days
   Future<List<int>> _getRecentVerseIds(int days) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final cutoffDate = DateTime.now().subtract(Duration(days: days));
     final cutoffTimestamp = cutoffDate.millisecondsSinceEpoch;
 
@@ -261,7 +258,7 @@ class VerseService {
     required List<int> excludeIds,
     String version = 'WEB',
   }) async {
-    // final db = await _database.database;
+    final db = await _database.database;
 
     String excludeClause = '';
     if (excludeIds.isNotEmpty) {
@@ -290,7 +287,7 @@ class VerseService {
 
   /// Record daily verse selection in history
   Future<void> _recordDailyVerse(int verseId, int shownDate, String theme) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.insert(
       'daily_verse_history',
       {
@@ -310,7 +307,7 @@ class VerseService {
     required int verse,
     String version = 'WEB',
   }) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query(
       'verses',
       where: 'version = ? AND book = ? AND chapter = ? AND verse = ?',
@@ -333,7 +330,7 @@ class VerseService {
 
   /// Search Bible verses by text content
   Future<List<BibleVerse>> searchBibleText(String query, {String version = 'WEB'}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query(
       'verses',
       where: 'version = ? AND text LIKE ?',
@@ -358,7 +355,7 @@ class VerseService {
     required int chapter,
     String version = 'WEB',
   }) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query(
       'verses',
       where: 'version = ? AND book = ? AND chapter = ?',
@@ -380,7 +377,7 @@ class VerseService {
   Future<List<BibleVerse>> getVersesByIds(List<String> ids) async {
     if (ids.isEmpty) return [];
 
-    // final db = await _database.database;
+    final db = await _database.database;
     final placeholders = ids.map((_) => '?').join(',');
     final maps = await db.query(
       'verses',
@@ -391,7 +388,7 @@ class VerseService {
   }
 
   Future<int> getFavoriteCount() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM bible_verses WHERE is_favorite = 1',
     );
@@ -414,7 +411,7 @@ class VerseService {
     );
   }
 
-  // Map<String, dynamic> _verseToMap(BibleVerse verse) {
+  Map<String, dynamic> _verseToMap(BibleVerse verse) {
     return {
       'id': verse.id,
       'text': verse.text,
@@ -431,7 +428,7 @@ class VerseService {
 
   /// Add a bookmark for a verse
   Future<void> addBookmark(int verseId, {String? note, List<String>? tags}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     await db.insert(
@@ -449,7 +446,7 @@ class VerseService {
 
   /// Remove a bookmark
   Future<void> removeBookmark(int verseId) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.delete(
       'verse_bookmarks',
       where: 'verse_id = ?',
@@ -459,7 +456,7 @@ class VerseService {
 
   /// Update bookmark note or tags
   Future<void> updateBookmark(int verseId, {String? note, List<String>? tags}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.update(
       'verse_bookmarks',
       {
@@ -474,7 +471,7 @@ class VerseService {
 
   /// Check if a verse is bookmarked
   Future<bool> isBookmarked(int verseId) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final result = await db.query(
       'verse_bookmarks',
       where: 'verse_id = ?',
@@ -485,7 +482,7 @@ class VerseService {
 
   /// Get all bookmarked verses with their notes and tags
   Future<List<Map<String, dynamic>>> getBookmarks() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.rawQuery('''
       SELECT
         bv.*,
@@ -513,7 +510,7 @@ class VerseService {
 
   /// Search bookmarks by tag
   Future<List<Map<String, dynamic>>> searchBookmarksByTag(String tag) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.rawQuery('''
       SELECT
         bv.*,
@@ -546,7 +543,7 @@ class VerseService {
 
   /// Save search to history
   Future<void> _saveSearchHistory(String query, String searchType) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.insert('search_history', {
       'query': query,
       'search_type': searchType,
@@ -556,7 +553,7 @@ class VerseService {
 
   /// Get recent search history
   Future<List<Map<String, dynamic>>> getSearchHistory({int limit = 20}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.query(
       'search_history',
       orderBy: 'created_at DESC',
@@ -572,13 +569,13 @@ class VerseService {
 
   /// Clear search history
   Future<void> clearSearchHistory() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.delete('search_history');
   }
 
   /// Get distinct search suggestions from history
   Future<List<String>> getSearchSuggestions({int limit = 10}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.rawQuery('''
       SELECT DISTINCT query
       FROM search_history
@@ -595,7 +592,7 @@ class VerseService {
 
   /// Update user's preferred themes for daily verses
   Future<void> updatePreferredThemes(List<String> themes) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.update(
       'verse_preferences',
       {
@@ -609,7 +606,7 @@ class VerseService {
 
   /// Update how many days to avoid showing recent verses
   Future<void> updateAvoidRecentDays(int days) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.update(
       'verse_preferences',
       {
@@ -623,7 +620,7 @@ class VerseService {
 
   /// Update preferred Bible version for daily verses
   Future<void> updatePreferredVersion(String version) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.update(
       'verse_preferences',
       {
@@ -637,7 +634,7 @@ class VerseService {
 
   /// Get daily verse history
   Future<List<Map<String, dynamic>>> getDailyVerseHistory({int limit = 30}) async {
-    // final db = await _database.database;
+    final db = await _database.database;
     final maps = await db.rawQuery('''
       SELECT
         bv.*,
@@ -665,7 +662,7 @@ class VerseService {
 
   /// Clear daily verse history (for testing or user request)
   Future<void> clearDailyVerseHistory() async {
-    // final db = await _database.database;
+    final db = await _database.database;
     await db.delete('daily_verse_history');
   }
 }
