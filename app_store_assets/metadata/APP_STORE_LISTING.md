@@ -58,8 +58,8 @@ Immerse yourself in a stunning glassmorphism interface that makes reading and re
 🔒 Privacy & Security
 Your spiritual journey is personal. All your prayers, notes, and data stay private and secure on your device. Optional biometric authentication for added peace of mind.
 
-✨ Offline Access
-Take your Bible anywhere. All features work offline so you can access scripture, prayers, and devotionals even without internet connection.
+✨ Always Offline-First
+Take your Bible anywhere. The entire app works offline - scripture, prayers, and devotionals are always accessible. Only the AI chat feature requires internet.
 
 WHY EVERYDAY CHRISTIAN?
 
@@ -164,11 +164,11 @@ Transform your spiritual journey with Everyday Christian - the complete faith co
 • No data collection
 • Your faith, your privacy
 
-✈️ OFFLINE MODE
-• Full Bible access offline
+✈️ ALWAYS OFFLINE-FIRST
+• Complete Bible access offline
+• Prayers, notes, devotionals work offline
 • Read anywhere, anytime
-• No internet required
-• Sync when connected
+• Only AI chat requires internet
 
 💡 WHY CHOOSE EVERYDAY CHRISTIAN?
 
@@ -247,7 +247,7 @@ Version 1.0.0 - Launch Release! 🎉
 • Customizable reading plans
 • Beautiful glassmorphism design
 • Dark mode support
-• Offline access
+• Always offline-first (AI chat only requires internet)
 • Privacy-focused with local storage
 
 Thank you for being part of our launch! Share the app and help others grow in faith.

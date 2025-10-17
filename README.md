@@ -43,7 +43,7 @@ Everyday Christian is a pastoral counseling app that provides:
 - 🔐 **Biometric authentication** (Face ID, Touch ID)
 - 📊 **Progress tracking** (reading streaks, prayer stats)
 - 🎨 **Beautiful glassmorphic UI** with modern design language
-- 📴 **Offline Bible access** (AI chat requires internet)
+- 📴 **Always offline-first** (only AI chat requires internet)
 
 ---
 
