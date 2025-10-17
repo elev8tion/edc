@@ -236,6 +236,11 @@ class SubscriptionService {
 
   /// Check if user can send a message (has remaining messages)
   bool get canSendMessage {
+    // Bypass limits in debug mode for testing
+    if (kDebugMode) {
+      return true;
+    }
+
     if (isPremium) {
       return premiumMessagesRemaining > 0;
     } else if (isInTrial) {
