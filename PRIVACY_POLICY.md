@@ -22,7 +22,7 @@ Everyday Christian is a faith-centered mobile app that provides:
 - **NO third-party analytics or tracking** - we don't use Google Analytics, Facebook Pixel, or similar tracking services
 - **NO advertising networks** - we don't integrate ad networks or sell ad space
 - **NO data monetization** - we never sell or rent your information
-- **Local-first storage** - all your data stays on your device using encrypted SQLite
+- **Local-first storage** - all your data stays on your device using secure SQLite database
 
 **By using Everyday Christian, you agree to the collection and use of information in accordance with this Privacy Policy. If you do not agree, please do not use the App.**
 
@@ -30,7 +30,7 @@ Everyday Christian is a faith-centered mobile app that provides:
 
 ### 2.1 Information Stored Locally on Your Device
 
-All of the following data is stored **exclusively on your device** using encrypted SQLite database technology and **never leaves your device** except when using the Premium AI chat feature:
+All of the following data is stored **exclusively on your device** using SQLite database technology protected by your device's security and **never leaves your device** except when using the Premium AI chat feature:
 
 **Prayer Journal Entries**: Your personal prayers, prayer requests, prayer categories, and reflections that you choose to save. Includes prayer status (answered, pending, ongoing), timestamps, and optional notes.
 
@@ -128,7 +128,7 @@ When you use the Premium AI chat feature:
 
 **All personal data** - including prayer journal entries, AI chat history, favorite verses, reading history, and app settings - is stored **exclusively on your device** using:
 
-**SQLite Database**: Encrypted local database technology that stores your data in the app's protected storage area
+**SQLite Database**: Secure local database technology that stores your data in the app's protected storage area, safeguarded by your device's built-in security
 
 **Biometric Security (Optional)**: You can enable Face ID, Touch ID, or fingerprint authentication to add an additional security layer before accessing sensitive features
 
@@ -142,7 +142,7 @@ We implement industry-standard security practices:
 
 **Secure Coding Standards**: Development follows OWASP Mobile Security Guidelines to prevent common vulnerabilities
 
-**Encrypted Storage**: Sensitive data fields are encrypted at rest using platform-provided encryption
+**Device-Level Protection**: All app data is protected by your device's built-in security features, including full-disk encryption available on modern iOS and Android devices
 
 **Secure API Communication**: When using Premium AI chat, messages are transmitted to Google Gemini API over TLS/SSL encrypted connections
 
@@ -608,8 +608,8 @@ Email: support@everydaychristian.app with "COPPA Inquiry" in subject line
    - Privacy Policy accessible in Settings > Legal
    - Data export/deletion tools in Settings > Privacy
 
-6. **Verify database encryption:**
-   - Confirm SQLite database is encrypted at rest
+6. **Verify database security:**
+   - Confirm SQLite database is stored in app's protected sandbox
    - Test biometric authentication if implemented
    - Verify foreign key constraints are enabled
 
