@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/crisis_detection_service.dart';
 import '../../theme/app_theme.dart';
+import '../../components/frosted_glass_card.dart';
+import '../../utils/responsive_utils.dart';
 
 /// Non-dismissible crisis intervention dialog
 class CrisisDialog extends StatelessWidget {
@@ -23,109 +25,151 @@ class CrisisDialog extends StatelessWidget {
     return WillPopScope(
       // Prevent dismissing by back button
       onWillPop: () async => false,
-      child: AlertDialog(
-        backgroundColor: Colors.red.shade50,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          side: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.warning_rounded, color: Colors.red.shade700, size: 32),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Crisis Resources',
-                style: TextStyle(
-                  color: Colors.red.shade900,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Crisis message
-              Text(
-                crisisResult.getMessage(),
-                style: TextStyle(
-                  fontSize: 16,
-                  height: 1.5,
-                  color: Colors.grey.shade900,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Hotline button
-              _buildHotlineButton(context),
-
-              const SizedBox(height: 16),
-
-              // Additional resources
-              _buildAdditionalResources(),
-
-              const SizedBox(height: 24),
-
-              // Important notice
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: AppRadius.smallRadius,
-                  border: Border.all(color: Colors.orange.shade300),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.orange.shade700, size: 20),
-                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.red.withValues(alpha: 0.3),
+                            Colors.red.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.warning_rounded,
+                        color: Colors.red,
+                        size: ResponsiveUtils.iconSize(context, 24),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
-                        'If you are in immediate danger, call 911 or go to your nearest emergency room.',
+                        'Crisis Resources',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.orange.shade900,
-                          fontWeight: FontWeight.w500,
+                          fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          // Acknowledge button (only way to dismiss)
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onAcknowledge();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade700,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: AppRadius.smallRadius,
+                const SizedBox(height: AppSpacing.lg),
+
+                // Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Crisis message
+                        Text(
+                          crisisResult.getMessage(),
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                            height: 1.5,
+                            color: Colors.white.withValues(alpha: 0.95),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Hotline button
+                        _buildHotlineButton(context),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Additional resources
+                        _buildAdditionalResources(context),
+
+                        const SizedBox(height: AppSpacing.xl),
+
+                        // Important notice
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            border: Border.all(
+                              color: Colors.orange.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.orange,
+                                size: ResponsiveUtils.iconSize(context, 20),
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              Expanded(
+                                child: Text(
+                                  'If you are in immediate danger, call 911 or go to your nearest emergency room.',
+                                  style: TextStyle(
+                                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'I understand and have noted these resources',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: AppSpacing.xl),
+
+                // Acknowledge button (only way to dismiss)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      onAcknowledge();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+                      foregroundColor: AppColors.primaryText,
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                    ),
+                    child: Text(
+                      'I understand and have noted these resources',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -160,7 +204,7 @@ class CrisisDialog extends StatelessWidget {
   }
 
   /// Build additional crisis resources section
-  Widget _buildAdditionalResources() {
+  Widget _buildAdditionalResources(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -168,12 +212,13 @@ class CrisisDialog extends StatelessWidget {
           'Additional Resources:',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 14,
-            color: Colors.grey.shade700,
+            fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         _buildResourceTile(
+          context: context,
           icon: Icons.chat_bubble_outline,
           title: 'Crisis Text Line',
           subtitle: 'Text HOME to 741741',
@@ -181,6 +226,7 @@ class CrisisDialog extends StatelessWidget {
         ),
         if (crisisResult.type == CrisisType.suicide) ...[
           _buildResourceTile(
+            context: context,
             icon: Icons.language,
             title: '988 Lifeline Website',
             subtitle: 'Chat online at 988lifeline.org',
@@ -189,6 +235,7 @@ class CrisisDialog extends StatelessWidget {
         ],
         if (crisisResult.type == CrisisType.abuse) ...[
           _buildResourceTile(
+            context: context,
             icon: Icons.language,
             title: 'RAINN Online Chat',
             subtitle: 'rainn.org/get-help',
@@ -201,6 +248,7 @@ class CrisisDialog extends StatelessWidget {
 
   /// Build a resource list tile
   Widget _buildResourceTile({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -208,13 +256,25 @@ class CrisisDialog extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: AppRadius.smallRadius,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+          ),
+        ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: Colors.blue.shade700),
-            const SizedBox(width: 12),
+            Icon(
+              icon,
+              size: ResponsiveUtils.iconSize(context, 20),
+              color: AppTheme.primaryColor,
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,21 +283,26 @@ class CrisisDialog extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: Colors.grey.shade900,
+                      fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                      color: AppColors.primaryText,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                      fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: ResponsiveUtils.iconSize(context, 14),
+              color: Colors.white.withValues(alpha: 0.4),
+            ),
           ],
         ),
       ),
