@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:upgrader/upgrader.dart';
 import 'theme/app_theme.dart';
 import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
@@ -108,7 +109,15 @@ class EverydayChristianApp extends ConsumerWidget {
     // Watch text size preference for global text scaling
     final textScaleFactor = ref.watch(textSizeProvider);
 
-    return MaterialApp(
+    return UpgradeAlert(
+      upgrader: Upgrader(
+        dialogStyle: UpgradeDialogStyle.cupertino,
+        canDismissDialog: true,
+        durationUntilAlertAgain: const Duration(days: 1),
+        showIgnore: false,
+        showLater: true,
+      ),
+      child: MaterialApp(
       title: 'Everyday Christian',
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.navigatorKey,
@@ -157,6 +166,7 @@ class EverydayChristianApp extends ConsumerWidget {
           ],
         );
       },
+      ),
     );
   }
 
