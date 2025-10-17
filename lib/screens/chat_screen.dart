@@ -22,6 +22,7 @@ import '../components/time_and_status.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
 import '../core/services/crisis_detection_service.dart';
+import '../core/services/content_filter_service.dart';
 import '../core/widgets/crisis_dialog.dart';
 import '../utils/responsive_utils.dart';
 import 'paywall_screen.dart';
@@ -307,9 +308,27 @@ class ChatScreen extends HookConsumerWidget {
         // Wait for completion animation to finish
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Create final AI message with complete response
+        // Filter AI response for harmful content
+        final contentFilterService = ContentFilterService();
+        final filterResult = contentFilterService.filterResponse(fullResponse.toString());
+
+        String finalContent;
+        if (filterResult.isRejected) {
+          // Log the filtering event
+          contentFilterService.logFilteredResponse(filterResult, fullResponse.toString());
+
+          // Use fallback response instead
+          finalContent = contentFilterService.getFallbackResponse('default');
+
+          debugPrint('⚠️ Content filtered: ${filterResult.rejectionReason}');
+          debugPrint('📝 Using fallback response');
+        } else {
+          finalContent = fullResponse.toString();
+        }
+
+        // Create final AI message with filtered content
         final aiMessage = ChatMessage.ai(
-          content: fullResponse.toString(),
+          content: finalContent,
           sessionId: sessionId.value,
         );
 
@@ -427,8 +446,21 @@ class ChatScreen extends HookConsumerWidget {
         );
         debugPrint('✅ AI service returned new response');
 
+        // Filter regenerated response for harmful content
+        final contentFilterService = ContentFilterService();
+        final filterResult = contentFilterService.filterResponse(response.content);
+
+        String finalContent;
+        if (filterResult.isRejected) {
+          contentFilterService.logFilteredResponse(filterResult, response.content);
+          finalContent = contentFilterService.getFallbackResponse('default');
+          debugPrint('⚠️ Regenerated content filtered: ${filterResult.rejectionReason}');
+        } else {
+          finalContent = response.content;
+        }
+
         final newAiMessage = ChatMessage.ai(
-          content: response.content,
+          content: finalContent,
           verses: response.verses,
           metadata: response.metadata,
           sessionId: sessionId.value,
