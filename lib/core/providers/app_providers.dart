@@ -171,11 +171,8 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   // Load Bible on first launch
   final isWEBLoaded = await bibleLoader.isBibleLoaded('WEB');
   if (!isWEBLoaded) {
-    print('📖 Loading WEB Bible for first time...');
     await bibleLoader.loadAllBibles();
-    print('✅ WEB Bible loaded successfully!');
   } else {
-    print('✅ WEB Bible already loaded');
   }
 
   // Load devotional content on first launch
@@ -366,17 +363,13 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
           _preferences = prefs;
           final savedTheme = prefs.loadThemeMode();
           state = savedTheme;
-          print('✅ Theme initialized from preferences: $savedTheme');
         },
         loading: () {
-          print('⏳ Loading preferences...');
         },
         error: (error, stack) {
-          print('❌ Error loading preferences for theme: $error');
         },
       );
     } catch (e) {
-      print('❌ Error initializing theme: $e');
     }
   }
 
@@ -399,15 +392,11 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
       try {
         final success = await _preferences!.saveThemeMode(mode);
         if (success) {
-          print('✅ Theme saved successfully: $mode');
         } else {
-          print('⚠️ Failed to save theme mode');
         }
       } catch (e) {
-        print('❌ Error saving theme mode: $e');
       }
     } else {
-      print('⚠️ Preferences service not initialized, theme not persisted');
     }
   }
 }
@@ -434,17 +423,13 @@ class LanguageNotifier extends StateNotifier<String> {
           _preferences = prefs;
           final savedLanguage = prefs.loadLanguage();
           state = savedLanguage;
-          print('✅ Language initialized from preferences: $savedLanguage');
         },
         loading: () {
-          print('⏳ Loading preferences for language...');
         },
         error: (error, stack) {
-          print('❌ Error loading preferences for language: $error');
         },
       );
     } catch (e) {
-      print('❌ Error initializing language: $e');
     }
   }
 
@@ -456,15 +441,11 @@ class LanguageNotifier extends StateNotifier<String> {
       try {
         final success = await _preferences!.saveLanguage(language);
         if (success) {
-          print('✅ Language saved successfully: $language');
         } else {
-          print('⚠️ Failed to save language');
         }
       } catch (e) {
-        print('❌ Error saving language: $e');
       }
     } else {
-      print('⚠️ Preferences service not initialized, language not persisted');
     }
   }
 }
@@ -514,17 +495,13 @@ class TextSizeNotifier extends StateNotifier<double> {
           // Migrate old pixel-based values (12-24) to scale factor (0.8-1.5)
           final scaleFactor = _migrateToScaleFactor(savedSize);
           state = scaleFactor;
-          print('✅ Text size initialized from preferences: $scaleFactor (${(scaleFactor * 100).round()}%)');
         },
         loading: () {
-          print('⏳ Loading preferences for text size...');
         },
         error: (error, stack) {
-          print('❌ Error loading preferences for text size: $error');
         },
       );
     } catch (e) {
-      print('❌ Error initializing text size: $e');
     }
   }
 
@@ -544,7 +521,6 @@ class TextSizeNotifier extends StateNotifier<double> {
   Future<void> setTextSize(double size) async {
     // Validate size is within scale factor bounds (0.8-1.5)
     if (size < 0.8 || size > 1.5) {
-      print('⚠️ Text scale factor out of bounds: $size. Clamping to valid range.');
       size = size.clamp(0.8, 1.5);
     }
 
@@ -554,15 +530,11 @@ class TextSizeNotifier extends StateNotifier<double> {
       try {
         final success = await _preferences!.saveTextSize(size);
         if (success) {
-          print('✅ Text scale factor saved successfully: $size (${(size * 100).round()}%)');
         } else {
-          print('⚠️ Failed to save text scale factor');
         }
       } catch (e) {
-        print('❌ Error saving text scale factor: $e');
       }
     } else {
-      print('⚠️ Preferences service not initialized, text size not persisted');
     }
   }
 }

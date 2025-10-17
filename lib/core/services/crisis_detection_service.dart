@@ -299,9 +299,6 @@ class CrisisDetectionService {
   /// Log crisis detection (for monitoring and improvement)
   void logCrisisDetection(CrisisDetectionResult result) {
     if (kDebugMode) {
-      print('[CRISIS DETECTED] Type: ${result.type}');
-      print('[CRISIS DETECTED] Keywords: ${result.matchedKeywords}');
-      print('[CRISIS DETECTED] Severity: ${getCrisisSeverity(result)}');
     }
 
     // TODO: Add analytics logging (Firebase Analytics, etc.)

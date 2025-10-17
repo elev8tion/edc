@@ -40,7 +40,6 @@ class PrayerStreakService {
       }
       // If entry exists, we don't need to do anything - one entry per day
     } catch (e) {
-      print('Error recording prayer activity: $e');
       rethrow;
     }
   }
@@ -82,7 +81,6 @@ class PrayerStreakService {
 
       return streak;
     } catch (e) {
-      print('Error getting current streak: $e');
       return 0;
     }
   }
@@ -132,7 +130,6 @@ class PrayerStreakService {
 
       return longestStreak;
     } catch (e) {
-      print('Error getting longest streak: $e');
       return 0;
     }
   }
@@ -154,7 +151,6 @@ class PrayerStreakService {
 
       return result.isNotEmpty;
     } catch (e) {
-      print('Error checking if prayed today: $e');
       return false;
     }
   }
@@ -176,7 +172,6 @@ class PrayerStreakService {
         return _dateIntToDateTime(dateInt);
       }).toList();
     } catch (e) {
-      print('Error getting activity dates: $e');
       return [];
     }
   }
@@ -190,7 +185,6 @@ class PrayerStreakService {
       );
       return result.first['count'] as int;
     } catch (e) {
-      print('Error getting total days prayed: $e');
       return 0;
     }
   }
@@ -240,7 +234,6 @@ class PrayerStreakService {
       final db = await _database.database;
       await db.delete('prayer_streak_activity');
     } catch (e) {
-      print('Error clearing streak data: $e');
       rethrow;
     }
   }

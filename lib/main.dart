@@ -98,7 +98,7 @@ void main() async {
 //   • Settings - App configuration
 //   • Profile - User profile management
 // To disable: Change to false for normal authentication flow
-const bool kDevelopmentMode = true;
+const bool kDevelopmentMode = false;
 
 class EverydayChristianApp extends ConsumerWidget {
   const EverydayChristianApp({super.key});

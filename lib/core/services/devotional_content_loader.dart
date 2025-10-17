@@ -15,11 +15,9 @@ class DevotionalContentLoader {
     // Check if devotionals already exist
     final existing = await db.query('devotionals', limit: 1);
     if (existing.isNotEmpty) {
-      print('✅ Devotionals already loaded');
       return;
     }
 
-    print('📖 Loading devotional content...');
 
     final devotionals = _getDevotionalContent();
 
@@ -27,7 +25,6 @@ class DevotionalContentLoader {
       await db.insert('devotionals', devotional);
     }
 
-    print('✅ Loaded ${devotionals.length} devotionals');
   }
 
   List<Map<String, dynamic>> _getDevotionalContent() {

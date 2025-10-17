@@ -25,27 +25,14 @@ class NotificationService {
     );
 
     await _requestPermissions();
-    print('📱 NotificationService initialized successfully');
   }
 
   Future<void> _requestPermissions() async {
-    final status = await Permission.notification.request();
-    print('📱 Notification permission status: $status');
-
-    if (status.isGranted) {
-      print('✅ Notification permissions granted');
-    } else if (status.isDenied) {
-      print('❌ Notification permissions denied');
-    } else if (status.isPermanentlyDenied) {
-      print('❌ Notification permissions permanently denied');
-    } else {
-      print('⚠️ Notification permission status: $status');
-    }
+    await Permission.notification.request();
   }
 
   void _onNotificationTapped(NotificationResponse response) {
     // Handle notification tap with payload routing
-    print('Notification tapped: ${response.payload}');
     if (response.payload != null) {
       _handleNotificationPayload(response.payload!);
     }
@@ -78,16 +65,15 @@ class NotificationService {
 
   void _navigateToDailyVerse(String reference) {
     // This will be handled by the app's navigation service
-    // For now, just log the action
-    print('Navigate to daily verse: $reference');
+    // TODO: Implement navigation to daily verse screen
   }
 
   void _navigateToPrayer(String prayerId) {
-    print('Navigate to prayer: $prayerId');
+    // TODO: Implement navigation to prayer journal
   }
 
   void _navigateToReading(String planId) {
-    print('Navigate to reading plan: $planId');
+    // TODO: Implement navigation to reading plan
   }
 
   Future<void> scheduleDailyDevotional({
@@ -159,20 +145,13 @@ class NotificationService {
     required String verseReference,
     required String verseText,
   }) async {
-    print('📱 Sending test notification: $verseReference');
-
     try {
       // Check permission status first
       final permissionStatus = await Permission.notification.status;
-      print('📱 Current permission status: $permissionStatus');
 
       if (!permissionStatus.isGranted) {
-        print('⚠️ Notification permission not granted, requesting...');
         final newStatus = await Permission.notification.request();
-        print('📱 New permission status: $newStatus');
-
         if (!newStatus.isGranted) {
-          print('❌ Cannot send notification - permission denied');
           return;
         }
       }
@@ -180,7 +159,6 @@ class NotificationService {
       // Immediate notification for testing or on-demand
       final payload = 'verse:$verseReference';
 
-      print('📱 Calling _notifications.show() with ID: 4');
       await _notifications.show(
         4,
         'Verse of the Day',
@@ -206,13 +184,9 @@ class NotificationService {
         ),
         payload: payload,
       );
-
-      print('✅ Notification sent successfully');
-      print('💡 Note: iOS may not show notification banner when app is in foreground');
-      print('💡 Try: 1) Press Home button then check, or 2) Swipe down to see Notification Center');
-    } catch (e, stackTrace) {
-      print('❌ Error sending notification: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
+      // Silent failure in production
+      // Error details: $e
     }
   }
 

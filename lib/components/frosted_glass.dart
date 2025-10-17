@@ -27,7 +27,6 @@ class FrostedGlass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     // Different glass effects for nested vs main containers
     final gradientColors = isNested

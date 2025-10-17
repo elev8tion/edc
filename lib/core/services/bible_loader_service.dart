@@ -28,7 +28,6 @@ class BibleLoaderService {
       final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await File(assetDbPath).writeAsBytes(bytes, flush: true);
 
-      print('📖 Asset database copied to $assetDbPath');
 
       // Attach the asset database
       await db.execute("ATTACH DATABASE '$assetDbPath' AS asset_db");
@@ -54,9 +53,7 @@ class BibleLoaderService {
       // Clean up the copied asset database file
       await File(assetDbPath).delete();
 
-      print('✅ Loaded WEB Bible (31,103 verses from asset database)');
     } catch (e) {
-      print('❌ Error copying from asset database: $e');
       rethrow;
     }
   }

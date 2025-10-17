@@ -27,7 +27,6 @@ class PreferencesService {
     try {
       _preferences = await SharedPreferences.getInstance();
     } catch (e) {
-      print('Error initializing SharedPreferences: $e');
       rethrow;
     }
   }
@@ -60,12 +59,8 @@ class PreferencesService {
     try {
       final String modeString = _themeModeToString(mode);
       final result = await _preferences?.setString(_themeModeKey, modeString);
-      if (result == true) {
-        print('✅ Theme mode saved: $modeString');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving theme mode: $e');
       return false;
     }
   }
@@ -77,13 +72,10 @@ class PreferencesService {
     try {
       final String? modeString = _preferences?.getString(_themeModeKey);
       if (modeString == null) {
-        print('ℹ️ No saved theme mode, using default: $_defaultThemeMode');
         return _stringToThemeMode(_defaultThemeMode);
       }
-      print('✅ Theme mode loaded: $modeString');
       return _stringToThemeMode(modeString);
     } catch (e) {
-      print('❌ Error loading theme mode: $e');
       return _stringToThemeMode(_defaultThemeMode);
     }
   }
@@ -124,12 +116,8 @@ class PreferencesService {
   Future<bool> saveLanguage(String language) async {
     try {
       final result = await _preferences?.setString(_languageKey, language);
-      if (result == true) {
-        print('✅ Language saved: $language');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving language: $e');
       return false;
     }
   }
@@ -141,13 +129,10 @@ class PreferencesService {
     try {
       final String? language = _preferences?.getString(_languageKey);
       if (language == null) {
-        print('ℹ️ No saved language, using default: $_defaultLanguage');
         return _defaultLanguage;
       }
-      print('✅ Language loaded: $language');
       return language;
     } catch (e) {
-      print('❌ Error loading language: $e');
       return _defaultLanguage;
     }
   }
@@ -197,12 +182,8 @@ class PreferencesService {
   Future<bool> saveTextSize(double size) async {
     try {
       final result = await _preferences?.setDouble(_textSizeKey, size);
-      if (result == true) {
-        print('✅ Text size saved: $size');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving text size: $e');
       return false;
     }
   }
@@ -214,13 +195,10 @@ class PreferencesService {
     try {
       final double? size = _preferences?.getDouble(_textSizeKey);
       if (size == null) {
-        print('ℹ️ No saved text size, using default: $_defaultTextSize');
         return _defaultTextSize;
       }
-      print('✅ Text size loaded: $size');
       return size;
     } catch (e) {
-      print('❌ Error loading text size: $e');
       return _defaultTextSize;
     }
   }
@@ -233,12 +211,8 @@ class PreferencesService {
   Future<bool> saveDailyNotificationsEnabled(bool enabled) async {
     try {
       final result = await _preferences?.setBool(_dailyNotificationsKey, enabled);
-      if (result == true) {
-        print('✅ Daily notifications enabled: $enabled');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving daily notifications setting: $e');
       return false;
     }
   }
@@ -249,7 +223,6 @@ class PreferencesService {
       final bool? enabled = _preferences?.getBool(_dailyNotificationsKey);
       return enabled ?? _defaultNotificationsEnabled;
     } catch (e) {
-      print('❌ Error loading daily notifications setting: $e');
       return _defaultNotificationsEnabled;
     }
   }
@@ -258,12 +231,8 @@ class PreferencesService {
   Future<bool> savePrayerRemindersEnabled(bool enabled) async {
     try {
       final result = await _preferences?.setBool(_prayerRemindersKey, enabled);
-      if (result == true) {
-        print('✅ Prayer reminders enabled: $enabled');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving prayer reminders setting: $e');
       return false;
     }
   }
@@ -274,7 +243,6 @@ class PreferencesService {
       final bool? enabled = _preferences?.getBool(_prayerRemindersKey);
       return enabled ?? _defaultNotificationsEnabled;
     } catch (e) {
-      print('❌ Error loading prayer reminders setting: $e');
       return _defaultNotificationsEnabled;
     }
   }
@@ -283,12 +251,8 @@ class PreferencesService {
   Future<bool> saveVerseOfTheDayEnabled(bool enabled) async {
     try {
       final result = await _preferences?.setBool(_verseOfTheDayKey, enabled);
-      if (result == true) {
-        print('✅ Verse of the day enabled: $enabled');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving verse of the day setting: $e');
       return false;
     }
   }
@@ -299,7 +263,6 @@ class PreferencesService {
       final bool? enabled = _preferences?.getBool(_verseOfTheDayKey);
       return enabled ?? _defaultNotificationsEnabled;
     } catch (e) {
-      print('❌ Error loading verse of the day setting: $e');
       return _defaultNotificationsEnabled;
     }
   }
@@ -308,12 +271,8 @@ class PreferencesService {
   Future<bool> saveNotificationTime(String time) async {
     try {
       final result = await _preferences?.setString(_notificationTimeKey, time);
-      if (result == true) {
-        print('✅ Notification time saved: $time');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error saving notification time: $e');
       return false;
     }
   }
@@ -324,7 +283,6 @@ class PreferencesService {
       final String? time = _preferences?.getString(_notificationTimeKey);
       return time ?? _defaultNotificationTime;
     } catch (e) {
-      print('❌ Error loading notification time: $e');
       return _defaultNotificationTime;
     }
   }
@@ -337,12 +295,8 @@ class PreferencesService {
   Future<bool> clearAll() async {
     try {
       final result = await _preferences?.clear();
-      if (result == true) {
-        print('✅ All preferences cleared');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error clearing preferences: $e');
       return false;
     }
   }
@@ -351,12 +305,8 @@ class PreferencesService {
   Future<bool> remove(String key) async {
     try {
       final result = await _preferences?.remove(key);
-      if (result == true) {
-        print('✅ Preference removed: $key');
-      }
       return result ?? false;
     } catch (e) {
-      print('❌ Error removing preference: $e');
       return false;
     }
   }
