@@ -70,7 +70,8 @@ We have intentionally designed Everyday Christian to respect your privacy by **N
 
 **Important details:**
 - **Anonymous requests**: We do not include your name, email, device ID, or any personal identifiers when sending messages to Google
-- **No conversation linking**: Each API request is independent; Google cannot link multiple conversations to the same user
+- **Session-based context**: Within a single conversation session, recent message history is included with each request to maintain conversational context (e.g., "you mentioned earlier..."). This allows the AI to provide coherent, contextual guidance.
+- **No cross-session tracking**: Unlike chat services with user accounts (like ChatGPT), we cannot and do not track your conversations across different sessions. Each new conversation you start on a different day appears as a completely separate, anonymous interaction. Even if you have 100 conversations over a year, there is no technical way for Google or us to link them together or build a long-term profile of you.
 - **Trained AI model**: Our system includes pastoral training examples based on authentic biblical counseling to guide appropriate Christian responses
 - **Google's data use**: Google processes your message text according to their API terms and may use it to improve their services. See Google's Generative AI Prohibited Use Policy: https://policies.google.com/terms/generative-ai/use-policy
 - **Content filtering**: Messages are screened for prohibited content (prosperity gospel promotion, hate speech, harmful advice) before being sent

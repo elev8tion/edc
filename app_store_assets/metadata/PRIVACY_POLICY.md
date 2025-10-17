@@ -48,7 +48,8 @@ When you use the AI chat feature:
 - **What we collect:** Your questions and conversation context
 - **Purpose:** To provide biblical guidance and responses
 - **Retention:** Conversation history stored locally on your device
-- **Third-party processing:** Anonymized queries may be processed by our AI service provider
+- **Third-party processing:** Anonymized queries processed by Google Gemini API. Within a single conversation session, recent message history is included to maintain context.
+- **No cross-session tracking:** Unlike chat services with user accounts (like ChatGPT), we cannot and do not track your conversations across different sessions. Each new conversation appears as a completely separate, anonymous interaction. There is no technical way to link multiple conversations together or build a long-term profile of you.
 - **Opt-out:** Simply don't use the AI chat feature
 
 #### 2. Crash Reports (Anonymous)
@@ -274,7 +275,8 @@ Your relationship with God is sacred and private. We respect that.
 
 ### AI Chat
 - Questions processed anonymously
-- No conversation linked to your identity
+- Context maintained within single session
+- No tracking across different conversations
 - History stored locally only
 - Can be disabled completely
 
