@@ -43,7 +43,7 @@ Everyday Christian is a faith-centered mobile application that provides:
 **Content Safety Features:**
 - Automated filtering of AI responses for harmful theology (prosperity gospel, spiritual bypassing, toxic positivity, legalism, hate speech, medical overreach)
 - Crisis keyword detection triggering professional resource recommendations
-- 3-strike content policy enforcement to maintain community standards
+- Repeated crisis keyword use triggers safety intervention protocols
 
 ### 2.1 Service Availability
 
@@ -166,27 +166,22 @@ When using Premium AI chat features, you agree to:
 - Hate speech targeting any group
 - Medical advice or discouragement from seeking professional help
 
-### 5.3 Three-Strike Content Policy Enforcement
+### 5.3 Content Policy Enforcement
 
-**We enforce a three-strike system for content policy violations:**
-
-**First Strike:** Warning message displayed; chat continues with reminder of content policy
-
-**Second Strike:** Warning message displayed; temporary cooldown period before next message
-
-**Third Strike:** 30-minute temporary lockout from AI chat feature
-- Other app features (Bible reading, prayer journal) remain accessible
-- You can bypass lockout using device biometric authentication (PIN, Face ID, Touch ID, fingerprint)
-- Biometric authentication is handled entirely by your device's operating system; we do not see or store your credentials
-- Continued violations may result in permanent suspension from Premium features
-
-**What Constitutes a Strike:**
-- Posting prohibited content as defined in Section 5.1
-- Repeated attempts to bypass content filtering
-- Abusive or harassing messages directed at the AI system
+**We reserve the right to suspend or terminate access to Premium AI chat features for:**
+- Repeated violations of prohibited content policies (Section 5.1)
+- Attempts to bypass content filtering or safety mechanisms
+- Abusive or harassing behavior
 - Attempts to manipulate the AI into generating harmful content
+- Any use that violates these Terms or applicable law
 
-**Strike Reset:** Strikes expire after 30 days of policy-compliant use
+**Enforcement actions may include:**
+- Warnings and reminders of content policy
+- Temporary suspension of AI chat access
+- Permanent suspension from Premium features
+- Account termination in severe cases
+
+We reserve discretion in determining appropriate responses to policy violations based on severity and context.
 
 ### 5.4 Crisis Content and Intervention
 
@@ -563,11 +558,10 @@ See our Privacy Policy for detailed contact information regarding data protectio
    - Re-display Terms after material changes
 
 3. **Implement content policy enforcement:**
-   - 3-strike system in AI chat
-   - Warning messages for strikes 1-2
-   - 30-minute lockout for strike 3
-   - Biometric bypass option for lockout
-   - Strike reset after 30 days
+   - Content filtering for AI responses (already implemented)
+   - Crisis detection with safety intervention (already implemented)
+   - Manual moderation capabilities for abuse reports
+   - Option to suspend/terminate Premium access for violations
 
 4. **Add Terms access in app:**
    - Settings > Legal > Terms of Service
