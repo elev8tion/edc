@@ -301,7 +301,7 @@ Relevant Bible verses to weave into your response:''');
     // Conversation context
     if (conversationHistory != null && conversationHistory.isNotEmpty) {
       buffer.writeln('Recent conversation:');
-      for (final msg in conversationHistory.take(3)) {
+      for (final msg in conversationHistory.take(6)) {
         buffer.writeln(msg);
       }
       buffer.writeln();
