@@ -74,8 +74,8 @@ We have intentionally designed Everyday Christian to respect your privacy by **N
 - **No cross-session tracking**: Unlike chat services with user accounts (like ChatGPT), we cannot and do not track your conversations across different sessions. Each new conversation you start on a different day appears as a completely separate, anonymous interaction. Even if you have 100 conversations over a year, there is no technical way for Google or us to link them together or build a long-term profile of you.
 - **Trained AI model**: Our system includes pastoral training examples based on authentic biblical counseling to guide appropriate Christian responses
 - **Google's data use**: Google processes your message text according to their API terms and may use it to improve their services. See Google's Generative AI Prohibited Use Policy: https://policies.google.com/terms/generative-ai/use-policy
-- **Content filtering**: Messages are screened for prohibited content (prosperity gospel promotion, hate speech, harmful advice) before being sent
-- **Crisis detection**: Messages containing crisis keywords (suicide, self-harm, abuse) trigger immediate intervention with professional resources including the 988 Suicide & Crisis Lifeline
+- **Content filtering**: AI-generated responses are automatically filtered for harmful theology patterns including prosperity gospel, spiritual bypassing, toxic positivity, legalism, hate speech, and inappropriate medical advice. Filtered responses are replaced with safe, scripture-based alternatives.
+- **Crisis detection**: User messages containing crisis keywords (suicide, self-harm, abuse) trigger immediate intervention with professional resources including the 988 Suicide & Crisis Lifeline
 
 **Free tier users**: If you don't subscribe to Premium, you can use all other app features without any data leaving your device.
 
