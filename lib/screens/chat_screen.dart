@@ -186,26 +186,60 @@ class ChatScreen extends HookConsumerWidget {
         return;
       }
 
-      // Check for crisis keywords BEFORE sending message
+      // Check for crisis keywords and show resources if detected
       final crisisDetectionService = CrisisDetectionService();
       final crisisResult = crisisDetectionService.detectCrisis(text.trim());
 
       if (crisisResult != null && context.mounted) {
-        // Crisis detected - show intervention dialog
+        // Show dismissible warning with resources (doesn't block the message)
         crisisDetectionService.logCrisisDetection(crisisResult);
 
-        await CrisisDialog.show(
-          context,
-          crisisResult: crisisResult,
-          onAcknowledge: () {
-            debugPrint('✅ User acknowledged crisis resources');
-          },
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.white, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Crisis Resources Available',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(crisisResult.getMessage(), style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 8),
+                Text(
+                  'Tap to view resources →',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.orange.shade700,
+            duration: const Duration(seconds: 10),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'View',
+              textColor: Colors.white,
+              onPressed: () {
+                CrisisDialog.show(
+                  context,
+                  crisisResult: crisisResult,
+                  onAcknowledge: () {
+                    debugPrint('✅ User viewed crisis resources');
+                  },
+                );
+              },
+            ),
+          ),
         );
-
-        // Do NOT send the message to AI - user needs immediate help
-        // Refund the consumed message credit since we're not sending
-        // TODO: Implement message credit refund in SubscriptionService
-        return;
+        // Message continues to AI normally
       }
 
       final userMessage = ChatMessage.user(
