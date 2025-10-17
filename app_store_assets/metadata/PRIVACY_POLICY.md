@@ -48,7 +48,8 @@ When you use the AI chat feature:
 - **What we collect:** Your questions and conversation context
 - **Purpose:** To provide biblical guidance and responses
 - **Retention:** Conversation history stored locally on your device
-- **Third-party processing:** Anonymized queries may be processed by our AI service provider
+- **Third-party processing:** Anonymized queries processed by Google Gemini API. Within a single conversation session, recent message history is included to maintain context.
+- **No cross-session tracking:** Unlike chat services with user accounts (like ChatGPT), we cannot and do not track your conversations across different sessions. Each new conversation appears as a completely separate, anonymous interaction. There is no technical way to link multiple conversations together or build a long-term profile of you.
 - **Opt-out:** Simply don't use the AI chat feature
 
 #### 2. Crash Reports (Anonymous)
@@ -87,9 +88,9 @@ When you use the AI chat feature:
 
 ### Local Storage
 All your personal data is stored locally on your device using:
-- **Encrypted SQLite database** for prayers, verses, and notes
+- **SQLite database** for prayers, verses, and notes, protected by your device's security
 - **Secure storage** for sensitive preferences
-- **Your device's security** - protected by your device PIN/biometrics
+- **Your device's security** - protected by your device PIN/biometrics and full-disk encryption
 
 ### Cloud Storage (Future Feature)
 If we add optional cloud backup:
@@ -99,7 +100,7 @@ If we add optional cloud backup:
 - ✅ Easy data export and deletion
 
 ### Security Measures
-1. **Encryption:** All sensitive data encrypted at rest
+1. **Device Protection:** All app data protected by your device's built-in security features
 2. **Biometric Lock:** Optional Face ID / fingerprint protection
 3. **No Account Required:** No passwords to be leaked
 4. **Local-First:** Data stays on your device by default
@@ -266,7 +267,7 @@ We built Everyday Christian with privacy as a core principle:
 2. **No Accounts Required** - No email, no password, no tracking
 3. **Transparent Practices** - Clear about what we do (and don't do)
 4. **User Control** - You own and control your spiritual journey
-5. **Security by Design** - Encryption and protection built-in
+5. **Security by Design** - Device-level protection and secure coding practices
 
 Your relationship with God is sacred and private. We respect that.
 
@@ -274,13 +275,13 @@ Your relationship with God is sacred and private. We respect that.
 
 ### AI Chat
 - Questions processed anonymously
-- No conversation linked to your identity
+- Context maintained within single session
+- No tracking across different conversations
 - History stored locally only
-- Can be disabled completely
 
 ### Prayer Journal
 - 100% local storage
-- Encrypted on device
+- Protected by device security
 - Never leaves your device
 - Optional biometric lock
 
@@ -328,7 +329,7 @@ We promise to respond quickly and honestly.
 
 | What | How We Handle It |
 |------|------------------|
-| Prayer Journal | Stored locally, encrypted, never shared |
+| Prayer Journal | Stored locally, device-protected, never shared |
 | Favorite Verses | Local storage only |
 | Reading Progress | Local storage only |
 | AI Chat | Anonymous queries, local history |
