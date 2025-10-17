@@ -127,6 +127,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ref.watch(notificationTimeProvider),
                 (time) => ref.read(notificationTimeProvider.notifier).setTime(time),
               ),
+              const SizedBox(height: AppSpacing.md),
+              _buildTestNotificationButton(context, ref),
             ],
           ),
           const SizedBox(height: AppSpacing.xxl),
@@ -703,6 +705,108 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Icons.arrow_forward_ios,
                   color: Colors.white.withValues(alpha: 0.5),
                   size: ResponsiveUtils.iconSize(context, 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTestNotificationButton(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () async {
+            try {
+              final notificationService = ref.read(notificationServiceProvider);
+
+              // Send test verse notification
+              await notificationService.showDailyVerseNotification(
+                verseReference: 'John 3:16',
+                verseText: 'For God so loved the world, that he gave his only begotten Son, '
+                    'that whoever believes in him should not perish, but have eternal life.',
+              );
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('✅ Test notification sent!'),
+                    backgroundColor: AppTheme.primaryColor,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('❌ Failed: $e'),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+              }
+            }
+          },
+          borderRadius: AppRadius.mediumRadius,
+          child: Container(
+            padding: AppSpacing.cardPadding,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withValues(alpha: 0.2),
+              borderRadius: AppRadius.mediumRadius,
+              border: Border.all(
+                color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                    borderRadius: AppRadius.smallRadius,
+                  ),
+                  child: Icon(
+                    Icons.notification_add,
+                    color: AppColors.primaryText,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Test Notification',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryText,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Preview how notifications will appear',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                          color: Colors.white.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.send,
+                  color: AppTheme.primaryColor,
+                  size: ResponsiveUtils.iconSize(context, 20),
                 ),
               ],
             ),

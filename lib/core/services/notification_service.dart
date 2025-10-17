@@ -25,10 +25,22 @@ class NotificationService {
     );
 
     await _requestPermissions();
+    print('📱 NotificationService initialized successfully');
   }
 
   Future<void> _requestPermissions() async {
-    await Permission.notification.request();
+    final status = await Permission.notification.request();
+    print('📱 Notification permission status: $status');
+
+    if (status.isGranted) {
+      print('✅ Notification permissions granted');
+    } else if (status.isDenied) {
+      print('❌ Notification permissions denied');
+    } else if (status.isPermanentlyDenied) {
+      print('❌ Notification permissions permanently denied');
+    } else {
+      print('⚠️ Notification permission status: $status');
+    }
   }
 
   void _onNotificationTapped(NotificationResponse response) {
@@ -147,34 +159,61 @@ class NotificationService {
     required String verseReference,
     required String verseText,
   }) async {
-    // Immediate notification for testing or on-demand
-    final payload = 'verse:$verseReference';
+    print('📱 Sending test notification: $verseReference');
 
-    await _notifications.show(
-      4,
-      'Verse of the Day',
-      '$verseReference - ${verseText.substring(0, verseText.length > 50 ? 50 : verseText.length)}...',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'daily_verse_channel',
-          'Daily Verse',
-          channelDescription: 'Daily verse notifications',
-          importance: Importance.high,
-          priority: Priority.high,
-          styleInformation: BigTextStyleInformation(
-            verseText,
-            contentTitle: 'Verse of the Day',
-            summaryText: verseReference,
+    try {
+      // Check permission status first
+      final permissionStatus = await Permission.notification.status;
+      print('📱 Current permission status: $permissionStatus');
+
+      if (!permissionStatus.isGranted) {
+        print('⚠️ Notification permission not granted, requesting...');
+        final newStatus = await Permission.notification.request();
+        print('📱 New permission status: $newStatus');
+
+        if (!newStatus.isGranted) {
+          print('❌ Cannot send notification - permission denied');
+          return;
+        }
+      }
+
+      // Immediate notification for testing or on-demand
+      final payload = 'verse:$verseReference';
+
+      print('📱 Calling _notifications.show() with ID: 4');
+      await _notifications.show(
+        4,
+        'Verse of the Day',
+        '$verseReference - ${verseText.substring(0, verseText.length > 50 ? 50 : verseText.length)}...',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'daily_verse_channel',
+            'Daily Verse',
+            channelDescription: 'Daily verse notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+            styleInformation: BigTextStyleInformation(
+              verseText,
+              contentTitle: 'Verse of the Day',
+              summaryText: verseReference,
+            ),
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      payload: payload,
-    );
+        payload: payload,
+      );
+
+      print('✅ Notification sent successfully');
+      print('💡 Note: iOS may not show notification banner when app is in foreground');
+      print('💡 Try: 1) Press Home button then check, or 2) Swipe down to see Notification Center');
+    } catch (e, stackTrace) {
+      print('❌ Error sending notification: $e');
+      print('Stack trace: $stackTrace');
+    }
   }
 
   Future<void> schedulePrayerReminder({
