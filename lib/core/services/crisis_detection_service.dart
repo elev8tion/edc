@@ -58,8 +58,9 @@ class CrisisDetectionResult {
 
 /// Service for detecting crisis situations in user input
 class CrisisDetectionService {
-  // Suicide ideation keywords
+  // Suicide ideation keywords (direct + indirect patterns)
   static const List<String> _suicideKeywords = [
+    // Direct statements
     'kill myself',
     'end it all',
     'dont want to be alive',
@@ -79,10 +80,38 @@ class CrisisDetectionService {
     'world would be better without me',
     'goodbye forever',
     'final message',
+
+    // Indirect patterns - hopelessness & trapped feelings
+    'no way out',
+    'cant see a way out',
+    'can t see a way out',
+    'nothing will ever change',
+    'never going to get better',
+    'never gonna get better',
+    'stuck forever',
+    'trapped',
+    'burden to everyone',
+    'burden to others',
+    'want to disappear',
+    'cant do this anymore',
+    'can t do this anymore',
+    'drowning',
+    'cant cope',
+    'can t cope',
+    'end the pain',
+    'no point anymore',
+    'no point in living',
+    'give up on life',
+    'giving up',
+    'hopeless',
+    'unbearable',
+    'cant take it',
+    'can t take it',
   ];
 
-  // Self-harm keywords
+  // Self-harm keywords (direct + indirect patterns)
   static const List<String> _selfHarmKeywords = [
+    // Direct statements
     'cut myself',
     'hurt myself',
     'self harm',
@@ -94,10 +123,30 @@ class CrisisDetectionService {
     'harming myself',
     'ive been hurting',
     'i ve been hurting',
+
+    // Indirect patterns - risky behaviors & coping struggles
+    'punish myself',
+    'need to feel pain',
+    'deserve to hurt',
+    'deserve pain',
+    'only way to cope',
+    'only way i cope',
+    'cant stop hurting',
+    'can t stop hurting',
+    'keep hurting',
+    'feel numb',
+    'need to feel something',
+    'release the pain',
+    'physical pain helps',
+    'cutting helps',
+    'scars',
+    'fresh cuts',
+    'relapsed',
   ];
 
-  // Abuse keywords
+  // Abuse keywords (direct + indirect patterns)
   static const List<String> _abuseKeywords = [
+    // Direct statements
     'hitting me',
     'hurting me',
     'abusing me',
@@ -115,6 +164,34 @@ class CrisisDetectionService {
     'threatens me',
     'afraid for my safety',
     'physically hurt',
+
+    // Indirect patterns - fear, control, safety concerns
+    'dont feel safe at home',
+    'don t feel safe at home',
+    'afraid to go home',
+    'scared of my partner',
+    'scared of my spouse',
+    'controls everything i do',
+    'wont let me leave',
+    'won t let me leave',
+    'isolates me',
+    'tracks my phone',
+    'checks my messages',
+    'screams at me',
+    'yells at me constantly',
+    'calls me names',
+    'makes me feel worthless',
+    'blames me for everything',
+    'punches walls',
+    'destroys my things',
+    'breaks things when angry',
+    'afraid what they ll do',
+    'afraid what they will do',
+    'walking on eggshells',
+    'cant talk about it',
+    'can t talk about it',
+    'made me do it',
+    'forced me',
   ];
 
   /// Detect if user input contains crisis keywords

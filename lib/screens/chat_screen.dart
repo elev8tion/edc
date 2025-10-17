@@ -194,6 +194,9 @@ class ChatScreen extends HookConsumerWidget {
         // Show dismissible warning with resources (doesn't block the message)
         crisisDetectionService.logCrisisDetection(crisisResult);
 
+        // Capture the context that has Navigator access
+        final navigatorContext = context;
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Column(
@@ -228,13 +231,16 @@ class ChatScreen extends HookConsumerWidget {
               label: 'View',
               textColor: Colors.white,
               onPressed: () {
-                CrisisDialog.show(
-                  context,
-                  crisisResult: crisisResult,
-                  onAcknowledge: () {
-                    debugPrint('✅ User viewed crisis resources');
-                  },
-                );
+                // Use navigatorContext to ensure we have Navigator access
+                if (navigatorContext.mounted) {
+                  CrisisDialog.show(
+                    navigatorContext,
+                    crisisResult: crisisResult,
+                    onAcknowledge: () {
+                      debugPrint('✅ User viewed crisis resources');
+                    },
+                  );
+                }
               },
             ),
           ),
