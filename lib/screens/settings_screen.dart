@@ -7,6 +7,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import '../core/services/database_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
 import '../components/gradient_background.dart';
@@ -20,6 +21,7 @@ import '../widgets/time_picker/time_range_sheet.dart';
 import '../widgets/time_picker/time_range_sheet_style.dart';
 import '../widgets/time_picker/models/time_range_data.dart';
 import '../components/glass_card.dart';
+import '../components/glass_button.dart';
 import '../components/base_bottom_sheet.dart';
 import 'subscription_settings_screen.dart';
 
@@ -262,6 +264,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Backup your prayers and notes',
                 Icons.download,
                 () => _exportUserData(),
+              ),
+              _buildActionTile(
+                'Delete All Data',
+                '⚠️ Permanently delete all your data',
+                Icons.warning_amber_rounded,
+                () => _showDeleteAllDataDialog(),
+                isDestructive: true,
               ),
             ],
           ),
@@ -706,7 +715,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Widget _buildActionTile(String title, String subtitle, IconData icon, VoidCallback onTap) {
+  Widget _buildActionTile(String title, String subtitle, IconData icon, VoidCallback onTap, {bool isDestructive = false}) {
+    final textColor = isDestructive ? Colors.red : AppColors.primaryText;
+    final subtitleColor = isDestructive ? Colors.red.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.7);
+    final iconColor = isDestructive ? Colors.red : AppColors.primaryText;
+    final borderColor = isDestructive ? Colors.red.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.1);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
@@ -717,10 +731,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           child: Container(
             padding: AppSpacing.cardPadding,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: isDestructive
+                  ? Colors.red.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.1),
               borderRadius: AppRadius.mediumRadius,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: borderColor,
                 width: 1,
               ),
             ),
@@ -729,12 +745,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: isDestructive
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : Colors.white.withValues(alpha: 0.1),
                     borderRadius: AppRadius.smallRadius,
                   ),
                   child: Icon(
                     icon,
-                    color: AppColors.primaryText,
+                    color: iconColor,
                     size: ResponsiveUtils.iconSize(context, 20),
                   ),
                 ),
@@ -748,7 +766,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: TextStyle(
                           fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                           fontWeight: FontWeight.w600,
-                          color: AppColors.primaryText,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -756,7 +774,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         subtitle,
                         style: TextStyle(
                           fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: subtitleColor,
                         ),
                       ),
                     ],
@@ -764,7 +782,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: isDestructive
+                      ? Colors.red.withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.5),
                   size: ResponsiveUtils.iconSize(context, 16),
                 ),
               ],
@@ -974,22 +994,522 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _showHelpDialog() {
+  void _showDeleteAllDataDialog() {
+    final confirmController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2D3748),
-        title: const Text('Help & FAQ', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'For help and support, please visit our website or contact us through the app.',
-          style: TextStyle(color: Colors.white70),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Delete All Data',
+                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '⚠️ THIS ACTION CANNOT BE UNDONE ⚠️',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'This will permanently delete:',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildDeleteItem('✝️ All prayer journal entries'),
+              _buildDeleteItem('💬 All AI chat conversations'),
+              _buildDeleteItem('📖 Reading plan progress'),
+              _buildDeleteItem('🌟 Favorite verses'),
+              _buildDeleteItem('📝 Devotional completion history'),
+              _buildDeleteItem('⚙️ All app settings and preferences'),
+              _buildDeleteItem('👤 Profile picture'),
+              _buildDeleteItem('📊 All statistics and progress'),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '⚠️ Before proceeding:',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Export your prayer journal first (Settings > Export Data)\n• This will reset the app to factory defaults\n• You will need to reconfigure all settings',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Type DELETE to confirm:',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: confirmController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Type DELETE',
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => NavigationService.pop(),
-            child: Text('Close', style: TextStyle(color: AppTheme.primaryColor)),
+            onPressed: () {
+              confirmController.dispose();
+              NavigationService.pop();
+            },
+            child: Text('Cancel', style: TextStyle(color: Colors.white.withValues(alpha: 0.7))),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (confirmController.text.trim() == 'DELETE') {
+                confirmController.dispose();
+                NavigationService.pop();
+                await _deleteAllData();
+              } else {
+                _showSnackBar('❌ You must type DELETE to confirm');
+              }
+            },
+            child: const Text('Delete Everything', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDeleteItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, bottom: 6),
+      child: Row(
+        children: [
+          Icon(Icons.close, color: Colors.red, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteAllData() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF2D3748),
+          content: Row(
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text('Deleting all data...', style: TextStyle(color: Colors.white)),
+            ],
+          ),
+        ),
+      );
+
+      // 1. Reset database (clears all prayer, chat, favorites, reading plans, etc.)
+      final dbService = DatabaseService();
+      await dbService.resetDatabase();
+
+      // 2. Clear SharedPreferences (all app settings)
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // 3. Remove profile picture
+      try {
+        final profileService = ref.read(profilePictureServiceProvider);
+        await profileService.removeProfilePicture();
+      } catch (e) {
+        debugPrint('Profile picture removal failed: $e');
+      }
+
+      // 4. Clear all cache
+      try {
+        imageCache.clear();
+        imageCache.clearLiveImages();
+        final tempDir = await getTemporaryDirectory();
+        if (await tempDir.exists()) {
+          await tempDir.delete(recursive: true);
+          await tempDir.create();
+        }
+        final cacheDir = await getApplicationCacheDirectory();
+        if (await cacheDir.exists()) {
+          await cacheDir.delete(recursive: true);
+          await cacheDir.create();
+        }
+      } catch (e) {
+        debugPrint('Cache clearing failed: $e');
+      }
+
+      // Close loading dialog
+      if (mounted) {
+        NavigationService.pop();
+      }
+
+      // Show success message
+      _showSnackBar('✅ All data deleted. App will restart.');
+
+      // Wait a moment then exit the app (user needs to restart)
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) {
+        // Reset the app state by navigating to home
+        NavigationService.goToHome();
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) {
+        NavigationService.pop();
+      }
+      _showSnackBar('❌ Failed to delete data: $e');
+    }
+  }
+
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.primaryColor.withValues(alpha: 0.3),
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.help_outline,
+                        color: AppColors.primaryText,
+                        size: ResponsiveUtils.iconSize(context, 20),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      'Help & FAQ',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Find answers to common questions',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Scrollable FAQ List
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildFAQSection('Getting Started', [
+                          _FAQItem(
+                            question: 'How do I get started?',
+                            answer: 'Welcome! Start by exploring the Home screen where you\'ll find daily devotionals, verse of the day, and quick access to prayer and Bible reading. Navigate using the menu in the top left corner.',
+                          ),
+                          _FAQItem(
+                            question: 'Is the app free to use?',
+                            answer: 'Yes! Everyday Christian offers a free trial with daily message limits for AI chat. Upgrade to Premium for unlimited AI conversations and full access to all features.',
+                          ),
+                          _FAQItem(
+                            question: 'Which Bible version is used?',
+                            answer: 'The app uses the World English Bible (WEB), a modern public domain translation that\'s faithful to the original texts and easy to read.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Bible Reading', [
+                          _FAQItem(
+                            question: 'Can I read the Bible offline?',
+                            answer: 'Yes! The entire Bible is downloaded when you first install the app. You can read all 66 books, chapters, and verses without an internet connection.',
+                          ),
+                          _FAQItem(
+                            question: 'How do I search for verses?',
+                            answer: 'Navigate to the Bible section from the home menu. Use the search bar to find verses by keywords, or browse by book, chapter, and verse.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I change the Bible version?',
+                            answer: 'The World English Bible (WEB) is currently the only version available. This ensures consistent offline access and optimal performance.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Prayer Journal', [
+                          _FAQItem(
+                            question: 'How do I add a prayer?',
+                            answer: 'Open the Prayer Journal from the home menu and tap the floating + button. Enter your prayer title, description, and choose a category (Personal, Family, Health, etc.), then save.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I mark prayers as answered?',
+                            answer: 'Yes! Open any prayer and tap "Mark as Answered". You can add a description of how God answered your prayer. View all answered prayers in the "Answered" tab.',
+                          ),
+                          _FAQItem(
+                            question: 'How do I export my prayer journal?',
+                            answer: 'Go to Settings > Data & Privacy > Export Data. This creates a formatted text file containing all your prayers (both active and answered) that you can save or share.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I organize prayers by category?',
+                            answer: 'Yes! Each prayer can be assigned to a category. Use the category filter at the top of the Prayer Journal to view prayers by specific categories.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Devotionals & Reading Plans', [
+                          _FAQItem(
+                            question: 'Where can I find daily devotionals?',
+                            answer: 'Daily devotionals appear on your Home screen. You can mark devotionals as completed to track your progress and build your devotional streak.',
+                          ),
+                          _FAQItem(
+                            question: 'How do reading plans work?',
+                            answer: 'Choose a reading plan from the Reading Plans section. Tap "Start Plan" to begin. The app tracks your progress as you complete daily readings. Only one plan can be active at a time.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I track my devotional streak?',
+                            answer: 'Yes! The app automatically tracks how many consecutive days you\'ve completed devotionals. View your current streak on your Profile screen.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('AI Chat & Support', [
+                          _FAQItem(
+                            question: 'What can I ask the AI?',
+                            answer: 'You can ask about Scripture interpretation, prayer requests, life challenges, faith questions, and daily encouragement. The AI provides biblically-grounded guidance and support.',
+                          ),
+                          _FAQItem(
+                            question: 'How many messages can I send?',
+                            answer: 'Free users have a daily message limit. Premium subscribers get unlimited messages. Check Settings > Subscription to see your current plan and remaining messages.',
+                          ),
+                          _FAQItem(
+                            question: 'Are my conversations saved?',
+                            answer: 'Yes! All your AI conversations are saved to your device. Each chat creates a new session that you can access from the conversation history.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Notifications', [
+                          _FAQItem(
+                            question: 'How do I change notification times?',
+                            answer: 'Go to Settings > Notifications > Notification Time. Select your preferred time for daily reminders.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I turn off specific notifications?',
+                            answer: 'Yes! In Settings > Notifications, you can toggle each notification type (Daily Devotional, Prayer Reminders, Verse of the Day) independently.',
+                          ),
+                          _FAQItem(
+                            question: 'Why aren\'t I receiving notifications?',
+                            answer: 'Check your device settings to ensure notifications are enabled for Everyday Christian. Also verify that each notification type is enabled in Settings > Notifications.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Settings & Customization', [
+                          _FAQItem(
+                            question: 'How do I adjust text size?',
+                            answer: 'Go to Settings > Appearance > Text Size. Use the slider to adjust text size throughout the app from 80% to 150% of normal size.',
+                          ),
+                          _FAQItem(
+                            question: 'Can I add a profile picture?',
+                            answer: 'Yes! Tap your profile avatar in Settings or on your Profile screen. Choose to take a photo or select one from your gallery.',
+                          ),
+                          _FAQItem(
+                            question: 'What does offline mode do?',
+                            answer: 'Offline mode allows you to use core features (Bible reading, viewing saved prayers and devotionals) without an internet connection. AI chat requires internet.',
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+
+                        _buildFAQSection('Data & Privacy', [
+                          _FAQItem(
+                            question: 'Is my data private and secure?',
+                            answer: 'Yes! Your prayers, notes, and personal data are stored securely on your device. We never sell your information to third parties.',
+                          ),
+                          _FAQItem(
+                            question: 'What data is stored on my device?',
+                            answer: 'The Bible content, your prayers, conversation history, reading plan progress, devotional completion records, and app preferences are all stored locally.',
+                          ),
+                          _FAQItem(
+                            question: 'What\'s the difference between Clear Cache and Delete All Data?',
+                            answer: 'Clear Cache removes temporary files (image cache, temp directories) to free up storage space. Your prayers, settings, and all personal data remain safe. Delete All Data permanently erases everything including prayers, conversations, settings, and resets the app to factory defaults.',
+                          ),
+                          _FAQItem(
+                            question: 'How do I clear cached data?',
+                            answer: 'Go to Settings > Data & Privacy > Clear Cache. This removes temporary files and image cache to free up storage space. Your prayers, conversations, and personal data are NOT deleted - only temporary cache files are removed.',
+                          ),
+                          _FAQItem(
+                            question: 'How do I delete all my data?',
+                            answer: 'Go to Settings > Data & Privacy > Delete All Data. You\'ll be asked to type "DELETE" to confirm. This permanently erases all prayers, conversations, reading plans, favorites, settings, and profile picture. Export your prayer journal first if you want to keep a backup. This action cannot be undone.',
+                          ),
+                        ]),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Close Button
+                GlassButton(
+                  text: 'Close',
+                  height: 48,
+                  onPressed: () => NavigationService.pop(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFAQSection(String title, List<_FAQItem> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+        ),
+        ...items.map((item) => _buildFAQTile(item.question, item.answer)),
+      ],
+    );
+  }
+
+  Widget _buildFAQTile(String question, String answer) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.2),
+        borderRadius: AppRadius.mediumRadius,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          tilePadding: AppSpacing.cardPadding,
+          childrenPadding: const EdgeInsets.only(
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            bottom: AppSpacing.md,
+          ),
+          title: Text(
+            question,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+              fontWeight: FontWeight.w600,
+              color: AppColors.primaryText,
+            ),
+          ),
+          iconColor: AppColors.primaryText,
+          collapsedIconColor: Colors.white.withValues(alpha: 0.5),
+          children: [
+            Text(
+              answer,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
+                color: Colors.white.withValues(alpha: 0.8),
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1102,4 +1622,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+}
+
+// FAQ Item Model
+class _FAQItem {
+  final String question;
+  final String answer;
+
+  _FAQItem({
+    required this.question,
+    required this.answer,
+  });
 }
