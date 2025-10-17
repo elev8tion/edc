@@ -33,7 +33,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   // Local state for non-persisted settings
   bool _offlineMode = false;
-  String _selectedBibleVersion = 'WEB';
 
   @override
   Widget build(BuildContext context) {
@@ -223,13 +222,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             'Bible Settings',
             Icons.menu_book,
             [
-              _buildDropdownTile(
-                'Bible Version',
-                'Choose your preferred translation',
-                _selectedBibleVersion,
-                ['WEB', 'WEB'],
-                (value) => setState(() => _selectedBibleVersion = value!),
-              ),
+              _buildInfoTile('Bible Version', 'WEB'),
             ],
           ),
           const SizedBox(height: AppSpacing.xxl),
