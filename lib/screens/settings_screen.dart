@@ -1695,11 +1695,785 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showPrivacyPolicy() {
-    _showSnackBar('Opening privacy policy...');
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.primaryColor.withValues(alpha: 0.3),
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.privacy_tip_outlined,
+                        color: AppColors.primaryText,
+                        size: ResponsiveUtils.iconSize(context, 20),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      'Privacy Policy',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Last Updated: October 15, 2025',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Scrollable Privacy Policy Content
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      borderRadius: AppRadius.mediumRadius,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: AppSpacing.cardPadding,
+                      child: _buildPrivacyPolicyContent(),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Close Button
+                GlassButton(
+                  text: 'Close',
+                  height: 48,
+                  onPressed: () => NavigationService.pop(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyPolicyContent() {
+    return SelectableText.rich(
+      TextSpan(
+        style: TextStyle(
+          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+          color: AppColors.primaryText,
+          height: 1.6,
+        ),
+        children: [
+          // Introduction Section
+          TextSpan(
+            text: '1. INTRODUCTION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'Welcome to Everyday Christian. We are deeply committed to your privacy and have built this application on a privacy-first foundation.\n\n'
+                'Everyday Christian provides AI-powered pastoral guidance, daily Bible verses, devotionals, prayer journal, and comprehensive verse library.\n\n',
+          ),
+          TextSpan(
+            text: 'OUR PRIVACY-FIRST COMMITMENT:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• NO user accounts required - use completely anonymously\n'
+                '• NO personal information collection\n'
+                '• NO location tracking\n'
+                '• NO third-party analytics\n'
+                '• NO advertising networks\n'
+                '• NO data monetization\n'
+                '• Local-first storage - data stays on your device\n\n',
+          ),
+
+          // Information We Collect
+          TextSpan(
+            text: '2. INFORMATION WE COLLECT\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Stored Locally on Your Device:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'All data is stored exclusively on your device using secure SQLite database:\n'
+                '• Prayer journal entries and reflections\n'
+                '• Favorite verses and bookmarks\n'
+                '• Reading history and progress\n'
+                '• AI chat history (Premium users only)\n'
+                '• App settings and preferences\n'
+                '• Devotional completion records\n\n',
+          ),
+          TextSpan(
+            text: 'We Do NOT Collect:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '❌ Personal identification (name, email, phone)\n'
+                '❌ Location data or GPS coordinates\n'
+                '❌ Device tracking identifiers\n'
+                '❌ Behavioral analytics\n'
+                '❌ Payment information (handled by Apple/Google)\n\n',
+          ),
+
+          // Third-Party Services
+          TextSpan(
+            text: '3. THIRD-PARTY SERVICES\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Google Gemini API (Premium AI Chat Only):\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'When using Premium AI guidance, your chat messages are sent anonymously to Google\'s Gemini API:\n'
+                '• Anonymous requests - no personal identifiers\n'
+                '• Session-based context for coherent responses\n'
+                '• No cross-session tracking\n'
+                '• Content filtering for harmful theology\n'
+                '• Crisis detection triggers professional resources\n\n'
+                'Free tier users: No data leaves your device.\n\n',
+          ),
+
+          // Data Security
+          TextSpan(
+            text: '4. DATA SECURITY\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'We implement industry-standard security:\n'
+                '• Secure SQLite database storage\n'
+                '• Optional biometric authentication (Face ID, Touch ID)\n'
+                '• No cloud storage or external servers\n'
+                '• TLS/SSL encrypted API communications\n'
+                '• Regular security audits\n\n',
+          ),
+
+          // Data Sharing
+          TextSpan(
+            text: '5. DATA SHARING\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'We Do Not Sell Your Data:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'We categorically do not and will never sell, rent, or monetize your data. Our only revenue is from optional Premium subscriptions (\$35/year).\n\n',
+          ),
+          TextSpan(
+            text: 'Third-Party Sharing:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Google Gemini API: Message text only (Premium feature)\n'
+                '• Apple/Google: Subscription validation (anonymous)\n'
+                '• NO analytics, advertising, or tracking services\n\n',
+          ),
+
+          // Sensitive Information
+          TextSpan(
+            text: '6. SENSITIVE INFORMATION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'We recognize this app processes sensitive religious data:\n'
+                '• Religious beliefs revealed through app usage\n'
+                '• Emotional and mental health concerns\n'
+                '• Personal circumstances and struggles\n\n'
+                'Special Protections:\n'
+                '• Local storage minimizes exposure\n'
+                '• Anonymous API calls (no identity)\n'
+                '• No profiling or cross-app tracking\n'
+                '• Crisis content triggers safety resources\n\n',
+          ),
+
+          // Children's Privacy
+          TextSpan(
+            text: '7. CHILDREN\'S PRIVACY (COPPA)\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'Age Requirements:\n'
+                '• General Use: Ages 13+ (parental guidance recommended for 13-17)\n'
+                '• Under 13: Premium AI chat requires parental consent\n\n'
+                'Parental Rights:\n'
+                '• Review locally stored data\n'
+                '• Delete data via app settings\n'
+                '• Control Premium subscriptions\n\n',
+          ),
+
+          // Your Rights
+          TextSpan(
+            text: '8. YOUR PRIVACY RIGHTS\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Universal Rights:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Right to Access: View stored data in app\n'
+                '• Right to Delete: Settings > Delete All Data\n'
+                '• Right to Correct: Edit content directly\n'
+                '• Right to Export: Settings > Export My Data\n'
+                '• Right to Withdraw Consent: Cancel subscription or uninstall\n\n',
+          ),
+          TextSpan(
+            text: 'California (CCPA/CPRA) & EU (GDPR) Rights:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'Additional rights for California and EU residents apply. '
+                'We do NOT sell personal information. '
+                'Contact support@everydaychristian.app for requests.\n\n',
+          ),
+
+          // Data Retention
+          TextSpan(
+            text: '9. DATA RETENTION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'Local Storage: Retained indefinitely until you delete it\n'
+                'Google Gemini: Retained per Google\'s AI data use policy\n'
+                'Subscription Data: Managed by Apple/Google (7 years for financial records)\n\n'
+                'You control retention through deletion options in Settings.\n\n',
+          ),
+
+          // Contact Information
+          TextSpan(
+            text: '10. CONTACT US\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'For privacy inquiries or to exercise your rights:\n\n'
+                'Email: support@everydaychristian.app\n'
+                'Response Time: Within 30 days\n\n'
+                'EU residents: Contact your local Data Protection Authority\n'
+                'California residents: California Attorney General (oag.ca.gov/privacy)\n\n',
+          ),
+
+          // Footer
+          TextSpan(
+            text: '\n━━━━━━━━━━━━━━━━━━━━\n\n',
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+          ),
+          TextSpan(
+            text: 'By using Everyday Christian, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.\n\n',
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+          TextSpan(
+            text: 'For the complete Privacy Policy, visit Settings > Legal > Privacy Policy or contact support@everydaychristian.app\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+              color: Colors.white.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showTermsOfService() {
-    _showSnackBar('Opening terms of service...');
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: ResponsiveUtils.maxContentWidth(context),
+          ),
+          child: FrostedGlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppTheme.primaryColor.withValues(alpha: 0.3),
+                            AppTheme.primaryColor.withValues(alpha: 0.1),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+                        border: Border.all(
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.description_outlined,
+                        color: AppColors.primaryText,
+                        size: ResponsiveUtils.iconSize(context, 20),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      'Terms of Service',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Last Updated: October 17, 2025',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Scrollable Terms Content
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      borderRadius: AppRadius.mediumRadius,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: AppSpacing.cardPadding,
+                      child: _buildTermsOfServiceContent(),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Close Button
+                GlassButton(
+                  text: 'Close',
+                  height: 48,
+                  onPressed: () => NavigationService.pop(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTermsOfServiceContent() {
+    return SelectableText.rich(
+      TextSpan(
+        style: TextStyle(
+          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+          color: AppColors.primaryText,
+          height: 1.6,
+        ),
+        children: [
+          // Agreement to Terms
+          TextSpan(
+            text: '1. AGREEMENT TO TERMS\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'BY DOWNLOADING, INSTALLING, OR USING EVERYDAY CHRISTIAN, YOU AGREE TO BE BOUND BY THESE TERMS AND OUR PRIVACY POLICY. IF YOU DO NOT AGREE, DO NOT USE THE APP.\n\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          TextSpan(
+            text: 'Age Requirements:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Users 13+ may use all features\n'
+                '• Under 13: Free features allowed with parental consent; Premium AI chat requires verifiable parental consent\n'
+                '• Parents are responsible for monitoring children\'s use\n\n',
+          ),
+
+          // Service Description
+          TextSpan(
+            text: '2. DESCRIPTION OF SERVICE\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Core Features (Free):\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• 31,103 Bible verses (World English Bible)\n'
+                '• Daily devotionals and Bible reading plans\n'
+                '• Personal prayer journal with categories\n'
+                '• Verse bookmarking and favorites\n'
+                '• Crisis intervention resources (988 Lifeline)\n'
+                '• Biometric authentication\n\n',
+          ),
+          TextSpan(
+            text: 'Premium Features (\$35/year):\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• AI-powered pastoral guidance (Google Gemini API)\n'
+                '• 150 AI chat messages per month\n'
+                '• Scripture-based guidance on faith questions\n'
+                '• Conversation history stored locally\n\n',
+          ),
+
+          // Subscription Terms
+          TextSpan(
+            text: '3. PREMIUM SUBSCRIPTION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Subscription Details:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Price: \$35/year USD (varies by region)\n'
+                '• Features: 150 messages/month, all Premium features\n'
+                '• Auto-Renewal: Renews annually unless canceled 24 hours before renewal\n'
+                '• Refunds: Subject to Apple/Google refund policies\n'
+                '• Unused messages do NOT roll over\n\n',
+          ),
+          TextSpan(
+            text: 'Manage Subscription:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• iOS: Settings > [Your Name] > Subscriptions\n'
+                '• Android: Google Play Store > Menu > Subscriptions\n\n',
+          ),
+
+          // User Conduct
+          TextSpan(
+            text: '4. USER CONDUCT & CONTENT POLICY\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Prohibited Content:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '❌ Hate speech, harassment, threats, or violence\n'
+                '❌ Obscene, pornographic, or sexually explicit content\n'
+                '❌ Promoting self-harm, suicide, or eating disorders\n'
+                '❌ Prosperity gospel or spiritual manipulation\n'
+                '❌ Spam or unsolicited promotional content\n\n',
+          ),
+          TextSpan(
+            text: 'Enforcement:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Warnings for policy violations\n'
+                '• Temporary suspension of AI chat\n'
+                '• Permanent suspension for severe violations\n'
+                '• Account termination for repeated violations\n\n',
+          ),
+
+          // AI Disclaimer
+          TextSpan(
+            text: '5. AI GUIDANCE DISCLAIMER\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'AI IS NOT A SUBSTITUTE FOR:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Professional mental health counseling\n'
+                '• Medical advice, diagnosis, or treatment\n'
+                '• Legal or financial advice\n'
+                '• Professional pastoral counseling from clergy\n'
+                '• Crisis intervention services\n\n'
+                'AI responses are based on training data and may contain inaccuracies. '
+                'Verify important matters with qualified clergy or professionals.\n\n'
+                'IN CRISIS? Call 988 Suicide & Crisis Lifeline or 911 immediately.\n\n',
+          ),
+
+          // Intellectual Property
+          TextSpan(
+            text: '6. INTELLECTUAL PROPERTY\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'You receive a limited, non-exclusive, non-transferable license to use the App for personal, non-commercial purposes.\n\n',
+          ),
+          TextSpan(
+            text: 'You retain rights to:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• Your prayer journal entries\n'
+                '• Your bookmarks and notes\n'
+                '• Your AI chat conversations (stored locally)\n\n',
+          ),
+          TextSpan(
+            text: 'Bible Translation:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'World English Bible (WEB) - Public Domain\n\n',
+          ),
+
+          // Disclaimers
+          TextSpan(
+            text: '7. DISCLAIMERS & LIMITATIONS\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE":\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: '• We do NOT warrant accuracy of content or AI responses\n'
+                '• We do NOT guarantee uninterrupted availability\n'
+                '• We are NOT responsible for Google Gemini API performance\n\n',
+          ),
+          TextSpan(
+            text: 'Limitation of Liability:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'Our total liability shall not exceed the amount you paid in the last 12 months or \$100 USD, whichever is greater.\n\n'
+                'We are NOT liable for:\n'
+                '• Loss of locally stored data\n'
+                '• Inaccurate or harmful AI content\n'
+                '• Emotional distress or spiritual harm\n'
+                '• Consequential or indirect damages\n\n',
+          ),
+
+          // Dispute Resolution
+          TextSpan(
+            text: '8. DISPUTE RESOLUTION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'Governing Law:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'These Terms are governed by the laws of [INSERT STATE], United States.\n\n',
+          ),
+          TextSpan(
+            text: 'Informal Resolution:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'Before filing a claim, contact support@everydaychristian.app for good-faith negotiation (60 days).\n\n',
+          ),
+          TextSpan(
+            text: 'Arbitration:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'Disputes will be resolved through binding individual arbitration (American Arbitration Association).\n\n'
+                'NO CLASS ACTIONS: Claims brought only individually, not as class member.\n\n'
+                'Opt-Out: Send written notice within 30 days of accepting Terms.\n\n'
+                'Time Limit: Claims must be filed within ONE YEAR or are permanently barred.\n\n',
+          ),
+
+          // Termination
+          TextSpan(
+            text: '9. TERMINATION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          TextSpan(
+            text: 'By You:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'Uninstall the App or cancel Premium subscription anytime.\n\n',
+          ),
+          TextSpan(
+            text: 'By Us:\n',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const TextSpan(
+            text: 'We may suspend/terminate access for:\n'
+                '• Terms violations\n'
+                '• Repeated content policy violations (3+ strikes)\n'
+                '• Fraudulent or illegal activity\n\n'
+                'No refunds for violations. Locally stored data remains on your device.\n\n',
+          ),
+
+          // Changes to Terms
+          TextSpan(
+            text: '10. MODIFICATIONS TO TERMS\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'We may modify these Terms at any time:\n'
+                '• Updates shown via in-app notification\n'
+                '• Material changes require acceptance before continued use\n'
+                '• Your continued use constitutes acceptance\n\n'
+                'Material changes include pricing, features, limitations, dispute resolution, or new fees.\n\n',
+          ),
+
+          // Contact
+          TextSpan(
+            text: '11. CONTACT INFORMATION\n\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+              fontWeight: FontWeight.w700,
+              color: AppTheme.goldColor,
+            ),
+          ),
+          const TextSpan(
+            text: 'Questions about these Terms?\n\n'
+                'Email: support@everydaychristian.app\n'
+                'Response Time: 7 business days (general), 30 days (legal)\n\n'
+                'Premium Support: Apple App Store or Google Play Store\n'
+                'Technical Support: support@everydaychristian.app\n'
+                'Content Violations: support@everydaychristian.app\n\n',
+          ),
+
+          // Footer
+          TextSpan(
+            text: '\n━━━━━━━━━━━━━━━━━━━━\n\n',
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+          ),
+          TextSpan(
+            text: 'BY USING EVERYDAY CHRISTIAN, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS OF SERVICE.\n\n',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          TextSpan(
+            text: 'For the complete Terms of Service, visit Settings > Legal > Terms of Service or contact support@everydaychristian.app\n',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+              color: Colors.white.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showSnackBar(String message) {
