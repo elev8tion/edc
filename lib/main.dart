@@ -111,11 +111,7 @@ class EverydayChristianApp extends ConsumerWidget {
 
     return UpgradeAlert(
       upgrader: Upgrader(
-        dialogStyle: UpgradeDialogStyle.cupertino,
-        canDismissDialog: true,
         durationUntilAlertAgain: const Duration(days: 1),
-        showIgnore: false,
-        showLater: true,
       ),
       child: MaterialApp(
       title: 'Everyday Christian',

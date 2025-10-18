@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -146,7 +147,10 @@ class ChatScreen extends HookConsumerWidget {
       final subscriptionService = ref.read(subscriptionServiceProvider);
       final canSend = subscriptionService.canSendMessage;
 
-      if (!canSend) {
+      debugPrint('🔍 Subscription check: canSend=$canSend, kDebugMode=$kDebugMode');
+
+      // Bypass subscription check in debug mode
+      if (!canSend && !kDebugMode) {
         // Show paywall
         if (context.mounted) {
           final result = await Navigator.of(context).push(
@@ -173,8 +177,8 @@ class ChatScreen extends HookConsumerWidget {
         return;
       }
 
-      // Consume message credit
-      final consumed = await subscriptionService.consumeMessage();
+      // Consume message credit (skip in debug mode)
+      final consumed = kDebugMode ? true : await subscriptionService.consumeMessage();
       if (!consumed) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

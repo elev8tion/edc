@@ -237,7 +237,10 @@ class SubscriptionService {
   /// Check if user can send a message (has remaining messages)
   bool get canSendMessage {
     // Bypass limits in debug mode for testing
+    developer.log('canSendMessage check: kDebugMode=$kDebugMode, isPremium=$isPremium, isInTrial=$isInTrial, trialMessagesRemainingToday=$trialMessagesRemainingToday', name: 'SubscriptionService');
+
     if (kDebugMode) {
+      developer.log('Bypassing subscription check - debug mode', name: 'SubscriptionService');
       return true;
     }
 
