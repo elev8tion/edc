@@ -1797,256 +1797,2354 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           height: 1.6,
         ),
         children: [
-          // Introduction Section
-          TextSpan(
-            text: '1. INTRODUCTION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'Welcome to Everyday Christian. We are deeply committed to your privacy and have built this application on a privacy-first foundation.\n\n'
-                'Everyday Christian provides AI-powered pastoral guidance, daily Bible verses, devotionals, prayer journal, and comprehensive verse library.\n\n',
-          ),
-          TextSpan(
-            text: 'OUR PRIVACY-FIRST COMMITMENT:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• NO user accounts required - use completely anonymously\n'
-                '• NO personal information collection\n'
-                '• NO location tracking\n'
-                '• NO third-party analytics\n'
-                '• NO advertising networks\n'
-                '• NO data monetization\n'
-                '• Local-first storage - data stays on your device\n\n',
-          ),
-
-          // Information We Collect
-          TextSpan(
-            text: '2. INFORMATION WE COLLECT\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Stored Locally on Your Device:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'All data is stored exclusively on your device using secure SQLite database:\n'
-                '• Prayer journal entries and reflections\n'
-                '• Favorite verses and bookmarks\n'
-                '• Reading history and progress\n'
-                '• AI chat history (Premium users only)\n'
-                '• App settings and preferences\n'
-                '• Devotional completion records\n\n',
-          ),
-          TextSpan(
-            text: 'We Do NOT Collect:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '❌ Personal identification (name, email, phone)\n'
-                '❌ Location data or GPS coordinates\n'
-                '❌ Device tracking identifiers\n'
-                '❌ Behavioral analytics\n'
-                '❌ Payment information (handled by Apple/Google)\n\n',
-          ),
-
-          // Third-Party Services
-          TextSpan(
-            text: '3. THIRD-PARTY SERVICES\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Google Gemini API (Premium AI Chat Only):\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'When using Premium AI guidance, your chat messages are sent anonymously to Google\'s Gemini API:\n'
-                '• Anonymous requests - no personal identifiers\n'
-                '• Session-based context for coherent responses\n'
-                '• No cross-session tracking\n'
-                '• Content filtering for harmful theology\n'
-                '• Crisis detection triggers professional resources\n\n'
-                'Free tier users: No data leaves your device.\n\n',
-          ),
-
-          // Data Security
-          TextSpan(
-            text: '4. DATA SECURITY\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'We implement industry-standard security:\n'
-                '• Secure SQLite database storage\n'
-                '• Optional biometric authentication (Face ID, Touch ID)\n'
-                '• No cloud storage or external servers\n'
-                '• TLS/SSL encrypted API communications\n'
-                '• Regular security audits\n\n',
-          ),
-
-          // Data Sharing
-          TextSpan(
-            text: '5. DATA SHARING\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'We Do Not Sell Your Data:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'We categorically do not and will never sell, rent, or monetize your data. Our only revenue is from optional Premium subscriptions (\$35/year).\n\n',
-          ),
-          TextSpan(
-            text: 'Third-Party Sharing:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Google Gemini API: Message text only (Premium feature)\n'
-                '• Apple/Google: Subscription validation (anonymous)\n'
-                '• NO analytics, advertising, or tracking services\n\n',
-          ),
-
-          // Sensitive Information
-          TextSpan(
-            text: '6. SENSITIVE INFORMATION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'We recognize this app processes sensitive religious data:\n'
-                '• Religious beliefs revealed through app usage\n'
-                '• Emotional and mental health concerns\n'
-                '• Personal circumstances and struggles\n\n'
-                'Special Protections:\n'
-                '• Local storage minimizes exposure\n'
-                '• Anonymous API calls (no identity)\n'
-                '• No profiling or cross-app tracking\n'
-                '• Crisis content triggers safety resources\n\n',
-          ),
-
-          // Children's Privacy
-          TextSpan(
-            text: '7. CHILDREN\'S PRIVACY (COPPA)\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'Age Requirements:\n'
-                '• General Use: Ages 13+ (parental guidance recommended for 13-17)\n'
-                '• Under 13: Premium AI chat requires parental consent\n\n'
-                'Parental Rights:\n'
-                '• Review locally stored data\n'
-                '• Delete data via app settings\n'
-                '• Control Premium subscriptions\n\n',
-          ),
-
-          // Your Rights
-          TextSpan(
-            text: '8. YOUR PRIVACY RIGHTS\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Universal Rights:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Right to Access: View stored data in app\n'
-                '• Right to Delete: Settings > Delete All Data\n'
-                '• Right to Correct: Edit content directly\n'
-                '• Right to Export: Settings > Export My Data\n'
-                '• Right to Withdraw Consent: Cancel subscription or uninstall\n\n',
-          ),
-          TextSpan(
-            text: 'California (CCPA/CPRA) & EU (GDPR) Rights:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'Additional rights for California and EU residents apply. '
-                'We do NOT sell personal information. '
-                'Contact support@everydaychristian.app for requests.\n\n',
-          ),
-
-          // Data Retention
-          TextSpan(
-            text: '9. DATA RETENTION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'Local Storage: Retained indefinitely until you delete it\n'
-                'Google Gemini: Retained per Google\'s AI data use policy\n'
-                'Subscription Data: Managed by Apple/Google (7 years for financial records)\n\n'
-                'You control retention through deletion options in Settings.\n\n',
-          ),
-
-          // Contact Information
-          TextSpan(
-            text: '10. CONTACT US\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'For privacy inquiries or to exercise your rights:\n\n'
-                'Email: support@everydaychristian.app\n'
-                'Response Time: Within 30 days\n\n'
-                'EU residents: Contact your local Data Protection Authority\n'
-                'California residents: California Attorney General (oag.ca.gov/privacy)\n\n',
-          ),
-
-          // Footer
-          TextSpan(
-            text: '\n━━━━━━━━━━━━━━━━━━━━\n\n',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
-          ),
-          TextSpan(
-            text: 'By using Everyday Christian, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.\n\n',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Colors.white.withValues(alpha: 0.8),
-            ),
-          ),
-          TextSpan(
-            text: 'For the complete Privacy Policy, visit Settings > Legal > Privacy Policy or contact support@everydaychristian.app\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-              color: Colors.white.withValues(alpha: 0.6),
-            ),
-          ),
+              TextSpan(
+                text: 'EVERYDAY CHRISTIAN - PRIVACY POLICY\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 22),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: 'Last Updated: October 15, 2025\n',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              TextSpan(
+                text: 'Effective Date: October 15, 2025\n',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n1. Introduction\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'Welcome to Everyday Christian ("we," "our," "us," or the "App"). We are deeply committed to your privacy and have built this application on a '),
+                  TextSpan(
+                    text: 'privacy-first foundation',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: '. This Privacy Policy explains our data practices for the Everyday Christian mobile application.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Everyday Christian is a faith-centered mobile app that provides:\n'),
+              TextSpan(text: '  - AI-powered pastoral guidance using Google Gemini 2.0 Flash (Premium feature)\n'),
+              TextSpan(text: '  - Daily Bible verses and devotionals\n'),
+              TextSpan(text: '  - Personal prayer journal\n'),
+              TextSpan(text: '  - Comprehensive verse library (31,103 verses from the World English Bible)\n'),
+              TextSpan(text: '  - Bible reading plans\n'),
+              TextSpan(text: '  - Crisis intervention resources\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Our Privacy-First Commitment:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **NO user accounts required** - use the app completely anonymously\n'),
+              TextSpan(text: '  - **NO personal information collection** - we don\'t ask for names, emails, or phone numbers\n'),
+              TextSpan(text: '  - **NO location tracking** - we never access your GPS or location data\n'),
+              TextSpan(text: '  - **NO third-party analytics or tracking** - we don\'t use Google Analytics, Facebook Pixel, or similar tracking services\n'),
+              TextSpan(text: '  - **NO advertising networks** - we don\'t integrate ad networks or sell ad space\n'),
+              TextSpan(text: '  - **NO data monetization** - we never sell or rent your information\n'),
+              TextSpan(text: '  - **Local-first storage** - all your data stays on your device using secure SQLite database\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By using Everyday Christian, you agree to the collection and use of information in accordance with this Privacy Policy. If you do not agree, please do not use the App.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2. Information We Collect\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2.1 Information Stored Locally on Your Device\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'All of the following data is stored '),
+                  TextSpan(
+                    text: 'exclusively on your device',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' using SQLite database technology protected by your device\'s security and '),
+                  TextSpan(
+                    text: 'never leaves your device',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' except when using the Premium AI chat feature:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Prayer Journal Entries',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your personal prayers, prayer requests, prayer categories, and reflections that you choose to save. Includes prayer status (answered, pending, ongoing), timestamps, and optional notes.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Favorite Verses',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Bible verses you mark as favorites for quick access, including verse text, biblical reference, personal notes, tags, and date added.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Reading History',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Which Bible chapters and verses you\'ve read to track your reading progress through the 31,103 verses in the World English Bible translation.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Reading Plan Progress',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your progress through selected Bible reading plans, including completion dates and chapter tracking.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Verse Bookmarks',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Bookmarked verses with personal notes, tags, creation timestamps, and last updated timestamps.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'AI Chat History',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Premium users only): Conversations with the AI pastoral guidance system, stored locally on your device with session IDs, message timestamps, and conversation metadata.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Daily Verses',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Track which daily verses have been delivered to you, whether you\'ve opened them, and whether notifications were sent.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'App Settings',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your preferences including theme selection, text size, notification preferences, font size for Bible reader, biometric authentication preferences, and other customization options stored in a local settings table.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Devotional Progress',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Which daily devotionals you\'ve completed and when.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2.2 Information We Do NOT Collect\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'We have intentionally designed Everyday Christian to respect your privacy by '),
+                  TextSpan(
+                    text: 'NOT',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' collecting:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - ❌ Personal identification (name, email, phone number)\n'),
+              TextSpan(text: '  - ❌ User accounts or login credentials\n'),
+              TextSpan(text: '  - ❌ Location data or GPS coordinates\n'),
+              TextSpan(text: '  - ❌ Device tracking identifiers for advertising\n'),
+              TextSpan(text: '  - ❌ Behavioral analytics or usage tracking\n'),
+              TextSpan(text: '  - ❌ Contacts, photos, or other device data\n'),
+              TextSpan(text: '  - ❌ Payment information (handled by Apple/Google payment systems)\n'),
+              TextSpan(text: '  - ❌ Social media connections or profiles\n'),
+              TextSpan(text: '  - ❌ IP addresses or network information\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2.3 Third-Party Service: Google Gemini API\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Premium AI Chat Feature Only',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': When you use the Premium AI pastoral guidance feature (150 messages/month, \$35/year subscription), your chat messages are sent to Google\'s Gemini 2.0 Flash API to generate biblically-grounded responses.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Important details:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Anonymous requests**: We do not include your name, email, device ID, or any personal identifiers when sending messages to Google\n'),
+              TextSpan(text: '  - **Session-based context**: Within a single conversation session, recent message history is included with each request to maintain conversational context (e.g., "you mentioned earlier..."). This allows the AI to provide coherent, contextual guidance.\n'),
+              TextSpan(text: '  - **No cross-session tracking**: Unlike chat services with user accounts (like ChatGPT), we cannot and do not track your conversations across different sessions. Each new conversation you start on a different day appears as a completely separate, anonymous interaction. Even if you have 100 conversations over a year, there is no technical way for Google or us to link them together or build a long-term profile of you.\n'),
+              TextSpan(text: '  - **Trained AI model**: Our system includes pastoral training examples based on authentic biblical counseling to guide appropriate Christian responses\n'),
+              TextSpan(text: '  - **Google\'s data use**: Google processes your message text according to their API terms and may use it to improve their services. See Google\'s Generative AI Prohibited Use Policy: https://policies.google.com/terms/generative-ai/use-policy\n'),
+              TextSpan(text: '  - **Content filtering**: AI-generated responses are automatically filtered for harmful theology patterns including prosperity gospel, spiritual bypassing, toxic positivity, legalism, hate speech, and inappropriate medical advice. Filtered responses are replaced with safe, scripture-based alternatives.\n'),
+              TextSpan(text: '  - **Crisis detection**: User messages containing crisis keywords (suicide, self-harm, abuse) trigger immediate intervention with professional resources including the 988 Suicide & Crisis Lifeline\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Free tier users',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If you don\'t subscribe to Premium, you can use all other app features without any data leaving your device.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3. How We Use Your Information\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.1 Local Data Usage (On Your Device)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'The data stored locally on your device is used to:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Provide Core Features',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Display your prayer journal, favorite verses, reading history, and AI chat conversations within the app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Personalize Your Experience',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Remember your settings, track reading progress, and suggest relevant reading plans based on your history'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Maintain Reading Streaks',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Track daily devotional completion and reading plan adherence'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Secure Your Data',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Enable biometric authentication (Face ID, Touch ID, fingerprint) to protect your personal spiritual content if you choose to enable this feature'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No external transmission',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': This local data is never sent to our servers or any third party'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.2 Third-Party Data Processing (Google Gemini API - Premium Only)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'When you use the Premium AI chat feature:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Generate Pastoral Responses',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your message text is sent anonymously to Google Gemini API to generate biblically-grounded guidance with scripture references'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Intervention',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Messages containing crisis indicators trigger safety protocols, though the detection happens locally on your device before any API call'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content Moderation',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Messages are filtered locally for policy violations (prosperity gospel, hate speech) before being processed'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Google\'s Use',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Google may use your message text according to their Generative AI terms to improve their API services'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.3 Subscription Management\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Payment Processing',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Handled entirely by Apple App Store or Google Play Store payment systems. We never see or store your payment information.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Subscription Status',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your device communicates with Apple/Google servers to verify your Premium subscription status, but we do not receive personal identifying information from these transactions.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.4 Security Lockout System\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content Policy Enforcement',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If you enter an incorrect pastoral guidance PIN or violate our content policies (hate speech, prosperity gospel, harassment), the app implements a privacy-first security system:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **3 incorrect attempts = 30-minute temporary lockout**\n'),
+              TextSpan(text: '  - **Device authentication bypass**: You can immediately bypass the lockout using your device\'s built-in authentication (PIN, fingerprint, or Face ID)\n'),
+              TextSpan(text: '  - **Privacy-preserving**: We do not see, store, or have access to your device authentication credentials - this is handled entirely by your device\'s operating system\n'),
+              TextSpan(text: '  - **Local-only data**: Only two integers are stored locally (attempt counter and lockout timestamp) - no accounts, usernames, or personal identifiers\n'),
+              TextSpan(text: '  - Other app features (Bible reading, prayer journal, etc.) remain accessible during lockout\n'),
+              TextSpan(text: '  - **Zero data transmission**: No authentication data ever leaves your device\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4. Data Storage and Security\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.1 Local Storage Architecture\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'All personal data',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' - including prayer journal entries, AI chat history, favorite verses, reading history, and app settings - is stored '),
+                  TextSpan(
+                    text: 'exclusively on your device',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' using:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'SQLite Database',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Secure local database technology that stores your data in the app\'s protected storage area, safeguarded by your device\'s built-in security'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Biometric Security (Optional)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': You can enable Face ID, Touch ID, or fingerprint authentication to add an additional security layer before accessing sensitive features'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No Cloud Storage',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not sync your data to any cloud service, external server, or backup system. Your spiritual journey remains private on your device.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'App Sandbox',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': The data is isolated within the app\'s secure container and cannot be accessed by other apps on your device'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.2 Data Security Measures\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We implement industry-standard security practices:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Secure Coding Standards',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Development follows OWASP Mobile Security Guidelines to prevent common vulnerabilities'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Device-Level Protection',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': All app data is protected by your device\'s built-in security features, including full-disk encryption available on modern iOS and Android devices'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Secure API Communication',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': When using Premium AI chat, messages are transmitted to Google Gemini API over TLS/SSL encrypted connections'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No User Credentials',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Since we don\'t use accounts, there are no passwords to be compromised'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Regular Security Reviews',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We conduct periodic security audits of our codebase and data handling'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Content Handling',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Crisis detection keywords are processed locally on your device and never logged or transmitted'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Important',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': No system is 100% secure. While we implement strong protections, you should be aware that any data stored on your device could potentially be accessed if your device is compromised, lost, or stolen. We recommend:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Using device-level passcode/biometric protection\n'),
+              TextSpan(text: '  - Enabling app-level biometric authentication in Settings\n'),
+              TextSpan(text: '  - Being cautious about device sharing\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.3 Device Backups\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'iCloud Backup (iOS)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If you enable iCloud backup on your iOS device, your locally stored app data (including prayer journal and chat history) may be included in your iCloud backups. This is controlled by Apple\'s backup settings and governed by Apple\'s Privacy Policy.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Google Drive Backup (Android)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If you enable Android device backup, app data may be included in your Google Drive backups per Google\'s Privacy Policy.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To exclude Everyday Christian from backups',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - iOS: Settings > [Your Name] > iCloud > Manage Storage > Backups > [Device] > Toggle off Everyday Christian\n'),
+              TextSpan(text: '  - Android: Settings > Google > Backup > Toggle off app data for Everyday Christian\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We recommend',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If you have particularly sensitive spiritual content, consider disabling app backups for Everyday Christian and manually clearing data before device transfers.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5. Data Sharing and Disclosure\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.1 We Do Not Sell Your Data\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We categorically do not and will never:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Sell your personal information to third parties\n'),
+              TextSpan(text: '  - Rent or lease your data to advertisers or marketers\n'),
+              TextSpan(text: '  - Share your data with data brokers\n'),
+              TextSpan(text: '  - Use your spiritual content for advertising purposes\n'),
+              TextSpan(text: '  - Monetize your prayers, Bible reading, or chat conversations\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We have no business model based on data monetization.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Our only revenue comes from optional Premium subscriptions (\$35/year).'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.2 Third-Party Data Sharing\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Google Gemini API (Premium AI Chat Only)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **What is shared**: Your message text only (when you send an AI chat message)\n'),
+              TextSpan(text: '  - **What is NOT shared**: Your name, email, device ID, location, or any identifiers\n'),
+              TextSpan(text: '  - **Purpose**: To generate AI-powered pastoral guidance responses\n'),
+              TextSpan(text: '  - **Google\'s use**: Google may use message text to improve their AI services per their terms\n'),
+              TextSpan(text: '  - **User control**: Don\'t subscribe to Premium if you prefer zero third-party data sharing\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Apple App Store / Google Play Store',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **What is shared**: Subscription purchase information (handled by Apple/Google)\n'),
+              TextSpan(text: '  - **Purpose**: Process Premium subscription payments and verify subscription status\n'),
+              TextSpan(text: '  - **Our access**: We receive only anonymous subscription validation; we do not see your payment details or personal information\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'NO other third-party services',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' access your data. We do not use:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Analytics platforms (e.g., Google Analytics, Mixpanel)\n'),
+              TextSpan(text: '  - Advertising networks\n'),
+              TextSpan(text: '  - Crash reporting services with personal data\n'),
+              TextSpan(text: '  - Cloud storage providers\n'),
+              TextSpan(text: '  - Social media integrations\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.3 Legal Requirements and Safety\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We may disclose information when required by law or to prevent harm:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Legal Obligations',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We will comply with valid subpoenas, court orders, or legal processes. Since nearly all data is stored locally on your device, we have very limited information to provide to authorities.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Intervention',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': If we implement server-side crisis detection in the future, we may report imminent threats of self-harm or harm to others to appropriate authorities. Currently, crisis detection is local and provides resources only.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Child Safety',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We will report suspected child abuse or endangerment to the National Center for Missing & Exploited Children (NCMEC) or appropriate authorities as required by law.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Since we don\'t collect user identification information, our ability to respond to legal requests is inherently limited to aggregated, anonymous data.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.4 Business Transfers\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If Everyday Christian is acquired, merged, or sells assets:\n'),
+              TextSpan(text: '  - You will be notified via app update or email (if we have it)\n'),
+              TextSpan(text: '  - This Privacy Policy will continue to apply to your data\n'),
+              TextSpan(text: '  - You will have the option to delete your data before any transfer\n'),
+              TextSpan(text: '  - The acquiring party must honor these privacy commitments or obtain your explicit consent for changes\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.5 Data We CANNOT Share (Because We Don\'t Have It)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Since all data is stored locally on your device, we cannot:\n'),
+              TextSpan(text: '  - Provide your prayer journal to third parties\n'),
+              TextSpan(text: '  - Access your AI chat history\n'),
+              TextSpan(text: '  - See your Bible reading patterns\n'),
+              TextSpan(text: '  - Recover your data if you lose your device\n'),
+              TextSpan(text: '  - Transfer your data to a new device (unless you use device-level backups)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6. Sensitive Personal Information & Religious Data\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'We recognize that Everyday Christian inherently processes '),
+                  TextSpan(
+                    text: 'sensitive personal information',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' under various privacy laws:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.1 Types of Sensitive Data\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Religious Beliefs',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Your use of Bible reading, prayers, and AI pastoral guidance reveals your Christian faith'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Emotional and Mental Health',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Questions about anxiety, depression, grief, anger, or other struggles shared in AI chat'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Personal Circumstances',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Information about relationships, family matters, financial struggles, or life challenges mentioned in prayers or chat'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Content',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Messages containing references to suicide, self-harm, abuse, or trauma'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.2 Special Protections for Sensitive Data\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Local Storage',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': All sensitive data remains on your device, minimizing exposure risk'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Anonymous API Calls',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': When using Premium AI chat, your messages are sent to Google without your identity'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No Profiling',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not build profiles of your religious practices, mental health patterns, or personal struggles'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No Cross-App Tracking',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not share data with other apps or use it for targeted advertising'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Biometric Protection',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': You can enable additional security layers to protect access to sensitive content'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Intervention',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Crisis content triggers local safety resources without logging or transmitting the specific content'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.3 Legal Basis for Processing (GDPR Compliance)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'For users in the European Union or European Economic Area, our legal basis for processing religious and sensitive data is:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Explicit Consent',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (GDPR Article 9(2)(a)): By installing the app and using its features, you provide explicit consent to process religious data locally on your device and (for Premium users) send chat messages to Google Gemini API'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Manifest Public Interest',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Religious data processing for spiritual guidance purposes where you have made it publicly manifest through voluntary use'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'You can withdraw consent at any time',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' by uninstalling the app or ceasing to use specific features (e.g., Premium AI chat)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.4 Additional Safeguards\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No Minors Under 13',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not knowingly collect sensitive religious data from children under 13 without parental consent (see Section 7)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Crisis Detection Protocols',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Automated detection of crisis content triggers professional resource recommendations'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content Policy Enforcement',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Hate speech, abuse, and harmful content result in warnings and potential feature lockouts to protect the community'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'No Discrimination',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not use sensitive data for discriminatory purposes or to deny services'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7. Children\'s Privacy (COPPA Compliance)\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Everyday Christian is designed for Christians of all ages seeking biblical guidance. However, we take special precautions regarding children\'s privacy under the Children\'s Online Privacy Protection Act (COPPA) and similar laws.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.1 Age Requirements and Restrictions\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'General Use (Ages 13+)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Users 13 and older may use all app features. We recommend parental guidance for users 13-17, especially when using AI pastoral guidance.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Children Under 13',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We do not knowingly collect personal information from children under 13 without verifiable parental consent. Given our privacy-first, local-only architecture:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Free features** (Bible reading, verses, devotionals): Can be used by children under 13 without data collection concerns since all data stays on the device\n'),
+              TextSpan(text: '  - **Premium AI Chat**: Should not be used by children under 13 without parental consent due to message transmission to Google Gemini API\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.2 Parental Controls and Rights\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Parents and guardians of children under 13',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Your Rights Under COPPA',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Review data stored locally on your child\'s device by accessing the app\n'),
+              TextSpan(text: '  - Delete your child\'s data by clearing app data or uninstalling\n'),
+              TextSpan(text: '  - Refuse further data collection by not subscribing to Premium features\n'),
+              TextSpan(text: '  - Control your child\'s use of AI chat features\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'How to Exercise Rights',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '1. Since data is local, you can directly access your child\'s device to review prayer journals, chat history, and reading activity\n'),
+              TextSpan(text: '2. Delete all data: Settings > Clear All Data or uninstall the app\n'),
+              TextSpan(text: '3. Disable Premium features: Cancel subscription through Apple/Google subscription settings\n'),
+              TextSpan(text: '4. Block AI chat: Use device-level parental controls to restrict Premium purchases\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Contact for COPPA Concerns',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.3 What Data We Collect from Children (If Any)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If a child under 13 uses Everyday Christian:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'With parental consent (Premium users)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - AI chat message text sent anonymously to Google Gemini API\n'),
+              TextSpan(text: '  - Stored locally: prayer journal, favorite verses, reading history\n'),
+              TextSpan(text: '  - No personal identifiers (name, email, birthdate) are collected\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Without parental consent (Free users)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Only local device storage (prayer journal, Bible reading history)\n'),
+              TextSpan(text: '  - No data transmission to external services\n'),
+              TextSpan(text: '  - No collection of personal information\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.4 Parental Consent Mechanism\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To use Premium AI chat, parents of children under 13 should',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '1. Review this Privacy Policy and our Terms of Service\n'),
+              TextSpan(text: '2. Discuss appropriate use of AI spiritual guidance with your child\n'),
+              TextSpan(text: '3. Monitor your child\'s subscriptions through Family Sharing (Apple) or Family Link (Google)\n'),
+              TextSpan(text: '4. Supervise your child\'s use of AI chat features\n'),
+              TextSpan(text: '5. Understand that AI guidance is not professional counseling\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We do not independently verify parental consent',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' beyond the parent controlling the device and subscription purchases. Parents are responsible for monitoring their children\'s app usage.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.5 Teen Users (Ages 13-17)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Parental Guidance Recommended',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': While teens may use the app without explicit parental consent, we encourage parents to:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Discuss the difference between AI guidance and professional counseling\n'),
+              TextSpan(text: '  - Review crisis resources with your teen (988 Suicide & Crisis Lifeline)\n'),
+              TextSpan(text: '  - Monitor for signs of emotional distress\n'),
+              TextSpan(text: '  - Encourage your teen to speak with trusted adults, clergy, or counselors about serious issues\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content Restrictions',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': The app enforces content policies that prohibit hate speech, harmful content, and dangerous advice regardless of user age.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8. Your Privacy Rights\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8.1 Universal Rights (All Users)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Access',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': View all data stored locally on your device through the app interface (Settings > Data Management > View Stored Data)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Delete',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Delete specific items: Long-press on prayers, chat messages, or favorites to delete\n'),
+              TextSpan(text: '  - Delete all data: Settings > Privacy > Delete All Data\n'),
+              TextSpan(text: '  - Complete removal: Uninstall the app (permanently deletes all local data)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Correct',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Edit your app settings, preferences, and saved content directly within the app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Export',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Settings > Privacy > Export My Data (generates JSON file of your prayers, chats, and reading history)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Withdraw Consent',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Cancel Premium subscription to stop API data sharing\n'),
+              TextSpan(text: '  - Disable specific features in Settings\n'),
+              TextSpan(text: '  - Uninstall app completely\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8.2 California Privacy Rights (CCPA/CPRA)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'California residents have these specific rights:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Know',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (CCPA §1798.100):'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - We collect: AI chat messages (Premium only), locally stored prayers, reading history\n'),
+              TextSpan(text: '  - Categories: Religious information, emotional content, personal thoughts\n'),
+              TextSpan(text: '  - Purpose: Provide pastoral guidance and track reading progress\n'),
+              TextSpan(text: '  - Third parties: Google Gemini API (Premium chat only)\n'),
+              TextSpan(text: '  - **We do NOT sell personal information**\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Delete',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (CCPA §1798.105): Delete your data as described in Section 8.1'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Opt-Out',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Not applicable - we don\'t sell data'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Non-Discrimination',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': We will never discriminate against you for exercising privacy rights'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Limit Sensitive Data Use',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (CPRA §1798.121): All sensitive religious data stays local except Premium chat messages sent anonymously to Google'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Contact',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': support@everydaychristian.app | Response time: 30 days'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8.3 European Privacy Rights (GDPR)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'EU/EEA residents have these rights under GDPR:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right of Access',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 15): Access your locally stored data through app interface'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Erasure',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 17): Delete data as described in Section 8.1'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Data Portability',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 20): Export data in JSON format (Settings > Export My Data)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Restrict Processing',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 18): Don\'t subscribe to Premium to prevent API processing'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Object',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 21): Object to data processing by uninstalling or disabling features'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Lodge Complaint',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Contact your local Data Protection Authority'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - UK: ICO (ico.org.uk)\n'),
+              TextSpan(text: '  - EU: Find your DPA at edpb.europa.eu\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Right to Withdraw Consent',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Article 7(3)): Cancel Premium subscription or uninstall app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Legal Basis for Processing',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Consent** (Article 6(1)(a) & Article 9(2)(a)): Your use of the app constitutes consent for local data storage and (Premium) API transmission\n'),
+              TextSpan(text: '  - **Legitimate Interest** (Article 6(1)(f)): App functionality and security improvements\n'),
+              TextSpan(text: '  - **Manifest Public Interest** (Article 9(2)(g)): Religious guidance provision\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Data Controller',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': [INSERT LEGAL ENTITY NAME], [INSERT BUSINESS ADDRESS]'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Data Processor',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Google LLC (for Gemini API - Premium users only)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Data Protection Officer',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Not required for our scale, but contact support@everydaychristian.app for privacy matters'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8.4 Other Jurisdictions\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Brazil (LGPD)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Rights similar to GDPR, contact support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Canada (PIPEDA)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Rights to access and correct data, contact support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Australia (Privacy Act)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Rights to access and correction, contact support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'All regions',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Our privacy-first architecture means you have direct control over your data through device-level access and deletion'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9. Data Retention\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9.1 Local Device Storage (Indefinite)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'All data stored on your device is retained indefinitely until you choose to delete it:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Prayer Journal',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained until you delete individual entries or clear all data'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'AI Chat History',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained until you delete conversations or clear all data'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Favorite Verses',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained until you unfavorite or clear data'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Reading History',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained until you clear history or uninstall app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'App Settings',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained until you reset settings or uninstall app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Strike/Lockout Data',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Retained for 30 days after lockout ends, then automatically deleted'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Your control',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': You have complete control over retention through deletion options in Settings'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9.2 Third-Party Retention (Google Gemini API)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Premium AI Chat Messages',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': When you send a message via Premium AI chat:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Processed by Google Gemini API according to Google\'s data retention policies\n'),
+              TextSpan(text: '  - Google may retain message text to improve AI services per their terms\n'),
+              TextSpan(text: '  - We do not control Google\'s retention periods\n'),
+              TextSpan(text: '  - Messages are sent anonymously without your identity\n'),
+              TextSpan(text: '  - See Google\'s AI Data Use Policy: https://policies.google.com/terms/generative-ai\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9.3 Subscription Data Retention\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Apple/Google Payment Records',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Managed by Apple App Store/Google Play Store according to their retention policies (typically 7 years for financial records)'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9.4 No Server-Side Retention\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We do not operate servers that store user data, so there are no server-side retention periods to disclose.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9.5 Recommended Data Hygiene\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We recommend',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Periodically review and delete sensitive chat conversations\n'),
+              TextSpan(text: '  - Clear prayer journal entries containing deeply personal information after reflection\n'),
+              TextSpan(text: '  - Uninstall the app before selling or transferring your device\n'),
+              TextSpan(text: '  - Disable iCloud/Google backups for the app if you want to prevent cloud retention\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10. International Data Transfers\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10.1 Current Data Transfers\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Local Storage',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': No international transfers - all data stays on your device in your physical location'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Google Gemini API',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (Premium only):'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Messages sent to Google servers, which may be located in the United States or other countries\n'),
+              TextSpan(text: '  - Google complies with GDPR Standard Contractual Clauses for EU data transfers\n'),
+              TextSpan(text: '  - Transfers occur only when you actively send an AI chat message\n'),
+              TextSpan(text: '  - Messages are anonymous and not linked to your identity\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Apple/Google Payments',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Subscription data handled per Apple/Google\'s international transfer safeguards'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10.2 Future Transfers\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If we implement cloud synchronization or server-based features in the future:\n'),
+              TextSpan(text: '  - We will update this Privacy Policy with specific transfer details\n'),
+              TextSpan(text: '  - EU users will be protected by Standard Contractual Clauses (GDPR Article 46)\n'),
+              TextSpan(text: '  - You will have the option to opt-out of cloud features\n'),
+              TextSpan(text: '  - We will notify users before implementing such changes\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10.3 Safeguards for International Transfers\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Current safeguards',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Minimal data transfer (only anonymous chat messages)\n'),
+              TextSpan(text: '  - Google\'s GDPR compliance mechanisms\n'),
+              TextSpan(text: '  - No personal identifiers transmitted\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11. Changes to This Privacy Policy\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We may update this Privacy Policy to reflect changes in our practices, technology, legal requirements, or other factors.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.1 Notification of Changes\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'How we notify you',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Update the "Last Updated" date at the top of this policy\n'),
+              TextSpan(text: '  - Display an in-app notification on next app launch\n'),
+              TextSpan(text: '  - For material changes, require acknowledgment before continuing to use the app\n'),
+              TextSpan(text: '  - Post updated policy at [INSERT WEBSITE URL if applicable]\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.2 Material vs. Non-Material Changes\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Material changes',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (require acceptance):'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - New third-party data sharing\n'),
+              TextSpan(text: '  - Changes to data retention periods\n'),
+              TextSpan(text: '  - Removal of privacy protections\n'),
+              TextSpan(text: '  - Changes to children\'s data practices\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Non-material changes',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' (notification only):'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Clarifications or additional detail\n'),
+              TextSpan(text: '  - Contact information updates\n'),
+              TextSpan(text: '  - Formatting or organizational changes\n'),
+              TextSpan(text: '  - New data protection safeguards\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.3 Version History\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We maintain an archive of previous Privacy Policy versions. To request a previous version, contact support@everydaychristian.app\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.4 Your Options After Changes\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If you disagree with updated terms:\n'),
+              TextSpan(text: '  - Contact us to discuss concerns\n'),
+              TextSpan(text: '  - Delete your data and cease using affected features\n'),
+              TextSpan(text: '  - Uninstall the app (permanently deletes local data)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Your continued use',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' of the app after the effective date of changes constitutes acceptance of the updated Privacy Policy.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12. Contact Us\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.1 Privacy Inquiries\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For questions about this Privacy Policy or our data practices:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Email',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Response Time',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': Within 30 days of inquiry'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Mailing Address',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': [INSERT IF REQUIRED BY YOUR JURISDICTION]'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.2 Exercising Privacy Rights\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'To exercise your privacy rights (access, deletion, correction, etc.):\n'),
+              TextSpan(text: '1. Most rights can be exercised directly in app Settings\n'),
+              TextSpan(text: '2. For assistance: email support@everydaychristian.app with "Privacy Rights Request" in subject line\n'),
+              TextSpan(text: '3. We may request verification of device ownership before assisting with requests\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.3 COPPA Parental Inquiries\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Parents with questions about children under 13',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Email: support@everydaychristian.app with "COPPA Inquiry" in subject line\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.4 Data Protection Authorities\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'EU/EEA residents',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' may also contact your local Data Protection Authority:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Find your DPA: https://edpb.europa.eu/about-edpb/board/members_en\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'California residents',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' may contact the California Attorney General:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - California Department of Justice: https://oag.ca.gov/privacy\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '---\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Last Updated',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': October 15, 2025'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Effective Date',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': October 15, 2025'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Version',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ': 1.0'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By using Everyday Christian, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '---\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n🔒 IMPLEMENTATION NOTES FOR DEVELOPER\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'CRITICAL: Before app store submission, you MUST:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '1. '),
+                  TextSpan(
+                    text: 'Replace all placeholders:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- `support@everydaychristian.app` → Your actual support email\n'),
+              TextSpan(text: '- `[INSERT LEGAL ENTITY NAME]` → Your company/individual name\n'),
+              TextSpan(text: '- `[INSERT BUSINESS ADDRESS]` → Your business address (required in CA, EU)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '2. '),
+                  TextSpan(
+                    text: 'Verify Google Gemini API integration:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Confirm API implementation matches privacy policy description\n'),
+              TextSpan(text: '- Verify anonymous request handling (no device IDs sent)\n'),
+              TextSpan(text: '- Test content filtering and crisis detection systems\n'),
+              TextSpan(text: '- Confirm 150 messages/month rate limiting\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '3. '),
+                  TextSpan(
+                    text: 'Verify Premium subscription implementation:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Confirm \$35/year pricing\n'),
+              TextSpan(text: '- Verify Apple/Google payment integration\n'),
+              TextSpan(text: '- Test subscription status verification\n'),
+              TextSpan(text: '- Implement 3-strike content policy enforcement\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '4. '),
+                  TextSpan(
+                    text: 'Add Bible translation attribution:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Confirm "World English Bible" is actually being used\n'),
+              TextSpan(text: '- Add attribution in app footer and credits screen\n'),
+              TextSpan(text: '- Verify no copyrighted translations are used without license\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '5. '),
+                  TextSpan(
+                    text: 'Implement required legal features:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Age verification screen (COPPA compliance)\n'),
+              TextSpan(text: '- Crisis resources prominently accessible\n'),
+              TextSpan(text: '- Terms of Service acceptance on first launch\n'),
+              TextSpan(text: '- Privacy Policy accessible in Settings > Legal\n'),
+              TextSpan(text: '- Data export/deletion tools in Settings > Privacy\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '6. '),
+                  TextSpan(
+                    text: 'Verify database security:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Confirm SQLite database is stored in app\'s protected sandbox\n'),
+              TextSpan(text: '- Test biometric authentication if implemented\n'),
+              TextSpan(text: '- Verify foreign key constraints are enabled\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '7. '),
+                  TextSpan(
+                    text: 'Test notification system:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Verify notification permission requests match policy\n'),
+              TextSpan(text: '- Test daily verse notifications\n'),
+              TextSpan(text: '- Ensure notifications can be disabled\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: '8. '),
+                  TextSpan(
+                    text: 'App Store compliance:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '- Complete Apple App Privacy questionnaire accurately\n'),
+              TextSpan(text: '- Complete Google Data Safety section matching this policy\n'),
+              TextSpan(text: '- Host this privacy policy at a public URL (required)\n'),
+              TextSpan(text: '- Screenshot app showing disclaimers and privacy controls\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'MISSING IMPLEMENTATION VERIFICATION:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Based on codebase review (5 Dart files, database schema only), the following features mentioned in this privacy policy need verification:\n'),
+              TextSpan(text: '  - ❓ Google Gemini API integration code\n'),
+              TextSpan(text: '  - ❓ Premium subscription/payment system\n'),
+              TextSpan(text: '  - ❓ Crisis keyword detection system\n'),
+              TextSpan(text: '  - ❓ Content policy enforcement (3-strike system)\n'),
+              TextSpan(text: '  - ❓ Biometric authentication implementation\n'),
+              TextSpan(text: '  - ❓ Data export/deletion features\n'),
+              TextSpan(text: '  - ❓ Age verification system\n'),
+              TextSpan(text: '  - ❓ Notification system\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'LEGAL DISCLAIMER:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' This privacy policy was generated based on stated feature requirements. You must verify all claims are accurate against your final implementation before launch. Consult with a licensed attorney specializing in privacy law before app store submission.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
         ],
       ),
     );
@@ -2112,7 +4210,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                // Scrollable Terms Content
+                // Scrollable Terms of Service Content
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -2155,326 +4253,1428 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           height: 1.6,
         ),
         children: [
-          // Agreement to Terms
-          TextSpan(
-            text: '1. AGREEMENT TO TERMS\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'BY DOWNLOADING, INSTALLING, OR USING EVERYDAY CHRISTIAN, YOU AGREE TO BE BOUND BY THESE TERMS AND OUR PRIVACY POLICY. IF YOU DO NOT AGREE, DO NOT USE THE APP.\n\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          TextSpan(
-            text: 'Age Requirements:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Users 13+ may use all features\n'
-                '• Under 13: Free features allowed with parental consent; Premium AI chat requires verifiable parental consent\n'
-                '• Parents are responsible for monitoring children\'s use\n\n',
-          ),
-
-          // Service Description
-          TextSpan(
-            text: '2. DESCRIPTION OF SERVICE\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Core Features (Free):\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• 31,103 Bible verses (World English Bible)\n'
-                '• Daily devotionals and Bible reading plans\n'
-                '• Personal prayer journal with categories\n'
-                '• Verse bookmarking and favorites\n'
-                '• Crisis intervention resources (988 Lifeline)\n'
-                '• Biometric authentication\n\n',
-          ),
-          TextSpan(
-            text: 'Premium Features (\$35/year):\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• AI-powered pastoral guidance (Google Gemini API)\n'
-                '• 150 AI chat messages per month\n'
-                '• Scripture-based guidance on faith questions\n'
-                '• Conversation history stored locally\n\n',
-          ),
-
-          // Subscription Terms
-          TextSpan(
-            text: '3. PREMIUM SUBSCRIPTION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Subscription Details:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Price: \$35/year USD (varies by region)\n'
-                '• Features: 150 messages/month, all Premium features\n'
-                '• Auto-Renewal: Renews annually unless canceled 24 hours before renewal\n'
-                '• Refunds: Subject to Apple/Google refund policies\n'
-                '• Unused messages do NOT roll over\n\n',
-          ),
-          TextSpan(
-            text: 'Manage Subscription:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• iOS: Settings > [Your Name] > Subscriptions\n'
-                '• Android: Google Play Store > Menu > Subscriptions\n\n',
-          ),
-
-          // User Conduct
-          TextSpan(
-            text: '4. USER CONDUCT & CONTENT POLICY\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Prohibited Content:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '❌ Hate speech, harassment, threats, or violence\n'
-                '❌ Obscene, pornographic, or sexually explicit content\n'
-                '❌ Promoting self-harm, suicide, or eating disorders\n'
-                '❌ Prosperity gospel or spiritual manipulation\n'
-                '❌ Spam or unsolicited promotional content\n\n',
-          ),
-          TextSpan(
-            text: 'Enforcement:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Warnings for policy violations\n'
-                '• Temporary suspension of AI chat\n'
-                '• Permanent suspension for severe violations\n'
-                '• Account termination for repeated violations\n\n',
-          ),
-
-          // AI Disclaimer
-          TextSpan(
-            text: '5. AI GUIDANCE DISCLAIMER\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'AI IS NOT A SUBSTITUTE FOR:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Professional mental health counseling\n'
-                '• Medical advice, diagnosis, or treatment\n'
-                '• Legal or financial advice\n'
-                '• Professional pastoral counseling from clergy\n'
-                '• Crisis intervention services\n\n'
-                'AI responses are based on training data and may contain inaccuracies. '
-                'Verify important matters with qualified clergy or professionals.\n\n'
-                'IN CRISIS? Call 988 Suicide & Crisis Lifeline or 911 immediately.\n\n',
-          ),
-
-          // Intellectual Property
-          TextSpan(
-            text: '6. INTELLECTUAL PROPERTY\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'You receive a limited, non-exclusive, non-transferable license to use the App for personal, non-commercial purposes.\n\n',
-          ),
-          TextSpan(
-            text: 'You retain rights to:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• Your prayer journal entries\n'
-                '• Your bookmarks and notes\n'
-                '• Your AI chat conversations (stored locally)\n\n',
-          ),
-          TextSpan(
-            text: 'Bible Translation:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'World English Bible (WEB) - Public Domain\n\n',
-          ),
-
-          // Disclaimers
-          TextSpan(
-            text: '7. DISCLAIMERS & LIMITATIONS\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE":\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: '• We do NOT warrant accuracy of content or AI responses\n'
-                '• We do NOT guarantee uninterrupted availability\n'
-                '• We are NOT responsible for Google Gemini API performance\n\n',
-          ),
-          TextSpan(
-            text: 'Limitation of Liability:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'Our total liability shall not exceed the amount you paid in the last 12 months or \$100 USD, whichever is greater.\n\n'
-                'We are NOT liable for:\n'
-                '• Loss of locally stored data\n'
-                '• Inaccurate or harmful AI content\n'
-                '• Emotional distress or spiritual harm\n'
-                '• Consequential or indirect damages\n\n',
-          ),
-
-          // Dispute Resolution
-          TextSpan(
-            text: '8. DISPUTE RESOLUTION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'Governing Law:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'These Terms are governed by the laws of [INSERT STATE], United States.\n\n',
-          ),
-          TextSpan(
-            text: 'Informal Resolution:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'Before filing a claim, contact support@everydaychristian.app for good-faith negotiation (60 days).\n\n',
-          ),
-          TextSpan(
-            text: 'Arbitration:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'Disputes will be resolved through binding individual arbitration (American Arbitration Association).\n\n'
-                'NO CLASS ACTIONS: Claims brought only individually, not as class member.\n\n'
-                'Opt-Out: Send written notice within 30 days of accepting Terms.\n\n'
-                'Time Limit: Claims must be filed within ONE YEAR or are permanently barred.\n\n',
-          ),
-
-          // Termination
-          TextSpan(
-            text: '9. TERMINATION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          TextSpan(
-            text: 'By You:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'Uninstall the App or cancel Premium subscription anytime.\n\n',
-          ),
-          TextSpan(
-            text: 'By Us:\n',
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const TextSpan(
-            text: 'We may suspend/terminate access for:\n'
-                '• Terms violations\n'
-                '• Repeated content policy violations (3+ strikes)\n'
-                '• Fraudulent or illegal activity\n\n'
-                'No refunds for violations. Locally stored data remains on your device.\n\n',
-          ),
-
-          // Changes to Terms
-          TextSpan(
-            text: '10. MODIFICATIONS TO TERMS\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'We may modify these Terms at any time:\n'
-                '• Updates shown via in-app notification\n'
-                '• Material changes require acceptance before continued use\n'
-                '• Your continued use constitutes acceptance\n\n'
-                'Material changes include pricing, features, limitations, dispute resolution, or new fees.\n\n',
-          ),
-
-          // Contact
-          TextSpan(
-            text: '11. CONTACT INFORMATION\n\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-              fontWeight: FontWeight.w700,
-              color: AppTheme.goldColor,
-            ),
-          ),
-          const TextSpan(
-            text: 'Questions about these Terms?\n\n'
-                'Email: support@everydaychristian.app\n'
-                'Response Time: 7 business days (general), 30 days (legal)\n\n'
-                'Premium Support: Apple App Store or Google Play Store\n'
-                'Technical Support: support@everydaychristian.app\n'
-                'Content Violations: support@everydaychristian.app\n\n',
-          ),
-
-          // Footer
-          TextSpan(
-            text: '\n━━━━━━━━━━━━━━━━━━━━\n\n',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
-          ),
-          TextSpan(
-            text: 'BY USING EVERYDAY CHRISTIAN, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS OF SERVICE.\n\n',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontStyle: FontStyle.italic,
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-          ),
-          TextSpan(
-            text: 'For the complete Terms of Service, visit Settings > Legal > Terms of Service or contact support@everydaychristian.app\n',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-              color: Colors.white.withValues(alpha: 0.6),
-            ),
-          ),
+              TextSpan(
+                text: 'EVERYDAY CHRISTIAN - TERMS OF SERVICE\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 22),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: 'Last Updated: October 17, 2025\n',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              TextSpan(
+                text: 'Effective Date: October 17, 2025\n',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n1. Agreement to Terms\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Welcome to Everyday Christian ("we," "our," "us," or the "App"). These Terms of Service ("Terms") govern your access to and use of the Everyday Christian mobile application, including all features, content, and services offered through the App.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'BY DOWNLOADING, INSTALLING, OR USING EVERYDAY CHRISTIAN, YOU AGREE TO BE BOUND BY THESE TERMS AND OUR PRIVACY POLICY. IF YOU DO NOT AGREE TO THESE TERMS, DO NOT USE THE APP.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'These Terms constitute a legally binding agreement between you ("you," "your," or "User") and Everyday Christian. If you are using the App on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n1.1 Additional Terms\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Certain features or services may be subject to additional terms and conditions, which will be presented to you at the time you access those features. Those additional terms are incorporated into these Terms by reference.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n1.2 Age Requirements\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Users 13 and older** may use all App features\n'),
+              TextSpan(text: '  - **Users under 13** may use free features with parental consent, but Premium AI chat requires verifiable parental consent (see Section 3.2)\n'),
+              TextSpan(text: '  - **Parents and guardians** are responsible for monitoring their children\'s use of the App\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2. Description of Service\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Everyday Christian is a faith-centered mobile application that provides:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Core Features (Free):',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Access to 31,103 Bible verses from the World English Bible translation\n'),
+              TextSpan(text: '  - Daily Bible verses and devotional content\n'),
+              TextSpan(text: '  - Personal prayer journal with categories and progress tracking\n'),
+              TextSpan(text: '  - Bible reading plans and progress tracking\n'),
+              TextSpan(text: '  - Verse bookmarking and favorites with personal notes\n'),
+              TextSpan(text: '  - Crisis intervention resources including 988 Suicide & Crisis Lifeline\n'),
+              TextSpan(text: '  - Biometric authentication for privacy protection\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Premium Features (\$35/year subscription):',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - AI-powered pastoral guidance using Google Gemini 2.0 Flash API\n'),
+              TextSpan(text: '  - 150 AI chat messages per month with biblically-grounded responses\n'),
+              TextSpan(text: '  - Scripture-based guidance on faith questions, spiritual struggles, and life challenges\n'),
+              TextSpan(text: '  - Conversation history stored locally on your device\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content Safety Features:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Automated filtering of AI responses for harmful theology (prosperity gospel, spiritual bypassing, toxic positivity, legalism, hate speech, medical overreach)\n'),
+              TextSpan(text: '  - Crisis keyword detection triggering professional resource recommendations\n'),
+              TextSpan(text: '  - Repeated crisis keyword use triggers safety intervention protocols\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2.1 Service Availability\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We strive to provide continuous access to the App, but we do not guarantee uninterrupted availability. The App may be unavailable due to:\n'),
+              TextSpan(text: '  - Scheduled maintenance or updates\n'),
+              TextSpan(text: '  - Technical difficulties or system failures\n'),
+              TextSpan(text: '  - Third-party service interruptions (Google Gemini API)\n'),
+              TextSpan(text: '  - Force majeure events beyond our reasonable control\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n2.2 Changes to Service\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We reserve the right to modify, suspend, or discontinue any feature or the entire App at any time, with or without notice. We are not liable to you or any third party for any modification, suspension, or discontinuance of the service.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3. User Accounts and Registration\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.1 No Account Required\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'Everyday Christian is designed with privacy-first principles. '),
+                  TextSpan(
+                    text: 'We do not require you to create an account, provide an email address, or share personal identifying information',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' to use the App.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.2 Age Verification for Premium Features\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Users under 13:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' To subscribe to Premium features, parental consent is required under the Children\'s Online Privacy Protection Act (COPPA). Parents must:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '1. Review these Terms and our Privacy Policy\n'),
+              TextSpan(text: '2. Authorize the subscription purchase through Apple Family Sharing or Google Family Link\n'),
+              TextSpan(text: '3. Supervise their child\'s use of AI chat features\n'),
+              TextSpan(text: '4. Understand that AI guidance is not professional counseling\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We do not independently verify ages',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' beyond the age gates provided by Apple App Store and Google Play Store.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n3.3 Device Authentication\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If you enable biometric authentication (Face ID, Touch ID, fingerprint), you are responsible for:\n'),
+              TextSpan(text: '  - Maintaining the security of your device authentication credentials\n'),
+              TextSpan(text: '  - Understanding that we do not have access to these credentials (they are managed by your device\'s operating system)\n'),
+              TextSpan(text: '  - Any unauthorized access to the App using your device authentication\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4. Premium Subscription Terms\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.1 Subscription Plans\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Premium Annual Subscription:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Price:** \$35.00 USD per year (pricing may vary by region and currency)\n'),
+              TextSpan(text: '  - **Features:** 150 AI chat messages per month, unlimited access to all Premium features\n'),
+              TextSpan(text: '  - **Billing:** Charged annually to your Apple App Store or Google Play Store account\n'),
+              TextSpan(text: '  - **Auto-Renewal:** Automatically renews each year unless canceled at least 24 hours before the end of the current period\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.2 Payment and Billing\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Payment Processing:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' All payments are processed through Apple App Store or Google Play Store. We do not directly process, store, or have access to your payment information.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Refunds:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Refund requests are subject to Apple\'s and Google\'s refund policies. Generally:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Within 48 hours of purchase:** Contact Apple/Google support for a refund\n'),
+              TextSpan(text: '  - **After 48 hours:** Refunds are at Apple\'s/Google\'s discretion\n'),
+              TextSpan(text: '  - **Unused message credits do not roll over** and are non-refundable\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Pricing Changes:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' We reserve the right to change subscription pricing with 30 days\' notice. Price changes will not affect your current subscription period but will apply upon renewal.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.3 Subscription Management\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To manage your subscription:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **iOS:** Settings > [Your Name] > Subscriptions > Everyday Christian\n'),
+              TextSpan(text: '  - **Android:** Google Play Store > Menu > Subscriptions > Everyday Christian\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To cancel auto-renewal:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Follow the steps above and select "Cancel Subscription" at least 24 hours before your renewal date.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.4 Message Usage Limits\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(text: 'Premium subscribers receive '),
+                  TextSpan(
+                    text: '150 AI chat messages per month',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ':'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Message count resets on your subscription renewal date\n'),
+              TextSpan(text: '  - Unused messages do not roll over to the next month\n'),
+              TextSpan(text: '  - If you exceed 150 messages, you must wait until renewal or upgrade (if available)\n'),
+              TextSpan(text: '  - We track message counts locally on your device; counts may reset if you reinstall the App\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n4.5 Free Trial (If Offered)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If we offer a free trial:\n'),
+              TextSpan(text: '  - Trial duration will be clearly disclosed before subscription\n'),
+              TextSpan(text: '  - You must cancel before the trial ends to avoid being charged\n'),
+              TextSpan(text: '  - You may not be eligible for a free trial if you previously subscribed\n'),
+              TextSpan(text: '  - We reserve the right to modify or discontinue free trials at any time\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5. User Conduct and Content Policy\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.1 Acceptable Use\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You agree to use Everyday Christian only for lawful purposes and in accordance with these Terms. You agree NOT to:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Prohibited Content:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - ❌ Post, transmit, or promote hate speech, harassment, threats, or violence\n'),
+              TextSpan(text: '  - ❌ Share content that is obscene, pornographic, or sexually explicit\n'),
+              TextSpan(text: '  - ❌ Promote or glorify self-harm, suicide, or eating disorders\n'),
+              TextSpan(text: '  - ❌ Engage in harassment, bullying, or intimidation\n'),
+              TextSpan(text: '  - ❌ Promote prosperity gospel theology, spiritual manipulation, or abusive religious practices\n'),
+              TextSpan(text: '  - ❌ Impersonate others or misrepresent your identity or affiliation\n'),
+              TextSpan(text: '  - ❌ Share spam, advertising, or unsolicited promotional content\n'),
+              TextSpan(text: '  - ❌ Violate intellectual property rights, privacy rights, or other legal rights\n'),
+              TextSpan(text: '  - ❌ Attempt to exploit, harm, or solicit information from minors\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Prohibited Activities:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - ❌ Reverse engineer, decompile, or disassemble the App\n'),
+              TextSpan(text: '  - ❌ Attempt to gain unauthorized access to the App, servers, or databases\n'),
+              TextSpan(text: '  - ❌ Use automated systems (bots, scripts, scrapers) to access the App\n'),
+              TextSpan(text: '  - ❌ Interfere with or disrupt the App\'s operation or servers\n'),
+              TextSpan(text: '  - ❌ Remove, alter, or obscure copyright notices, trademarks, or disclaimers\n'),
+              TextSpan(text: '  - ❌ Use the App for any illegal purpose or in violation of any laws\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.2 AI Chat Content Policy\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'When using Premium AI chat features, you agree to:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Respectful Engagement:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Use the AI for genuine faith questions, spiritual guidance, and biblical learning\n'),
+              TextSpan(text: '  - Engage respectfully and avoid testing boundaries with inappropriate content\n'),
+              TextSpan(text: '  - Understand that the AI is a spiritual resource tool, not a replacement for professional counseling, therapy, or medical advice\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Content That Triggers Warnings:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Prosperity gospel language or health-and-wealth theology\n'),
+              TextSpan(text: '  - Spiritual bypassing or toxic positivity\n'),
+              TextSpan(text: '  - Legalistic or works-based salvation teachings\n'),
+              TextSpan(text: '  - Hate speech targeting any group\n'),
+              TextSpan(text: '  - Medical advice or discouragement from seeking professional help\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.3 Content Policy Enforcement\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'We reserve the right to suspend or terminate access to Premium AI chat features for:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Repeated violations of prohibited content policies (Section 5.1)\n'),
+              TextSpan(text: '  - Attempts to bypass content filtering or safety mechanisms\n'),
+              TextSpan(text: '  - Abusive or harassing behavior\n'),
+              TextSpan(text: '  - Attempts to manipulate the AI into generating harmful content\n'),
+              TextSpan(text: '  - Any use that violates these Terms or applicable law\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Enforcement actions may include:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Warnings and reminders of content policy\n'),
+              TextSpan(text: '  - Temporary suspension of AI chat access\n'),
+              TextSpan(text: '  - Permanent suspension from Premium features\n'),
+              TextSpan(text: '  - Account termination in severe cases\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We reserve discretion in determining appropriate responses to policy violations based on severity and context.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.4 Crisis Content and Intervention\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'If you express thoughts of suicide, self-harm, or harming others:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Crisis detection keywords trigger immediate display of professional resources\n'),
+              TextSpan(text: '  - Resources include 988 Suicide & Crisis Lifeline (call or text 988)\n'),
+              TextSpan(text: '  - We strongly encourage you to reach out to professional crisis services immediately\n'),
+              TextSpan(text: '  - The App is NOT a crisis intervention service and cannot provide emergency assistance\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'If you are in immediate danger:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Call 911 (US), 999 (UK), or your local emergency number immediately.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n5.5 User-Generated Content\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Prayer Journal Entries, Notes, and Bookmarks:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - All content you create (prayers, notes, highlights) is stored locally on your device\n'),
+              TextSpan(text: '  - You retain all rights to your user-generated content\n'),
+              TextSpan(text: '  - We do not have access to, monitor, or claim ownership of your locally stored content\n'),
+              TextSpan(text: '  - You are solely responsible for backing up your content (via device backups)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'AI Chat Messages:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Messages sent to AI chat are processed by Google Gemini API (see Privacy Policy)\n'),
+              TextSpan(text: '  - You grant us a limited license to transmit your messages to Google for processing\n'),
+              TextSpan(text: '  - Chat history is stored locally on your device and is not accessible to us\n'),
+              TextSpan(text: '  - We do not claim ownership of your chat conversations\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6. Intellectual Property Rights\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.1 App Ownership\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Everyday Christian, including all software, design, graphics, text, functionality, and content (excluding user-generated content and third-party content), is owned by us or our licensors and is protected by:\n'),
+              TextSpan(text: '  - United States copyright law\n'),
+              TextSpan(text: '  - International copyright treaties\n'),
+              TextSpan(text: '  - Trademark law\n'),
+              TextSpan(text: '  - Other intellectual property laws\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.2 Limited License to Use\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We grant you a limited, non-exclusive, non-transferable, revocable license to:\n'),
+              TextSpan(text: '  - Download and install the App on devices you own or control\n'),
+              TextSpan(text: '  - Use the App for personal, non-commercial purposes in accordance with these Terms\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'This license does NOT permit you to:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Modify, copy, distribute, transmit, display, perform, reproduce, publish, license, create derivative works from, transfer, or sell any content, software, or services obtained from the App\n'),
+              TextSpan(text: '  - Use the App for commercial purposes without our prior written consent\n'),
+              TextSpan(text: '  - Remove or alter any copyright, trademark, or other proprietary notices\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.3 Bible Translation License\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'The World English Bible (WEB) translation used in Everyday Christian is in the public domain. We include the following attribution:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'World English Bible (WEB)',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Public Domain\n'),
+              TextSpan(text: '  - Updated: 2024\n'),
+              TextSpan(text: '  - Translation: Modern English from Hebrew, Aramaic, and Greek source texts\n'),
+              TextSpan(text: '  - Free for all use, modification, and distribution\n'),
+              TextSpan(text: '  - See ebible.org/web for more information\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.4 Third-Party Content\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Google Gemini AI responses',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' are generated by Google\'s AI technology and may be subject to Google\'s intellectual property rights. By using Premium AI chat, you acknowledge that:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - AI-generated content is provided "as is" for spiritual guidance purposes\n'),
+              TextSpan(text: '  - We make no warranties regarding accuracy, completeness, or theological soundness of AI responses\n'),
+              TextSpan(text: '  - You should verify important spiritual or theological matters with qualified clergy or theologians\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.5 Trademarks\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '"Everyday Christian" and our logo (if applicable) are trademarks or registered trademarks of [INSERT LEGAL ENTITY NAME]. You may not use these marks without our prior written permission.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n6.6 Digital Millennium Copyright Act (DMCA)\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If you believe content in the App infringes your copyright, please contact us with:\n'),
+              TextSpan(text: '1. Description of the copyrighted work\n'),
+              TextSpan(text: '2. Location of the infringing material in the App\n'),
+              TextSpan(text: '3. Your contact information\n'),
+              TextSpan(text: '4. Statement of good faith belief that use is unauthorized\n'),
+              TextSpan(text: '5. Statement that information is accurate and you are authorized to act\n'),
+              TextSpan(text: '6. Your physical or electronic signature\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'DMCA Contact:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7. Disclaimers and Limitations of Liability\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.1 "AS IS" and "AS AVAILABLE" Disclaimer\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Accuracy of Content:** We do not warrant that Bible verses, devotionals, or AI-generated responses are free from errors or theologically sound for all denominations\n'),
+              TextSpan(text: '  - **Availability:** We do not guarantee uninterrupted, timely, secure, or error-free operation\n'),
+              TextSpan(text: '  - **Fitness for Purpose:** We do not warrant that the App will meet your specific spiritual needs or expectations\n'),
+              TextSpan(text: '  - **Third-Party Services:** We do not control Google Gemini API and are not responsible for its performance, availability, or content\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.2 AI Guidance Disclaimer\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'EVERYDAY CHRISTIAN\'S AI PASTORAL GUIDANCE IS NOT A SUBSTITUTE FOR:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Professional mental health counseling or therapy\n'),
+              TextSpan(text: '  - Medical advice, diagnosis, or treatment\n'),
+              TextSpan(text: '  - Legal advice\n'),
+              TextSpan(text: '  - Financial advice\n'),
+              TextSpan(text: '  - Professional pastoral counseling from ordained clergy\n'),
+              TextSpan(text: '  - Crisis intervention services\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'AI-generated responses:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Are based on patterns learned from training data and may contain inaccuracies\n'),
+              TextSpan(text: '  - Should be verified against Scripture and validated by trusted Christian leaders\n'),
+              TextSpan(text: '  - May not represent all theological perspectives or denominational views\n'),
+              TextSpan(text: '  - Are filtered for harmful theology, but filtering is not perfect\n'),
+              TextSpan(text: '  - Should never replace professional help for serious mental health, medical, or legal issues\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'If you are experiencing a mental health crisis, substance abuse emergency, domestic violence, or other serious situation:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Contact professional services immediately (988 Suicide & Crisis Lifeline, 911, or your local emergency services).'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.3 Limitation of Liability\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Direct Damages:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Loss of data stored locally on your device\n'),
+              TextSpan(text: '  - Inability to access the App or Premium features\n'),
+              TextSpan(text: '  - Inaccurate or harmful AI-generated content\n'),
+              TextSpan(text: '  - Theological disputes or disagreements arising from App content\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Indirect Damages:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Loss of profits, revenue, or business opportunities\n'),
+              TextSpan(text: '  - Emotional distress or spiritual harm\n'),
+              TextSpan(text: '  - Consequential, incidental, special, exemplary, or punitive damages\n'),
+              TextSpan(text: '  - Damages arising from reliance on AI guidance or devotional content\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Aggregate Liability Cap:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Our total liability to you for all claims arising from your use of the App shall not exceed the amount you paid for Premium subscription in the 12 months preceding the claim, or \$100 USD, whichever is greater.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.4 Exceptions to Limitations\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Some jurisdictions do not allow limitations on implied warranties or exclusion of certain damages. In such jurisdictions, our liability shall be limited to the greatest extent permitted by law.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Nothing in these Terms excludes or limits our liability for:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Death or personal injury caused by our negligence\n'),
+              TextSpan(text: '  - Fraud or fraudulent misrepresentation\n'),
+              TextSpan(text: '  - Any liability that cannot be excluded or limited under applicable law\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n7.5 Force Majeure\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We are not liable for any failure or delay in performance due to causes beyond our reasonable control, including:\n'),
+              TextSpan(text: '  - Acts of God (natural disasters, pandemics, etc.)\n'),
+              TextSpan(text: '  - War, terrorism, civil unrest\n'),
+              TextSpan(text: '  - Government actions or regulations\n'),
+              TextSpan(text: '  - Internet service provider failures\n'),
+              TextSpan(text: '  - Third-party service outages (Google API)\n'),
+              TextSpan(text: '  - Cyber attacks, hacking, or security breaches\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n8. Indemnification\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You agree to defend, indemnify, and hold harmless Everyday Christian, its affiliates, licensors, and service providers, and their respective officers, directors, employees, contractors, agents, and representatives from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys\' fees) arising out of or relating to:\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '1. Your violation of these Terms\n'),
+              TextSpan(text: '2. Your use or misuse of the App\n'),
+              TextSpan(text: '3. Your violation of any third-party rights, including intellectual property or privacy rights\n'),
+              TextSpan(text: '4. Your user-generated content (prayers, notes, chat messages)\n'),
+              TextSpan(text: '5. Your violation of any laws or regulations\n'),
+              TextSpan(text: '6. Any false or misleading information you provide\n'),
+              TextSpan(text: '7. Your reliance on AI-generated content leading to harm or loss\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'This indemnification obligation will survive termination of these Terms and your use of the App.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n9. Privacy and Data Protection\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Your use of Everyday Christian is also governed by our Privacy Policy, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand:\n'),
+              TextSpan(text: '  - How we collect, use, and protect your information\n'),
+              TextSpan(text: '  - Your privacy rights under GDPR, CCPA, and other laws\n'),
+              TextSpan(text: '  - How we handle sensitive religious data\n'),
+              TextSpan(text: '  - Third-party data sharing (Google Gemini API for Premium users)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Key Privacy Highlights:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - NO user accounts or email addresses required\n'),
+              TextSpan(text: '  - All personal data stored locally on your device\n'),
+              TextSpan(text: '  - Premium AI chat messages sent anonymously to Google Gemini API\n'),
+              TextSpan(text: '  - NO analytics, tracking, or advertising networks\n'),
+              TextSpan(text: '  - Complete data deletion available in Settings\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10. International Use and Export Controls\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10.1 Global Availability\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Everyday Christian may be accessed from countries around the world. However, we make no representation that the App is appropriate or available for use in all locations. You are responsible for compliance with local laws if you access the App from outside the United States.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n10.2 Export Controls\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'The App may be subject to U.S. export control laws and regulations. You agree not to export, re-export, or transfer the App or any technical data derived from it, in violation of:\n'),
+              TextSpan(text: '  - U.S. Export Administration Regulations\n'),
+              TextSpan(text: '  - International Traffic in Arms Regulations\n'),
+              TextSpan(text: '  - Economic sanctions enforced by the Office of Foreign Assets Control (OFAC)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You represent that you are not:\n'),
+              TextSpan(text: '  - Located in, under the control of, or a national or resident of any embargoed country\n'),
+              TextSpan(text: '  - On any U.S. government list of prohibited or restricted parties\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11. Dispute Resolution and Governing Law\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.1 Governing Law\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'These Terms shall be governed by and construed in accordance with the laws of the State of [INSERT STATE], United States, without regard to its conflict of law provisions.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.2 Informal Dispute Resolution\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Before filing a claim',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ', you agree to contact us at support@everydaychristian.app and attempt to resolve the dispute informally. We will attempt to resolve the dispute through good-faith negotiation within 60 days.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.3 Arbitration Agreement\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'YOU AND EVERYDAY CHRISTIAN AGREE TO RESOLVE ANY DISPUTES THROUGH BINDING INDIVIDUAL ARBITRATION, EXCEPT AS SPECIFIED BELOW.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Arbitration Procedures:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Arbitration shall be conducted by the American Arbitration Association (AAA) under its Consumer Arbitration Rules\n'),
+              TextSpan(text: '  - Arbitration shall take place in [INSERT LOCATION] or via telephone/video conference\n'),
+              TextSpan(text: '  - The arbitrator\'s decision is final and binding\n'),
+              TextSpan(text: '  - Each party shall bear its own costs and attorneys\' fees unless the arbitrator awards otherwise\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Exceptions to Arbitration:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - Small claims court actions (if the claim qualifies)\n'),
+              TextSpan(text: '  - Intellectual property disputes\n'),
+              TextSpan(text: '  - Violations of our intellectual property rights\n'),
+              TextSpan(text: '  - Claims for injunctive or equitable relief\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'NO CLASS ACTIONS:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' You agree to bring claims only in your individual capacity and not as a plaintiff or class member in any class, consolidated, or representative action.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.4 Opt-Out of Arbitration\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You may opt out of the arbitration agreement by sending written notice to support@everydaychristian.app within 30 days of first accepting these Terms. Your opt-out notice must include your name, address, and a clear statement that you wish to opt out of arbitration.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.5 Jurisdiction and Venue\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If arbitration is not applicable or you have opted out, you agree that any legal action shall be brought exclusively in the state or federal courts located in [INSERT COUNTY, STATE], and you consent to personal jurisdiction in those courts.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n11.6 Limitation on Time to File Claims\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'You agree that any claim arising out of your use of the App must be filed within ONE YEAR after the claim arose. Claims filed after one year are permanently barred.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12. Termination\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.1 Termination by You\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You may stop using the App at any time by:\n'),
+              TextSpan(text: '  - Uninstalling the App from your device (permanently deletes all locally stored data)\n'),
+              TextSpan(text: '  - Canceling your Premium subscription (access continues until end of current billing period)\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.2 Termination by Us\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We reserve the right to suspend or terminate your access to the App, with or without notice, for:\n'),
+              TextSpan(text: '  - Violation of these Terms or our content policy\n'),
+              TextSpan(text: '  - Repeated content policy strikes (3+ violations)\n'),
+              TextSpan(text: '  - Fraudulent, abusive, or illegal activity\n'),
+              TextSpan(text: '  - Harm to other users, the App, or our reputation\n'),
+              TextSpan(text: '  - Requests from law enforcement or legal process\n'),
+              TextSpan(text: '  - Technical or security reasons\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n12.3 Effect of Termination\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Upon termination:\n'),
+              TextSpan(text: '  - Your Premium subscription will be canceled (subject to Apple/Google refund policies)\n'),
+              TextSpan(text: '  - You must immediately cease using the App and uninstall it\n'),
+              TextSpan(text: '  - All locally stored data remains on your device until you delete it\n'),
+              TextSpan(text: '  - Sections 6 (Intellectual Property), 7 (Disclaimers), 8 (Indemnification), 9 (Privacy), and 11 (Dispute Resolution) survive termination\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'NO REFUNDS',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' are provided for terminations due to Terms violations.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n13. Modifications to Terms\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n13.1 Right to Modify\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We reserve the right to modify these Terms at any time. When we make changes:\n'),
+              TextSpan(text: '  - We will update the "Last Updated" date at the top of this document\n'),
+              TextSpan(text: '  - We will provide notice through the App (e.g., pop-up notification on next launch)\n'),
+              TextSpan(text: '  - For material changes, we will require you to accept the updated Terms before continuing to use the App\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n13.2 Material Changes\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Material changes include:\n'),
+              TextSpan(text: '  - Changes to Premium subscription pricing or features\n'),
+              TextSpan(text: '  - New limitations on your rights to use the App\n'),
+              TextSpan(text: '  - Changes to dispute resolution or arbitration terms\n'),
+              TextSpan(text: '  - Changes to liability limitations\n'),
+              TextSpan(text: '  - Introduction of new fees\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n13.3 Acceptance of Changes\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Your continued use of the App after the effective date of updated Terms constitutes acceptance of those changes.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' If you do not agree to the modified Terms, you must stop using the App and uninstall it.'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n13.4 Version Archive\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'We maintain an archive of previous Terms versions. To request a previous version, contact support@everydaychristian.app.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14. Miscellaneous Provisions\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.1 Entire Agreement\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'These Terms, together with our Privacy Policy, constitute the entire agreement between you and Everyday Christian regarding your use of the App and supersede all prior agreements, understandings, or representations.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.2 Severability\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'If any provision of these Terms is held to be invalid, illegal, or unenforceable, the remaining provisions shall continue in full force and effect. The invalid provision shall be modified to the minimum extent necessary to make it valid and enforceable.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.3 Waiver\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Our failure to enforce any provision of these Terms does not constitute a waiver of that provision or our right to enforce it in the future. Any waiver must be in writing and signed by an authorized representative.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.4 Assignment\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'You may not assign or transfer these Terms or any rights hereunder without our prior written consent. We may assign these Terms to any affiliate or successor without your consent.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.5 No Third-Party Beneficiaries\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'These Terms do not create any third-party beneficiary rights except as expressly stated herein.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.6 Notices\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To You:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' We may provide notices to you through:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - In-app notifications\n'),
+              TextSpan(text: '  - Email (if you provided one for support inquiries)\n'),
+              TextSpan(text: '  - Updates to this Terms document\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'To Us:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' You may contact us at:'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - **Email:** support@everydaychristian.app\n'),
+              TextSpan(text: '  - **Mailing Address:** [INSERT IF REQUIRED BY JURISDICTION]\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.7 Headings\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Section headings in these Terms are for convenience only and do not affect interpretation.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n14.8 Language\n',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'These Terms are drafted in English. In the event of any conflict between an English version and a translated version, the English version shall prevail.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                text: '\n15. Contact Information\n',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primaryColor,
+                ),
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For questions about these Terms, the App, or to report violations:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Email:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' support@everydaychristian.app'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Response Time:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' Within 7 business days for general inquiries, 30 days for legal matters'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For Premium subscription support:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '  - iOS: Apple App Store support\n'),
+              TextSpan(text: '  - Android: Google Play Store support\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For technical support or bug reports:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Email: support@everydaychristian.app with "Technical Support" in subject line\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For content policy violations:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'Email: support@everydaychristian.app with "Content Violation Report" in subject line\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'For privacy inquiries:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(text: 'See our Privacy Policy for detailed contact information regarding data protection rights.\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(text: '---\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Last Updated:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' October 17, 2025'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Effective Date:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' October 17, 2025'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Version:',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(text: ' 1.0'),
+                ],
+              ),
+              const TextSpan(text: '\n'),
+              const TextSpan(text: '\n'),
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'BY USING EVERYDAY CHRISTIAN, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS OF SERVICE.',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const TextSpan(text: '\n'),
         ],
       ),
     );
   }
+
+
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
