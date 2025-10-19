@@ -13,7 +13,7 @@ import 'core/error/error_handler.dart';
 import 'core/services/database_service.dart';
 import 'services/gemini_ai_service.dart';
 import 'screens/splash_screen.dart';
-import 'screens/disclaimer_screen.dart';
+import 'screens/legal_agreements_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
@@ -174,8 +174,8 @@ class EverydayChristianApp extends ConsumerWidget {
       case AppRoutes.splash:
         page = const SplashScreen();
         break;
-      case AppRoutes.disclaimer:
-        page = const DisclaimerScreen();
+      case AppRoutes.legalAgreements:
+        page = const LegalAgreementsScreen();
         break;
       case AppRoutes.onboarding:
         page = const OnboardingScreen();

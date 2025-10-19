@@ -35,11 +35,13 @@ class PreferencesService {
   static const String _themeModeKey = 'theme_mode';
   static const String _languageKey = 'language_preference';
   static const String _textSizeKey = 'text_size';
+  static const String _firstNameKey = 'user_first_name';
   static const String _dailyNotificationsKey = 'daily_notifications_enabled';
   static const String _prayerRemindersKey = 'prayer_reminders_enabled';
   static const String _verseOfTheDayKey = 'verse_of_the_day_enabled';
   static const String _notificationTimeKey = 'notification_time';
   static const String _termsAcceptedKey = 'terms_accepted_v1.0';
+  static const String _legalAgreementsKey = 'legal_agreements_accepted_v1.0';
 
   // Default values
   static const String _defaultThemeMode = 'dark';
@@ -205,6 +207,55 @@ class PreferencesService {
   }
 
   // ============================================================================
+  // FIRST NAME METHODS
+  // ============================================================================
+
+  /// Save user's first name to preferences
+  ///
+  /// Returns true if save was successful, false otherwise.
+  Future<bool> saveFirstName(String firstName) async {
+    try {
+      final result = await _preferences?.setString(_firstNameKey, firstName);
+      return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Load user's first name from preferences
+  ///
+  /// Returns saved first name or null if not set.
+  String? loadFirstName() {
+    try {
+      return _preferences?.getString(_firstNameKey);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get user's first name or "friend" as default greeting
+  ///
+  /// Returns saved first name or "friend" if not set.
+  String getFirstNameOrDefault() {
+    final firstName = loadFirstName();
+    return firstName?.trim().isEmpty == true || firstName == null
+        ? 'friend'
+        : firstName;
+  }
+
+  /// Delete user's first name from preferences
+  ///
+  /// Returns true if deletion was successful, false otherwise.
+  Future<bool> deleteFirstName() async {
+    try {
+      final result = await _preferences?.remove(_firstNameKey);
+      return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ============================================================================
   // NOTIFICATION SETTINGS METHODS
   // ============================================================================
 
@@ -310,6 +361,39 @@ class PreferencesService {
   bool hasAcceptedTerms() {
     try {
       final bool? accepted = _preferences?.getBool(_termsAcceptedKey);
+      return accepted ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ============================================================================
+  // LEGAL AGREEMENTS ACCEPTANCE METHODS (Combined disclaimer + terms/privacy)
+  // ============================================================================
+
+  /// Save legal agreements acceptance status
+  ///
+  /// This covers the combined legal agreements screen that includes:
+  /// - Crisis disclaimer
+  /// - Terms of Service
+  /// - Privacy Policy
+  ///
+  /// Returns true if save was successful, false otherwise.
+  Future<bool> saveLegalAgreementAcceptance(bool accepted) async {
+    try {
+      final result = await _preferences?.setBool(_legalAgreementsKey, accepted);
+      return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Check if user has accepted all legal agreements
+  ///
+  /// Returns true if legal agreements have been accepted, false otherwise.
+  bool hasAcceptedLegalAgreements() {
+    try {
+      final bool? accepted = _preferences?.getBool(_legalAgreementsKey);
       return accepted ?? false;
     } catch (e) {
       return false;

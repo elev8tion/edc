@@ -1,6 +1,6 @@
 class AppRoutes {
   static const String splash = '/splash';
-  static const String disclaimer = '/disclaimer';
+  static const String legalAgreements = '/legal-agreements';
   static const String onboarding = '/onboarding';
   static const String auth = '/auth';
   static const String home = '/home';
@@ -29,7 +29,7 @@ class AppRoutes {
 
   static const List<String> publicRoutes = [
     splash,
-    disclaimer,
+    legalAgreements,
     onboarding,
     auth,
   ];
