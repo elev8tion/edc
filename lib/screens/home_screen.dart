@@ -472,7 +472,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      "AI Guidance",
+                      "Biblical Chat",
                       style: TextStyle(
                         fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,

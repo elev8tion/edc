@@ -30,7 +30,7 @@ void main() {
       expect(find.textContaining('Friend'), findsOneWidget);
 
       // Verify main features are present
-      expect(find.text('AI Guidance'), findsOneWidget);
+      expect(find.text('Biblical Chat'), findsOneWidget);
       expect(find.text('Daily Devotional'), findsOneWidget);
       expect(find.text('Prayer Journal'), findsOneWidget);
       expect(find.text('Reading Plans'), findsOneWidget);
@@ -128,7 +128,7 @@ void main() {
       expect(find.text('0'), findsWidgets); // Default value for error
     });
 
-    testWidgets('should navigate to chat when AI Guidance is tapped', (tester) async {
+    testWidgets('should navigate to chat when Biblical Chat is tapped', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
@@ -139,8 +139,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Find and tap AI Guidance card
-      await tester.tap(find.text('AI Guidance'));
+      // Find and tap Biblical Chat card
+      await tester.tap(find.text('Biblical Chat'));
       await tester.pumpAndSettle();
 
       // Navigation would be tested in integration tests
