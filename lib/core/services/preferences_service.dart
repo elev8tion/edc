@@ -36,6 +36,7 @@ class PreferencesService {
   static const String _languageKey = 'language_preference';
   static const String _textSizeKey = 'text_size';
   static const String _firstNameKey = 'user_first_name';
+  static const String _onboardingCompletedKey = 'onboarding_completed';
   static const String _dailyNotificationsKey = 'daily_notifications_enabled';
   static const String _prayerRemindersKey = 'prayer_reminders_enabled';
   static const String _verseOfTheDayKey = 'verse_of_the_day_enabled';
@@ -250,6 +251,33 @@ class PreferencesService {
     try {
       final result = await _preferences?.remove(_firstNameKey);
       return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ============================================================================
+  // ONBOARDING COMPLETION METHODS
+  // ============================================================================
+
+  /// Mark onboarding as completed
+  ///
+  /// Returns true if save was successful, false otherwise.
+  Future<bool> setOnboardingCompleted() async {
+    try {
+      final result = await _preferences?.setBool(_onboardingCompletedKey, true);
+      return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Check if user has completed onboarding
+  ///
+  /// Returns true if onboarding is completed, false otherwise.
+  bool hasCompletedOnboarding() {
+    try {
+      return _preferences?.getBool(_onboardingCompletedKey) ?? false;
     } catch (e) {
       return false;
     }

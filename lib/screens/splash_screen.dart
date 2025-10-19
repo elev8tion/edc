@@ -64,10 +64,21 @@ class SplashScreen extends HookConsumerWidget {
           return;
         }
 
-        // Legal agreements accepted, go to onboarding
+        // Check if user has completed onboarding
+        final hasCompletedOnboarding = prefsService.hasCompletedOnboarding();
+
+        if (!hasCompletedOnboarding) {
+          // First time user - show onboarding
+          if (_hasNavigated) return;
+          _hasNavigated = true;
+          NavigationService.pushReplacementNamed(AppRoutes.onboarding);
+          return;
+        }
+
+        // Returning user - go directly to home
         if (_hasNavigated) return;
         _hasNavigated = true;
-        NavigationService.pushReplacementNamed(AppRoutes.onboarding);
+        NavigationService.pushReplacementNamed(AppRoutes.home);
       });
       return null;
     }, []);

@@ -196,12 +196,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           if (_isNavigating) return;
                           _isNavigating = true;
 
+                          final prefsService = await PreferencesService.getInstance();
+
                           // Save first name if provided
                           final firstName = _nameController.text.trim();
                           if (firstName.isNotEmpty) {
-                            final prefsService = await PreferencesService.getInstance();
                             await prefsService.saveFirstName(firstName);
                           }
+
+                          // Mark onboarding as completed
+                          await prefsService.setOnboardingCompleted();
 
                           _triggerFeatureAnimations();
                           // Navigate after a short delay to let animations play
