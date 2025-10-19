@@ -163,6 +163,10 @@ class GlassBottomSheet extends StatelessWidget {
 }
 
 /// Helper to show bottom sheet with full-screen backdrop blur
+///
+/// DEPRECATED: Use `showCustomBottomSheet` from `base_bottom_sheet.dart` instead
+/// for consistent dark gradient styling across the app.
+@Deprecated('Use showCustomBottomSheet from base_bottom_sheet.dart instead')
 Future<T?> showGlassBottomSheet<T>({
   required BuildContext context,
   required Widget child,

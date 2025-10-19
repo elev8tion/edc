@@ -678,24 +678,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       enableHapticFeedback: true,
     );
 
-    final result = await showGlassBottomSheet<TimeRangeData>(
+    final result = await showTimeRangeSheet(
       context: context,
-      isScrollControlled: true,
-      child: GlassBottomSheet(
-        child: TimeRangeSheet(
-          initialStartTime: initialTime,
-          style: customStyle,
-          singlePicker: true,
-          allowInvalidRange: true,
-          onConfirm: (start, end) {
-            Navigator.of(context).pop(TimeRangeData(
-              startTime: start,
-              endTime: end,
-            ));
-          },
-          onCancel: () => Navigator.of(context).pop(),
-        ),
-      ),
+      initialStartTime: initialTime,
+      style: customStyle,
+      singlePicker: true,
+      allowInvalidRange: true,
     );
 
     if (result != null) {
