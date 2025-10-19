@@ -216,44 +216,56 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
                     children: [
                       // Terms of Service
                       FrostedGlassCard(
-                        padding: const EdgeInsets.all(AppSpacing.md),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
                         intensity: GlassIntensity.light,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _termsChecked,
-                                  onChanged: _isAccepting ? null : (value) {
-                                    setState(() => _termsChecked = value ?? false);
-                                  },
-                                  activeColor: AppTheme.primaryColor,
-                                ),
-                                Expanded(
-                                  child: Text(
+                            Checkbox(
+                              value: _termsChecked,
+                              onChanged: _isAccepting ? null : (value) {
+                                setState(() => _termsChecked = value ?? false);
+                              },
+                              shape: const CircleBorder(),
+                              side: BorderSide(
+                                color: AppTheme.goldColor.withValues(alpha: 0.6),
+                                width: 2,
+                              ),
+                              activeColor: AppTheme.primaryColor,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
                                     'I have read and agree to the',
                                     style: TextStyle(
                                       fontSize: ResponsiveUtils.fontSize(context, 14),
                                       color: AppColors.primaryText,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: AppSpacing.md),
-                              child: TextButton(
-                                onPressed: () => _showDocument(
-                                  'Terms of Service',
-                                  'assets/legal/TERMS_OF_SERVICE.md',
-                                ),
-                                child: const Text(
-                                  'Terms of Service',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
+                                  TextButton(
+                                    onPressed: () => _showDocument(
+                                      'Terms of Service',
+                                      'assets/legal/TERMS_OF_SERVICE.md',
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(0, 30),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'Terms of Service',
+                                      style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        color: Colors.white.withValues(alpha: 0.8),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
                           ],
@@ -264,44 +276,56 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
 
                       // Privacy Policy
                       FrostedGlassCard(
-                        padding: const EdgeInsets.all(AppSpacing.md),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
                         intensity: GlassIntensity.light,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _privacyChecked,
-                                  onChanged: _isAccepting ? null : (value) {
-                                    setState(() => _privacyChecked = value ?? false);
-                                  },
-                                  activeColor: AppTheme.primaryColor,
-                                ),
-                                Expanded(
-                                  child: Text(
+                            Checkbox(
+                              value: _privacyChecked,
+                              onChanged: _isAccepting ? null : (value) {
+                                setState(() => _privacyChecked = value ?? false);
+                              },
+                              shape: const CircleBorder(),
+                              side: BorderSide(
+                                color: AppTheme.goldColor.withValues(alpha: 0.6),
+                                width: 2,
+                              ),
+                              activeColor: AppTheme.primaryColor,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
                                     'I have read and agree to the',
                                     style: TextStyle(
                                       fontSize: ResponsiveUtils.fontSize(context, 14),
                                       color: AppColors.primaryText,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: AppSpacing.md),
-                              child: TextButton(
-                                onPressed: () => _showDocument(
-                                  'Privacy Policy',
-                                  'assets/legal/PRIVACY_POLICY.md',
-                                ),
-                                child: const Text(
-                                  'Privacy Policy',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
+                                  TextButton(
+                                    onPressed: () => _showDocument(
+                                      'Privacy Policy',
+                                      'assets/legal/PRIVACY_POLICY.md',
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(0, 30),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'Privacy Policy',
+                                      style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        color: Colors.white.withValues(alpha: 0.8),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
                           ],
