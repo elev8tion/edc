@@ -1202,7 +1202,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '⚠️ Before proceeding:',
+                                '⚠️ This will delete all local data including:',
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
                                   fontWeight: FontWeight.bold,
@@ -1211,11 +1211,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               Text(
-                                '• Export your prayer journal first (Settings > Export Data)\n• This will reset the app to factory defaults\n• You will need to reconfigure all settings',
+                                '• Prayer journal entries\n• Chat history\n• Saved verses\n• Settings and preferences',
                                 style: TextStyle(
                                   fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                                   color: Colors.white.withValues(alpha: 0.9),
                                   height: 1.4,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              Container(
+                                padding: const EdgeInsets.all(AppSpacing.sm),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(AppRadius.xs),
+                                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      size: 16,
+                                      color: Colors.blue.withValues(alpha: 0.9),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: Text(
+                                        'Your subscription will remain active and will be automatically restored on next app launch.',
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.fontSize(context, 11, minSize: 9, maxSize: 13),
+                                          color: Colors.white.withValues(alpha: 0.9),
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],

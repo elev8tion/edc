@@ -27,6 +27,9 @@ import '../core/services/content_filter_service.dart';
 import '../core/widgets/crisis_dialog.dart';
 import '../utils/responsive_utils.dart';
 import 'paywall_screen.dart';
+import '../components/message_limit_dialog.dart';
+import '../components/chat_screen_lockout_overlay.dart';
+import '../core/services/subscription_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -143,38 +146,66 @@ class ChatScreen extends HookConsumerWidget {
     Future<void> sendMessage(String text) async {
       if (text.trim().isEmpty) return;
 
-      // Check subscription and consume message
+      // Get subscription service and status
       final subscriptionService = ref.read(subscriptionServiceProvider);
-      final canSend = subscriptionService.canSendMessage;
+      final subscriptionStatus = subscriptionService.getSubscriptionStatus();
 
-      debugPrint('🔍 Subscription check: canSend=$canSend, kDebugMode=$kDebugMode');
+      debugPrint('🔍 Subscription check: status=$subscriptionStatus, kDebugMode=$kDebugMode');
 
-      // Bypass subscription check in debug mode
-      if (!canSend && !kDebugMode) {
-        // Show paywall
-        if (context.mounted) {
-          final result = await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PaywallScreen(
-                showTrialInfo: !subscriptionService.hasTrialExpired,
-              ),
-            ),
-          );
-          // If user didn't upgrade, don't send message
-          if (result != true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  subscriptionService.hasTrialExpired
-                      ? 'Subscribe to continue using AI chat'
-                      : 'No messages remaining today',
-                ),
-                backgroundColor: Colors.orange,
+      // Skip all checks in debug mode
+      if (kDebugMode) {
+        // In debug mode, allow sending without subscription checks
+      } else {
+        // 1. Check if user is locked out (trial expired or premium expired)
+        if (subscriptionStatus == SubscriptionStatus.trialExpired ||
+            subscriptionStatus == SubscriptionStatus.premiumExpired) {
+          // Show paywall directly - user is fully locked out
+          if (context.mounted) {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PaywallScreen(showTrialInfo: false),
               ),
             );
           }
+          return;
         }
-        return;
+
+        // 2. Check if user has messages remaining
+        if (!subscriptionService.canSendMessage) {
+          // Show message limit dialog first
+          if (context.mounted) {
+            final shouldShowPaywall = await MessageLimitDialog.show(
+              context: context,
+              isPremium: subscriptionStatus == SubscriptionStatus.premiumActive,
+              remainingMessages: subscriptionService.remainingMessages,
+            );
+
+            if (shouldShowPaywall == true) {
+              // User clicked "Subscribe Now"
+              final upgraded = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PaywallScreen(
+                    showTrialInfo: subscriptionStatus == SubscriptionStatus.inTrial,
+                  ),
+                ),
+              );
+
+              if (upgraded != true) {
+                // User didn't upgrade, don't send message
+                return;
+              }
+            } else {
+              // User clicked "Maybe Later"
+              // Days 1-2: Can still view history (just return)
+              // Day 3 + cancelled: Will be handled by lockout check on next screen load
+              return;
+            }
+          } else {
+            return;
+          }
+        }
       }
 
       // Consume message credit (skip in debug mode)
@@ -746,6 +777,36 @@ class ChatScreen extends HookConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
+          ],
+        ),
+      );
+    }
+
+    // ============================================================================
+    // SUBSCRIPTION LOCKOUT CHECK
+    // ============================================================================
+
+    // Check subscription status for chat lockout
+    final subscriptionService = ref.watch(subscriptionServiceProvider);
+    final subscriptionStatus = subscriptionService.getSubscriptionStatus();
+
+    // If trial expired or premium expired, show lockout overlay
+    if (subscriptionStatus == SubscriptionStatus.trialExpired ||
+        subscriptionStatus == SubscriptionStatus.premiumExpired) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            const GradientBackground(),
+            ChatScreenLockoutOverlay(
+              onSubscribePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PaywallScreen(showTrialInfo: false),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       );
