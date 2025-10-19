@@ -261,7 +261,7 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
                                       'Terms of Service',
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,
-                                        color: Colors.white.withValues(alpha: 0.8),
+                                        color: Colors.black87,
                                       ),
                                     ),
                                   ),
@@ -321,7 +321,7 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
                                       'Privacy Policy',
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,
-                                        color: Colors.white.withValues(alpha: 0.8),
+                                        color: Colors.black87,
                                       ),
                                     ),
                                   ),
