@@ -334,17 +334,57 @@ class SubscriptionService {
   ///
   /// Returns true if user has cancelled, false otherwise.
   ///
-  /// TODO (Task 3.2): Implement platform-specific cancellation checking
-  /// - iOS: Check receipt for cancellation_date or auto_renew_status
-  /// - Android: Check Play Billing API for subscription status
+  /// Implementation: Uses client-side approach with in_app_purchase plugin
+  /// - Queries past purchases from App Store/Play Store
+  /// - If premium subscription not found, assumes cancelled
+  /// - Privacy-first: No backend, all local
+  /// - Trade-off: Detection is eventual (on app launch), not real-time
+  ///
+  /// See: openspec/changes/subscription-refactor/RESEARCH_CANCELLATION_DETECTION.md
   Future<bool> _checkTrialCancellation() async {
-    // For now, return false (assume not cancelled)
-    // This will be enhanced in Phase 3 Task 3.2
-    developer.log(
-      'Trial cancellation check not yet implemented - assuming user did not cancel',
-      name: 'SubscriptionService',
-    );
-    return false;
+    try {
+      developer.log(
+        'Checking for subscription cancellation via restorePurchases',
+        name: 'SubscriptionService',
+      );
+
+      // Since restorePurchases() has already been called in initialize(),
+      // the isPremium flag reflects the current subscription status from the platform
+      //
+      // Implementation: Client-side detection using isPremium flag
+      // - restorePurchases() updates local state from App Store/Play Store
+      // - If premium subscription exists, isPremium will be true
+      // - If subscription was cancelled/expired, isPremium will be false
+      // - Privacy-first: No backend, all local validation
+      // - Trade-off: Detection is eventual (on app launch), not real-time
+      //
+      // See: openspec/changes/subscription-refactor/RESEARCH_CANCELLATION_DETECTION.md
+
+      final hasActivePremium = isPremium;
+
+      if (hasActivePremium) {
+        developer.log(
+          'Active premium subscription found - user has NOT cancelled',
+          name: 'SubscriptionService',
+        );
+        return false; // Has active subscription, did not cancel
+      } else {
+        developer.log(
+          'No active premium subscription found - assuming user cancelled or never subscribed',
+          name: 'SubscriptionService',
+        );
+        return true; // No active subscription found, assume cancelled
+      }
+    } catch (e) {
+      developer.log(
+        'Exception during cancellation check: $e',
+        name: 'SubscriptionService',
+        error: e,
+      );
+      // On error, assume not cancelled (fail-safe)
+      // This prevents blocking auto-subscribe due to temporary errors
+      return false;
+    }
   }
 
   /// Attempt automatic subscription if user is on day 3 and hasn't cancelled
