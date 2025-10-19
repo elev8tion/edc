@@ -5,9 +5,11 @@ import '../theme/app_theme.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/glass/static_liquid_glass_lens.dart';
+import '../components/terms_acceptance_dialog.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/widgets/app_initializer.dart';
+import '../core/services/preferences_service.dart';
 import '../hooks/animation_hooks.dart';
 import '../utils/responsive_utils.dart';
 import 'disclaimer_screen.dart';
@@ -43,7 +45,7 @@ class SplashScreen extends HookConsumerWidget {
       ),
     );
 
-    // Navigate to next screen after delay and check disclaimer
+    // Navigate to next screen after delay and check disclaimer + terms
     useEffect(() {
       // Guard against double navigation
       if (_hasNavigated) return null;
@@ -53,19 +55,45 @@ class SplashScreen extends HookConsumerWidget {
         if (_hasNavigated) return;
 
         // Check if user has agreed to disclaimer
-        final hasAgreed = await DisclaimerScreen.hasAgreedToDisclaimer();
+        final hasAgreedToDisclaimer = await DisclaimerScreen.hasAgreedToDisclaimer();
 
-        // Final check and set flag
+        if (!hasAgreedToDisclaimer) {
+          // Show disclaimer first
+          if (_hasNavigated) return;
+          _hasNavigated = true;
+          NavigationService.pushReplacementNamed(AppRoutes.disclaimer);
+          return;
+        }
+
+        // Check if user has accepted terms
+        final prefsService = await PreferencesService.getInstance();
+        final hasAcceptedTerms = prefsService.hasAcceptedTerms();
+
+        if (!hasAcceptedTerms) {
+          // Show Terms Acceptance Dialog
+          if (_hasNavigated) return;
+          _hasNavigated = true;
+
+          // Show blocking dialog
+          showDialog(
+            context: NavigationService.context!,
+            barrierDismissible: false,
+            builder: (context) => TermsAcceptanceDialog(
+              onAccepted: () {
+                // Close dialog
+                Navigator.of(context).pop();
+                // Navigate to onboarding
+                NavigationService.pushReplacementNamed(AppRoutes.onboarding);
+              },
+            ),
+          );
+          return;
+        }
+
+        // Both disclaimer and terms accepted, go to onboarding
         if (_hasNavigated) return;
         _hasNavigated = true;
-
-        if (!hasAgreed) {
-          // Show disclaimer first
-          NavigationService.pushReplacementNamed(AppRoutes.disclaimer);
-        } else {
-          // Go straight to onboarding
-          NavigationService.pushReplacementNamed(AppRoutes.onboarding);
-        }
+        NavigationService.pushReplacementNamed(AppRoutes.onboarding);
       });
       return null;
     }, []);

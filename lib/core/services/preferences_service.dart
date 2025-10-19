@@ -39,6 +39,7 @@ class PreferencesService {
   static const String _prayerRemindersKey = 'prayer_reminders_enabled';
   static const String _verseOfTheDayKey = 'verse_of_the_day_enabled';
   static const String _notificationTimeKey = 'notification_time';
+  static const String _termsAcceptedKey = 'terms_accepted_v1.0';
 
   // Default values
   static const String _defaultThemeMode = 'dark';
@@ -284,6 +285,34 @@ class PreferencesService {
       return time ?? _defaultNotificationTime;
     } catch (e) {
       return _defaultNotificationTime;
+    }
+  }
+
+  // ============================================================================
+  // TERMS ACCEPTANCE METHODS
+  // ============================================================================
+
+  /// Save terms acceptance status
+  ///
+  /// Returns true if save was successful, false otherwise.
+  Future<bool> saveTermsAcceptance(bool accepted) async {
+    try {
+      final result = await _preferences?.setBool(_termsAcceptedKey, accepted);
+      return result ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Check if user has accepted terms
+  ///
+  /// Returns true if terms have been accepted, false otherwise.
+  bool hasAcceptedTerms() {
+    try {
+      final bool? accepted = _preferences?.getBool(_termsAcceptedKey);
+      return accepted ?? false;
+    } catch (e) {
+      return false;
     }
   }
 

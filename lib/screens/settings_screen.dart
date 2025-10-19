@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../core/services/database_service.dart';
+import '../services/conversation_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
 import '../components/gradient_background.dart';
@@ -1038,20 +1039,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _exportUserData() async {
     try {
-      final prayerService = ref.read(prayerServiceProvider);
-      final exportText = await prayerService.exportPrayerJournal();
+      final buffer = StringBuffer();
+      buffer.writeln('=' * 60);
+      buffer.writeln('EVERYDAY CHRISTIAN - DATA EXPORT');
+      buffer.writeln('Export Date: ${DateTime.now().toString()}');
+      buffer.writeln('=' * 60);
+      buffer.writeln();
 
-      if (exportText.isEmpty) {
-        _showSnackBar('No prayer data to export');
+      // Export Prayer Journal
+      final prayerService = ref.read(prayerServiceProvider);
+      final prayerExport = await prayerService.exportPrayerJournal();
+
+      if (prayerExport.isNotEmpty) {
+        buffer.writeln('📿 PRAYER JOURNAL');
+        buffer.writeln('=' * 60);
+        buffer.writeln(prayerExport);
+        buffer.writeln();
+      }
+
+      // Export AI Chat Conversations
+      final conversationService = ConversationService();
+      final sessions = await conversationService.getSessions(includeArchived: true);
+
+      if (sessions.isNotEmpty) {
+        buffer.writeln('💬 AI CHAT CONVERSATIONS');
+        buffer.writeln('=' * 60);
+        buffer.writeln('Total Sessions: ${sessions.length}');
+        buffer.writeln();
+
+        for (final session in sessions) {
+          final sessionId = session['id'] as String;
+          final title = session['title'] as String;
+          final isArchived = session['is_archived'] == 1;
+
+          final conversationExport = await conversationService.exportConversation(sessionId);
+
+          if (conversationExport.isNotEmpty) {
+            buffer.writeln('-' * 60);
+            buffer.writeln('Session: $title ${isArchived ? "(Archived)" : ""}');
+            buffer.writeln('-' * 60);
+            buffer.writeln(conversationExport);
+            buffer.writeln();
+          }
+        }
+      }
+
+      final exportText = buffer.toString();
+
+      if (exportText.isEmpty || exportText.length < 200) {
+        _showSnackBar('No data to export');
         return;
       }
 
       await Share.share(
         exportText,
-        subject: 'Prayer Journal Export',
+        subject: 'Everyday Christian - Data Export',
       );
 
-      _showSnackBar('📤 Prayer journal exported successfully');
+      final prayerCount = prayerExport.isNotEmpty ? 1 : 0;
+      final chatCount = sessions.length;
+      _showSnackBar('📤 Exported $prayerCount prayer journal${prayerCount != 1 ? 's' : ''} and $chatCount conversation${chatCount != 1 ? 's' : ''}');
     } catch (e) {
       _showSnackBar('Failed to export: $e');
     }
