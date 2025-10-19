@@ -23,7 +23,7 @@ Everyday Christian is a pastoral counseling app that provides:
 ## ✨ Features
 
 ### Core Functionality
-- **Biblical AI Chat (Premium - $35/year):** -150 messages/month with Enhanced Pastoral Model, Trained in Real World Experience
+- **Biblical AI Chat (Premium - ~$35/year):** -150 messages/month with Enhanced Pastoral Model, Trained in Real World Experience
 - **Daily Verse:** Smart verse selection based on user preferences
 - **Devotionals:** Structured reading plans and devotional content
 - **Prayer Journal:** Track prayers with categories and streaks
@@ -53,7 +53,7 @@ Everyday Christian is a pastoral counseling app that provides:
 - ✅ Daily verse, Bible search, prayer journal, reading plans, devotionals
 - ✅ All features except AI pastoral chat
 
-### Premium - $35/Year
+### Premium - ~$35/Year
 - ✅ **3-day free trial** (5 AI messages/day during trial)
 - ✅ **AI pastoral chat** - Enhanced Pastoral Model, Trained in Real World Experience
 150 messages/month after trial

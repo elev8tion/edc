@@ -34,7 +34,7 @@ Everyday Christian is a faith-centered mobile application that provides:
 - Crisis intervention resources including 988 Suicide & Crisis Lifeline
 - Biometric authentication for privacy protection
 
-**Premium Features ($35/year subscription):**
+**Premium Features (approximately $35/year subscription):**
 - AI-powered pastoral guidance using Google Gemini 2.0 Flash API
 - 150 AI chat messages per month with biblically-grounded responses
 - Scripture-based guidance on faith questions, spiritual struggles, and life challenges
