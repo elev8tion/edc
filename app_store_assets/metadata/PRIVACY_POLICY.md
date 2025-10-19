@@ -309,7 +309,7 @@ Everyday Christian is designed for Christians of all ages seeking biblical guida
 3. Disable Premium features: Cancel subscription through Apple/Google subscription settings
 4. Block AI chat: Use device-level parental controls to restrict Premium purchases
 
-**Contact for COPPA Concerns**: support@everydaychristian.app
+**Contact for COPPA Concerns**: connect@everydaychristian.app
 
 ### 7.3 What Data We Collect from Children (If Any)
 
@@ -385,7 +385,7 @@ If a child under 13 uses Everyday Christian:
 
 **Right to Limit Sensitive Data Use** (CPRA §1798.121): All sensitive religious data stays local except Premium chat messages sent anonymously to Google
 
-**Contact**: support@everydaychristian.app | Response time: 30 days
+**Contact**: connect@everydaychristian.app | Response time: 30 days
 
 ### 8.3 European Privacy Rights (GDPR)
 
@@ -416,15 +416,15 @@ If a child under 13 uses Everyday Christian:
 
 **Data Processor**: Google LLC (for Gemini API - Premium users only)
 
-**Data Protection Officer**: Not required for our scale, but contact support@everydaychristian.app for privacy matters
+**Data Protection Officer**: Not required for our scale, but contact connect@everydaychristian.app for privacy matters
 
 ### 8.4 Other Jurisdictions
 
-**Brazil (LGPD)**: Rights similar to GDPR, contact support@everydaychristian.app
+**Brazil (LGPD)**: Rights similar to GDPR, contact connect@everydaychristian.app
 
-**Canada (PIPEDA)**: Rights to access and correct data, contact support@everydaychristian.app
+**Canada (PIPEDA)**: Rights to access and correct data, contact connect@everydaychristian.app
 
-**Australia (Privacy Act)**: Rights to access and correction, contact support@everydaychristian.app
+**Australia (Privacy Act)**: Rights to access and correction, contact connect@everydaychristian.app
 
 **All regions**: Our privacy-first architecture means you have direct control over your data through device-level access and deletion
 
@@ -525,7 +525,7 @@ We may update this Privacy Policy to reflect changes in our practices, technolog
 
 ### 11.3 Version History
 
-We maintain an archive of previous Privacy Policy versions. To request a previous version, contact support@everydaychristian.app
+We maintain an archive of previous Privacy Policy versions. To request a previous version, contact connect@everydaychristian.app
 
 ### 11.4 Your Options After Changes
 
@@ -542,7 +542,7 @@ If you disagree with updated terms:
 
 **For questions about this Privacy Policy or our data practices:**
 
-**Email**: support@everydaychristian.app
+**Email**: connect@everydaychristian.app
 **Response Time**: Within 30 days of inquiry
 **Mailing Address**: [INSERT IF REQUIRED BY YOUR JURISDICTION]
 
@@ -550,13 +550,13 @@ If you disagree with updated terms:
 
 To exercise your privacy rights (access, deletion, correction, etc.):
 1. Most rights can be exercised directly in app Settings
-2. For assistance: email support@everydaychristian.app with "Privacy Rights Request" in subject line
+2. For assistance: email connect@everydaychristian.app with "Privacy Rights Request" in subject line
 3. We may request verification of device ownership before assisting with requests
 
 ### 12.3 COPPA Parental Inquiries
 
 **Parents with questions about children under 13**:
-Email: support@everydaychristian.app with "COPPA Inquiry" in subject line
+Email: connect@everydaychristian.app with "COPPA Inquiry" in subject line
 
 ### 12.4 Data Protection Authorities
 
@@ -581,7 +581,7 @@ Email: support@everydaychristian.app with "COPPA Inquiry" in subject line
 **CRITICAL: Before app store submission, you MUST:**
 
 1. **Replace all placeholders:**
-   - `support@everydaychristian.app` → Your actual support email
+   - `connect@everydaychristian.app` → Your actual support email
    - `[INSERT LEGAL ENTITY NAME]` → Your company/individual name
    - `[INSERT BUSINESS ADDRESS]` → Your business address (required in CA, EU)
 

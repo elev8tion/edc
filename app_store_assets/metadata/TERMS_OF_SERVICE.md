@@ -260,7 +260,7 @@ If you believe content in the App infringes your copyright, please contact us wi
 5. Statement that information is accurate and you are authorized to act
 6. Your physical or electronic signature
 
-**DMCA Contact:** support@everydaychristian.app
+**DMCA Contact:** connect@everydaychristian.app
 
 ## 7. Disclaimers and Limitations of Liability
 
@@ -383,7 +383,7 @@ These Terms shall be governed by and construed in accordance with the laws of th
 
 ### 11.2 Informal Dispute Resolution
 
-**Before filing a claim**, you agree to contact us at support@everydaychristian.app and attempt to resolve the dispute informally. We will attempt to resolve the dispute through good-faith negotiation within 60 days.
+**Before filing a claim**, you agree to contact us at connect@everydaychristian.app and attempt to resolve the dispute informally. We will attempt to resolve the dispute through good-faith negotiation within 60 days.
 
 ### 11.3 Arbitration Agreement
 
@@ -405,7 +405,7 @@ These Terms shall be governed by and construed in accordance with the laws of th
 
 ### 11.4 Opt-Out of Arbitration
 
-You may opt out of the arbitration agreement by sending written notice to support@everydaychristian.app within 30 days of first accepting these Terms. Your opt-out notice must include your name, address, and a clear statement that you wish to opt out of arbitration.
+You may opt out of the arbitration agreement by sending written notice to connect@everydaychristian.app within 30 days of first accepting these Terms. Your opt-out notice must include your name, address, and a clear statement that you wish to opt out of arbitration.
 
 ### 11.5 Jurisdiction and Venue
 
@@ -467,7 +467,7 @@ Material changes include:
 
 ### 13.4 Version Archive
 
-We maintain an archive of previous Terms versions. To request a previous version, contact support@everydaychristian.app.
+We maintain an archive of previous Terms versions. To request a previous version, contact connect@everydaychristian.app.
 
 ## 14. Miscellaneous Provisions
 
@@ -499,7 +499,7 @@ These Terms do not create any third-party beneficiary rights except as expressly
 - Updates to this Terms document
 
 **To Us:** You may contact us at:
-- **Email:** support@everydaychristian.app
+- **Email:** connect@everydaychristian.app
 - **Mailing Address:** [INSERT IF REQUIRED BY JURISDICTION]
 
 ### 14.7 Headings
@@ -514,7 +514,7 @@ These Terms are drafted in English. In the event of any conflict between an Engl
 
 **For questions about these Terms, the App, or to report violations:**
 
-**Email:** support@everydaychristian.app
+**Email:** connect@everydaychristian.app
 **Response Time:** Within 7 business days for general inquiries, 30 days for legal matters
 
 **For Premium subscription support:**
@@ -522,10 +522,10 @@ These Terms are drafted in English. In the event of any conflict between an Engl
 - Android: Google Play Store support
 
 **For technical support or bug reports:**
-Email: support@everydaychristian.app with "Technical Support" in subject line
+Email: connect@everydaychristian.app with "Technical Support" in subject line
 
 **For content policy violations:**
-Email: support@everydaychristian.app with "Content Violation Report" in subject line
+Email: connect@everydaychristian.app with "Content Violation Report" in subject line
 
 **For privacy inquiries:**
 See our Privacy Policy for detailed contact information regarding data protection rights.
@@ -545,7 +545,7 @@ See our Privacy Policy for detailed contact information regarding data protectio
 **CRITICAL: Before app store submission:**
 
 1. **Replace placeholders:**
-   - `support@everydaychristian.app` → Your actual support email
+   - `connect@everydaychristian.app` → Your actual support email
    - `[INSERT LEGAL ENTITY NAME]` → Your company/individual legal name
    - `[INSERT STATE]` → Your state for governing law
    - `[INSERT COUNTY, STATE]` → County and state for venue

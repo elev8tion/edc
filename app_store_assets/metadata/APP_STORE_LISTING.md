@@ -94,7 +94,7 @@ Download Everyday Christian today and take the next step in your faith journey. 
 
 CONNECT WITH US
 Website: www.everydaychristian.app
-Email: support@everydaychristian.app
+Email: connect@everydaychristian.app
 Privacy Policy: www.everydaychristian.app/privacy
 ```
 
@@ -224,7 +224,7 @@ Made with ❤️ for believers, by believers.
 Download Everyday Christian now and experience faith-based living in the modern age!
 
 📧 SUPPORT & FEEDBACK
-Email: support@everydaychristian.app
+Email: connect@everydaychristian.app
 Website: www.everydaychristian.app
 Privacy: www.everydaychristian.app/privacy
 
@@ -252,7 +252,7 @@ Version 1.0.0 - Launch Release! 🎉
 
 Thank you for being part of our launch! Share the app and help others grow in faith.
 
-Questions? Contact support@everydaychristian.app
+Questions? Contact connect@everydaychristian.app
 ```
 
 ### Support URL
@@ -426,5 +426,5 @@ Same as above, reformatted for 5.5" display
 
 ### Review Response Template
 ```
-Thank you for your review! We're thrilled Everyday Christian is helping you grow in faith. If you have any suggestions or need support, please email us at support@everydaychristian.app. God bless!
+Thank you for your review! We're thrilled Everyday Christian is helping you grow in faith. If you have any suggestions or need support, please email us at connect@everydaychristian.app. God bless!
 ```
