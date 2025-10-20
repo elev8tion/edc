@@ -357,18 +357,18 @@ class SubscriptionSettingsScreen extends ConsumerWidget {
     final benefits = [
       {
         'icon': Icons.chat_bubble_outline,
-        'title': 'AI Pastoral Guidance',
-        'subtitle': 'Gemini 2.0 Flash with 19,750 training examples',
+        'title': 'Intelligent Scripture Chat',
+        'subtitle': 'Custom Real World Pastoral Training',
       },
       {
         'icon': Icons.all_inclusive,
         'title': '150 Messages Monthly',
-        'subtitle': 'More than enough for daily guidance',
+        'subtitle': 'More than enough for daily conversations',
       },
       {
         'icon': Icons.psychology,
         'title': 'Context-Aware Responses',
-        'subtitle': 'Biblical guidance tailored to your needs',
+        'subtitle': 'Biblical intelligence tailored to provide insight',
       },
       {
         'icon': Icons.shield_outlined,

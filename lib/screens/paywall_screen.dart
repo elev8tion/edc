@@ -14,6 +14,7 @@ import '../components/frosted_glass_card.dart';
 import '../components/glass_button.dart';
 import '../components/glass_section_header.dart';
 import '../components/category_badge.dart';
+import '../components/glassmorphic_fab_menu.dart';
 import '../theme/app_theme.dart';
 import '../core/providers/app_providers.dart';
 import '../core/services/subscription_service.dart';
@@ -22,9 +23,13 @@ class PaywallScreen extends ConsumerStatefulWidget {
   /// Optional: show trial info (true) or expired message (false)
   final bool showTrialInfo;
 
+  /// Optional: show message usage stats (messages left, used, days)
+  final bool showMessageStats;
+
   const PaywallScreen({
     Key? key,
     this.showTrialInfo = true,
+    this.showMessageStats = false,
   }) : super(key: key);
 
   @override
@@ -40,63 +45,34 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final isInTrial = ref.watch(isInTrialProvider);
     final trialDaysRemaining = ref.watch(trialDaysRemainingProvider);
     final premiumProduct = subscriptionService.premiumProduct;
+    final isPremium = ref.watch(isPremiumProvider);
+    final remainingMessages = ref.watch(remainingMessagesProvider);
+    final messagesUsed = ref.watch(messagesUsedProvider);
 
     return Scaffold(
       body: Stack(
         children: [
           const GradientBackground(),
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                // App Bar
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  leading: IconButton(
-                    icon: Icon(
-                      Icons.close,
-                      color: AppColors.primaryText,
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  pinned: false,
-                ),
-
-                // Content
-                SliverPadding(
+            child: Column(
+              children: [
+                // App Bar with FAB
+                Container(
                   padding: AppSpacing.screenPadding,
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      // Header Icon
-                      Center(
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppTheme.goldColor.withValues(alpha: 0.6),
-                              width: 3,
-                            ),
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withValues(alpha: 0.15),
-                                Colors.white.withValues(alpha: 0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.workspace_premium,
-                            size: 50,
-                            color: AppTheme.goldColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Title
+                  child: Row(
+                    children: [
+                      const GlassmorphicFABMenu(),
+                      Expanded(child: Container()),
+                    ],
+                  ),
+                ),
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: AppSpacing.screenPadding,
+                    child: Column(
+                      children: [
+                        // Title
                       Text(
                         'Everyday Christian\nPremium',
                         style: TextStyle(
@@ -131,12 +107,49 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         ),
                       const SizedBox(height: AppSpacing.xxl),
 
-                      // Pricing Card
-                      FrostedGlassCard(
-                        padding: const EdgeInsets.all(AppSpacing.xl),
-                        intensity: GlassIntensity.strong,
-                        borderColor: AppTheme.goldColor.withValues(alpha: 0.8),
-                        child: Column(
+                      // Message Stats (if enabled)
+                      if (widget.showMessageStats) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.chat_bubble_outline,
+                                value: '$remainingMessages',
+                                label: 'Messages\nLeft',
+                                color: Colors.purple,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: Icons.check_circle_outline,
+                                value: '$messagesUsed',
+                                label: isPremium ? 'Used This\nMonth' : 'Used\nToday',
+                                color: Colors.green,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: _buildStatCard(
+                                icon: isPremium ? Icons.all_inclusive : Icons.schedule,
+                                value: isPremium ? '150' : '$trialDaysRemaining',
+                                label: isPremium ? 'Monthly\nLimit' : 'Trial Days\nLeft',
+                                color: isPremium ? AppTheme.goldColor : Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.xxl),
+                      ],
+
+                      // Pricing Card (Tappable)
+                      GestureDetector(
+                        onTap: _isProcessing ? null : _handlePurchase,
+                        child: FrostedGlassCard(
+                          padding: const EdgeInsets.all(AppSpacing.xl),
+                          intensity: GlassIntensity.strong,
+                          borderColor: AppTheme.goldColor.withValues(alpha: 0.8),
+                          child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -202,6 +215,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             ),
                           ],
                         ),
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.xxl),
 
@@ -215,20 +229,20 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       // Feature List
                       _buildFeatureItem(
                         icon: Icons.chat_bubble_outline,
-                        title: 'AI Pastoral Guidance',
-                        subtitle: 'Access Gemini 2.0 Flash with 19,750 pastoral training examples',
+                        title: 'Intelligent Scripture Chat',
+                        subtitle: 'Custom Real World Pastoral Training',
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _buildFeatureItem(
                         icon: Icons.all_inclusive,
                         title: '150 Messages Monthly',
-                        subtitle: 'More than enough for daily guidance and support',
+                        subtitle: 'More than enough for daily conversations',
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _buildFeatureItem(
                         icon: Icons.psychology,
                         title: 'Context-Aware Responses',
-                        subtitle: 'Biblical guidance tailored to your specific needs',
+                        subtitle: 'Biblical intelligence tailored to provide insight',
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _buildFeatureItem(
@@ -300,11 +314,60 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xxl),
-                    ]),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build a stat card (for message stats display)
+  Widget _buildStatCard({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return FrostedGlassCard(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      intensity: GlassIntensity.medium,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+            ),
+            child: Icon(icon, size: 24, color: color),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryText,
+              shadows: AppTheme.textShadowStrong,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.white.withValues(alpha: 0.9),
+              shadows: AppTheme.textShadowSubtle,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
           ),
         ],
       ),
@@ -387,7 +450,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Premium activated! Enjoy unlimited AI guidance.'),
+            content: const Text('Premium activated! 150 Messages Monthly.'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
