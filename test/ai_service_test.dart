@@ -23,9 +23,10 @@ void main() {
         BibleVerse(
           book: 'John',
           chapter: 3,
-          verse: 16,
+          verseNumber: 16,
           text: 'For God so loved the world...',
           translation: 'ESV',
+          reference: 'John 3:16',
           themes: const ['love'],
           category: 'salvation',
         ),
@@ -171,7 +172,7 @@ void main() {
     test('should include conversation history', () {
       final history = [
         ChatMessage.user(content: 'Previous question'),
-        ChatMessage.assistant(content: 'Previous answer'),
+        ChatMessage.ai(content: 'Previous answer'),
       ];
 
       final prompt = BiblicalPrompts.buildUserPrompt(
@@ -364,7 +365,7 @@ void main() {
       for (final verse in response.verses) {
         expect(verse.book, isNotEmpty);
         expect(verse.chapter, greaterThan(0));
-        expect(verse.verse, greaterThan(0));
+        expect(verse.verseNumber, greaterThan(0));
         expect(verse.text, isNotEmpty);
       }
     });

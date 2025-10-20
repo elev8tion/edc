@@ -9,14 +9,15 @@ void main() {
         id: '1',
         title: 'Test Prayer',
         description: 'Please pray for...',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
         dateCreated: now,
+        isAnswered: false,
       );
 
       expect(prayer.id, equals('1'));
       expect(prayer.title, equals('Test Prayer'));
       expect(prayer.description, equals('Please pray for...'));
-      expect(prayer.category, equals(PrayerCategory.general));
+      expect(prayer.categoryId, equals('cat_general'));
       expect(prayer.dateCreated, equals(now));
       expect(prayer.isAnswered, isFalse);
       expect(prayer.dateAnswered, isNull);
@@ -31,7 +32,7 @@ void main() {
         id: '1',
         title: 'Test',
         description: 'Test description',
-        category: PrayerCategory.health,
+        categoryId: 'cat_health',
         dateCreated: created,
         isAnswered: true,
         dateAnswered: answered,
@@ -49,7 +50,7 @@ void main() {
         id: '1',
         title: 'Test',
         description: 'Description',
-        category: PrayerCategory.family,
+        categoryId: 'cat_family',
         dateCreated: now,
         isAnswered: true,
       );
@@ -58,7 +59,7 @@ void main() {
 
       expect(json['id'], equals('1'));
       expect(json['title'], equals('Test'));
-      expect(json['category'], equals('family'));
+      expect(json['categoryId'], equals('cat_family'));
       expect(json['isAnswered'], isTrue);
     });
 
@@ -67,7 +68,7 @@ void main() {
         'id': '1',
         'title': 'Test Prayer',
         'description': 'Test',
-        'category': 'work',
+        'categoryId': 'cat_work',
         'dateCreated': DateTime.now().toIso8601String(),
         'isAnswered': false,
       };
@@ -76,7 +77,7 @@ void main() {
 
       expect(prayer.id, equals('1'));
       expect(prayer.title, equals('Test Prayer'));
-      expect(prayer.category, equals(PrayerCategory.work));
+      expect(prayer.categoryId, equals('cat_work'));
       expect(prayer.isAnswered, isFalse);
     });
 
@@ -86,8 +87,9 @@ void main() {
         id: '1',
         title: 'Original',
         description: 'Original description',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
         dateCreated: now,
+        isAnswered: false,
       );
 
       final updated = prayer.copyWith(
@@ -107,44 +109,21 @@ void main() {
         id: '1',
         title: 'Test',
         description: 'Test',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
         dateCreated: now,
+        isAnswered: false,
       );
 
       final prayer2 = PrayerRequest(
         id: '1',
         title: 'Test',
         description: 'Test',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
         dateCreated: now,
+        isAnswered: false,
       );
 
       expect(prayer1, equals(prayer2));
-    });
-  });
-
-  group('PrayerCategory Enum', () {
-    test('should have all categories', () {
-      expect(PrayerCategory.values.length, equals(7));
-      expect(PrayerCategory.values, contains(PrayerCategory.general));
-      expect(PrayerCategory.values, contains(PrayerCategory.health));
-      expect(PrayerCategory.values, contains(PrayerCategory.family));
-      expect(PrayerCategory.values, contains(PrayerCategory.work));
-      expect(PrayerCategory.values, contains(PrayerCategory.protection));
-      expect(PrayerCategory.values, contains(PrayerCategory.guidance));
-      expect(PrayerCategory.values, contains(PrayerCategory.gratitude));
-    });
-  });
-
-  group('PrayerCategoryExtension', () {
-    test('should return correct display names', () {
-      expect(PrayerCategory.general.displayName, equals('General'));
-      expect(PrayerCategory.health.displayName, equals('Health'));
-      expect(PrayerCategory.family.displayName, equals('Family'));
-      expect(PrayerCategory.work.displayName, equals('Work/Career'));
-      expect(PrayerCategory.protection.displayName, equals('Protection'));
-      expect(PrayerCategory.guidance.displayName, equals('Guidance'));
-      expect(PrayerCategory.gratitude.displayName, equals('Gratitude'));
     });
   });
 }

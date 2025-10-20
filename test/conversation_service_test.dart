@@ -106,7 +106,7 @@ void main() {
           content: 'Message 1',
           sessionId: sessionId,
         );
-        final message2 = ChatMessage.assistant(
+        final message2 = ChatMessage.ai(
           content: 'Response 1',
           sessionId: sessionId,
         );
@@ -154,9 +154,9 @@ void main() {
       test('should save multiple messages in transaction', () async {
         final messages = [
           ChatMessage.user(content: 'Question 1', sessionId: sessionId),
-          ChatMessage.assistant(content: 'Answer 1', sessionId: sessionId),
+          ChatMessage.ai(content: 'Answer 1', sessionId: sessionId),
           ChatMessage.user(content: 'Question 2', sessionId: sessionId),
-          ChatMessage.assistant(content: 'Answer 2', sessionId: sessionId),
+          ChatMessage.ai(content: 'Answer 2', sessionId: sessionId),
         ];
 
         await conversationService.saveMessages(messages);
@@ -254,9 +254,9 @@ void main() {
         // Add various messages
         await conversationService.saveMessages([
           ChatMessage.user(content: 'How can I find peace?', sessionId: sessionId),
-          ChatMessage.assistant(content: 'Peace comes from trusting God.', sessionId: sessionId),
+          ChatMessage.ai(content: 'Peace comes from trusting God.', sessionId: sessionId),
           ChatMessage.user(content: 'What about anxiety?', sessionId: sessionId),
-          ChatMessage.assistant(content: 'Cast your anxiety on Him.', sessionId: sessionId),
+          ChatMessage.ai(content: 'Cast your anxiety on Him.', sessionId: sessionId),
           ChatMessage.user(content: 'How to have joy?', sessionId: sessionId),
         ]);
       });
@@ -297,7 +297,7 @@ void main() {
 
         await conversationService.saveMessages([
           ChatMessage.user(content: 'Hello', sessionId: sessionId),
-          ChatMessage.assistant(content: 'Hi there!', sessionId: sessionId),
+          ChatMessage.ai(content: 'Hi there!', sessionId: sessionId),
         ]);
 
         final export = await conversationService.exportConversation(sessionId);
