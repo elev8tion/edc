@@ -1353,7 +1353,7 @@ class ChatScreen extends HookConsumerWidget {
                   fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Ask for biblical guidance...',
+                  hintText: 'Scripture Chat...',
                   hintStyle: TextStyle(
                     color: AppColors.tertiaryText,
                     fontSize: ResponsiveUtils.fontSize(context, 15, minSize: 13, maxSize: 17),
