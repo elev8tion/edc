@@ -1,4 +1,3 @@
-import 'package:sqflite/sqflite.dart';
 import '../models/devotional.dart';
 import 'database_service.dart';
 
@@ -23,7 +22,6 @@ class DevotionalProgressService {
       whereArgs: [devotionalId],
     );
 
-    print('✅ Devotional $devotionalId marked as complete');
   }
 
   /// Mark a devotional as incomplete
@@ -40,7 +38,6 @@ class DevotionalProgressService {
       whereArgs: [devotionalId],
     );
 
-    print('❌ Devotional $devotionalId marked as incomplete');
   }
 
   /// Get completion status for a specific devotional

@@ -586,11 +586,11 @@ class _BibleBrowserScreenState extends ConsumerState<BibleBrowserScreen> with Ti
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF1a1a2e).withValues(alpha: 0.95),
-                const Color(0xFF16213e).withValues(alpha: 0.95),
+                const Color(0xFF1E293B).withValues(alpha: 0.95), // Standard slate-800
+                const Color(0xFF0F172A).withValues(alpha: 0.98), // Standard slate-900
               ],
             ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
           ),
           child: Column(
             children: [

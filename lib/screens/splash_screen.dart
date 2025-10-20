@@ -8,9 +8,9 @@ import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/widgets/app_initializer.dart';
+import '../core/services/preferences_service.dart';
 import '../hooks/animation_hooks.dart';
 import '../utils/responsive_utils.dart';
-import 'disclaimer_screen.dart';
 
 class SplashScreen extends HookConsumerWidget {
   const SplashScreen({super.key});
@@ -43,7 +43,7 @@ class SplashScreen extends HookConsumerWidget {
       ),
     );
 
-    // Navigate to next screen after delay and check disclaimer
+    // Navigate to next screen after delay and check legal agreements
     useEffect(() {
       // Guard against double navigation
       if (_hasNavigated) return null;
@@ -52,20 +52,33 @@ class SplashScreen extends HookConsumerWidget {
         // Double-check before navigation
         if (_hasNavigated) return;
 
-        // Check if user has agreed to disclaimer
-        final hasAgreed = await DisclaimerScreen.hasAgreedToDisclaimer();
+        // Check if user has accepted all legal agreements
+        final prefsService = await PreferencesService.getInstance();
+        final hasAcceptedLegalAgreements = prefsService.hasAcceptedLegalAgreements();
 
-        // Final check and set flag
+        if (!hasAcceptedLegalAgreements) {
+          // Show legal agreements screen
+          if (_hasNavigated) return;
+          _hasNavigated = true;
+          NavigationService.pushReplacementNamed(AppRoutes.legalAgreements);
+          return;
+        }
+
+        // Check if user has completed onboarding
+        final hasCompletedOnboarding = prefsService.hasCompletedOnboarding();
+
+        if (!hasCompletedOnboarding) {
+          // First time user - show onboarding
+          if (_hasNavigated) return;
+          _hasNavigated = true;
+          NavigationService.pushReplacementNamed(AppRoutes.onboarding);
+          return;
+        }
+
+        // Returning user - go directly to home
         if (_hasNavigated) return;
         _hasNavigated = true;
-
-        if (!hasAgreed) {
-          // Show disclaimer first
-          NavigationService.pushReplacementNamed(AppRoutes.disclaimer);
-        } else {
-          // Go straight to onboarding
-          NavigationService.pushReplacementNamed(AppRoutes.onboarding);
-        }
+        NavigationService.pushReplacementNamed(AppRoutes.home);
       });
       return null;
     }, []);

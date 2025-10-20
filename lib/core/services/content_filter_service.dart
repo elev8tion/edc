@@ -267,9 +267,6 @@ class ContentFilterService {
   /// Log filtered response (for improvement and monitoring)
   void logFilteredResponse(FilterResult result, String response) {
     if (result.isRejected && kDebugMode) {
-      print('[CONTENT FILTERED] Reason: ${result.rejectionReason}');
-      print('[CONTENT FILTERED] Matched: ${result.matchedPhrases}');
-      print('[CONTENT FILTERED] Response length: ${response.length} chars');
       // Do NOT log actual response text - privacy
     }
 

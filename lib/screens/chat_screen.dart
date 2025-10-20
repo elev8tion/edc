@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -21,8 +22,14 @@ import '../components/is_typing_indicator.dart';
 import '../components/time_and_status.dart';
 import '../services/conversation_service.dart';
 import '../services/gemini_ai_service.dart';
+import '../core/services/crisis_detection_service.dart';
+import '../core/services/content_filter_service.dart';
+import '../core/widgets/crisis_dialog.dart';
 import '../utils/responsive_utils.dart';
 import 'paywall_screen.dart';
+import '../components/message_limit_dialog.dart';
+import '../components/chat_screen_lockout_overlay.dart';
+import '../core/services/subscription_service.dart';
 
 class ChatScreen extends HookConsumerWidget {
   const ChatScreen({super.key});
@@ -139,39 +146,70 @@ class ChatScreen extends HookConsumerWidget {
     Future<void> sendMessage(String text) async {
       if (text.trim().isEmpty) return;
 
-      // Check subscription and consume message
+      // Get subscription service and status
       final subscriptionService = ref.read(subscriptionServiceProvider);
-      final canSend = subscriptionService.canSendMessage;
+      final subscriptionStatus = subscriptionService.getSubscriptionStatus();
 
-      if (!canSend) {
-        // Show paywall
-        if (context.mounted) {
-          final result = await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PaywallScreen(
-                showTrialInfo: !subscriptionService.hasTrialExpired,
-              ),
-            ),
-          );
-          // If user didn't upgrade, don't send message
-          if (result != true && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  subscriptionService.hasTrialExpired
-                      ? 'Subscribe to continue using AI chat'
-                      : 'No messages remaining today',
-                ),
-                backgroundColor: Colors.orange,
+      debugPrint('🔍 Subscription check: status=$subscriptionStatus, kDebugMode=$kDebugMode');
+
+      // Skip all checks in debug mode
+      if (kDebugMode) {
+        // In debug mode, allow sending without subscription checks
+      } else {
+        // 1. Check if user is locked out (trial expired or premium expired)
+        if (subscriptionStatus == SubscriptionStatus.trialExpired ||
+            subscriptionStatus == SubscriptionStatus.premiumExpired) {
+          // Show paywall directly - user is fully locked out
+          if (context.mounted) {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PaywallScreen(showTrialInfo: false),
               ),
             );
           }
+          return;
         }
-        return;
+
+        // 2. Check if user has messages remaining
+        if (!subscriptionService.canSendMessage) {
+          // Show message limit dialog first
+          if (context.mounted) {
+            final shouldShowPaywall = await MessageLimitDialog.show(
+              context: context,
+              isPremium: subscriptionStatus == SubscriptionStatus.premiumActive,
+              remainingMessages: subscriptionService.remainingMessages,
+            );
+
+            if (shouldShowPaywall == true) {
+              // User clicked "Subscribe Now"
+              final upgraded = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PaywallScreen(
+                    showTrialInfo: subscriptionStatus == SubscriptionStatus.inTrial,
+                  ),
+                ),
+              );
+
+              if (upgraded != true) {
+                // User didn't upgrade, don't send message
+                return;
+              }
+            } else {
+              // User clicked "Maybe Later"
+              // Days 1-2: Can still view history (just return)
+              // Day 3 + cancelled: Will be handled by lockout check on next screen load
+              return;
+            }
+          } else {
+            return;
+          }
+        }
       }
 
-      // Consume message credit
-      final consumed = await subscriptionService.consumeMessage();
+      // Consume message credit (skip in debug mode)
+      final consumed = kDebugMode ? true : await subscriptionService.consumeMessage();
       if (!consumed) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -182,6 +220,68 @@ class ChatScreen extends HookConsumerWidget {
           );
         }
         return;
+      }
+
+      // Check for crisis keywords and show resources if detected
+      final crisisDetectionService = CrisisDetectionService();
+      final crisisResult = crisisDetectionService.detectCrisis(text.trim());
+
+      if (crisisResult != null && context.mounted) {
+        // Show dismissible warning with resources (doesn't block the message)
+        crisisDetectionService.logCrisisDetection(crisisResult);
+
+        // Capture the context that has Navigator access
+        final navigatorContext = context;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.white, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Crisis Resources Available',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(crisisResult.getMessage(), style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 8),
+                Text(
+                  'Tap to view resources →',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.orange.shade700,
+            duration: const Duration(seconds: 10),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'View',
+              textColor: Colors.white,
+              onPressed: () {
+                // Use navigatorContext to ensure we have Navigator access
+                if (navigatorContext.mounted) {
+                  CrisisDialog.show(
+                    navigatorContext,
+                    crisisResult: crisisResult,
+                    onAcknowledge: () {
+                      debugPrint('✅ User viewed crisis resources');
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        );
+        // Message continues to AI normally
       }
 
       final userMessage = ChatMessage.user(
@@ -243,9 +343,27 @@ class ChatScreen extends HookConsumerWidget {
         // Wait for completion animation to finish
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Create final AI message with complete response
+        // Filter AI response for harmful content
+        final contentFilterService = ContentFilterService();
+        final filterResult = contentFilterService.filterResponse(fullResponse.toString());
+
+        String finalContent;
+        if (filterResult.isRejected) {
+          // Log the filtering event
+          contentFilterService.logFilteredResponse(filterResult, fullResponse.toString());
+
+          // Use fallback response instead
+          finalContent = contentFilterService.getFallbackResponse('default');
+
+          debugPrint('⚠️ Content filtered: ${filterResult.rejectionReason}');
+          debugPrint('📝 Using fallback response');
+        } else {
+          finalContent = fullResponse.toString();
+        }
+
+        // Create final AI message with filtered content
         final aiMessage = ChatMessage.ai(
-          content: fullResponse.toString(),
+          content: finalContent,
           sessionId: sessionId.value,
         );
 
@@ -363,8 +481,21 @@ class ChatScreen extends HookConsumerWidget {
         );
         debugPrint('✅ AI service returned new response');
 
+        // Filter regenerated response for harmful content
+        final contentFilterService = ContentFilterService();
+        final filterResult = contentFilterService.filterResponse(response.content);
+
+        String finalContent;
+        if (filterResult.isRejected) {
+          contentFilterService.logFilteredResponse(filterResult, response.content);
+          finalContent = contentFilterService.getFallbackResponse('default');
+          debugPrint('⚠️ Regenerated content filtered: ${filterResult.rejectionReason}');
+        } else {
+          finalContent = response.content;
+        }
+
         final newAiMessage = ChatMessage.ai(
-          content: response.content,
+          content: finalContent,
           verses: response.verses,
           metadata: response.metadata,
           sessionId: sessionId.value,
@@ -646,6 +777,36 @@ class ChatScreen extends HookConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
+          ],
+        ),
+      );
+    }
+
+    // ============================================================================
+    // SUBSCRIPTION LOCKOUT CHECK
+    // ============================================================================
+
+    // Check subscription status for chat lockout
+    final subscriptionService = ref.watch(subscriptionServiceProvider);
+    final subscriptionStatus = subscriptionService.getSubscriptionStatus();
+
+    // If trial expired or premium expired, show lockout overlay
+    if (subscriptionStatus == SubscriptionStatus.trialExpired ||
+        subscriptionStatus == SubscriptionStatus.premiumExpired) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            const GradientBackground(),
+            ChatScreenLockoutOverlay(
+              onSubscribePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PaywallScreen(showTrialInfo: false),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       );

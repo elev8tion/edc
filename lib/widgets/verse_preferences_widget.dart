@@ -73,7 +73,6 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         }
       }
     } catch (e) {
-      print('Error loading preferences: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -91,7 +90,6 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         );
       }
     } catch (e) {
-      print('Error saving themes: $e');
     }
   }
 
@@ -107,7 +105,6 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         );
       }
     } catch (e) {
-      print('Error saving avoid recent days: $e');
     }
   }
 
@@ -123,7 +120,6 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         );
       }
     } catch (e) {
-      print('Error saving preferred version: $e');
     }
   }
 

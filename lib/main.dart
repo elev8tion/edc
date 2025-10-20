@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:upgrader/upgrader.dart';
 import 'theme/app_theme.dart';
 import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
@@ -12,7 +13,7 @@ import 'core/error/error_handler.dart';
 import 'core/services/database_service.dart';
 import 'services/gemini_ai_service.dart';
 import 'screens/splash_screen.dart';
-import 'screens/disclaimer_screen.dart';
+import 'screens/legal_agreements_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
@@ -98,7 +99,7 @@ void main() async {
 //   • Settings - App configuration
 //   • Profile - User profile management
 // To disable: Change to false for normal authentication flow
-const bool kDevelopmentMode = true;
+const bool kDevelopmentMode = false;
 
 class EverydayChristianApp extends ConsumerWidget {
   const EverydayChristianApp({super.key});
@@ -108,7 +109,11 @@ class EverydayChristianApp extends ConsumerWidget {
     // Watch text size preference for global text scaling
     final textScaleFactor = ref.watch(textSizeProvider);
 
-    return MaterialApp(
+    return UpgradeAlert(
+      upgrader: Upgrader(
+        durationUntilAlertAgain: const Duration(days: 1),
+      ),
+      child: MaterialApp(
       title: 'Everyday Christian',
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigationService.navigatorKey,
@@ -157,6 +162,7 @@ class EverydayChristianApp extends ConsumerWidget {
           ],
         );
       },
+      ),
     );
   }
 
@@ -168,8 +174,8 @@ class EverydayChristianApp extends ConsumerWidget {
       case AppRoutes.splash:
         page = const SplashScreen();
         break;
-      case AppRoutes.disclaimer:
-        page = const DisclaimerScreen();
+      case AppRoutes.legalAgreements:
+        page = const LegalAgreementsScreen();
         break;
       case AppRoutes.onboarding:
         page = const OnboardingScreen();

@@ -2,7 +2,7 @@
 /// Manages premium subscription state, trial period, and message limits
 ///
 /// Trial: 3 days, 5 messages/day (15 total)
-/// Premium: $35/year, 150 messages/month
+/// Premium: ~$35/year (varies by region), 150 messages/month
 ///
 /// Uses SharedPreferences for local persistence (privacy-first design)
 /// Uses in_app_purchase for App Store/Play Store subscriptions
@@ -12,6 +12,27 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Represents the current subscription state of the user
+enum SubscriptionStatus {
+  /// Brand new user who hasn't started trial
+  neverStarted,
+
+  /// Currently in days 1-3 of trial period
+  inTrial,
+
+  /// Trial period ended, no active subscription
+  trialExpired,
+
+  /// Active paid subscriber with valid subscription
+  premiumActive,
+
+  /// Subscription cancelled but still has time remaining
+  premiumCancelled,
+
+  /// Subscription fully expired
+  premiumExpired,
+}
 
 class SubscriptionService {
   // Singleton instance
@@ -46,6 +67,12 @@ class SubscriptionService {
   static const String _keyPremiumMessagesUsed = 'premium_messages_used';
   static const String _keyPremiumLastResetDate = 'premium_last_reset_date';
   static const String _keySubscriptionReceipt = 'subscription_receipt';
+  // New keys for expiry tracking and trial abuse prevention
+  static const String _keyPremiumExpiryDate = 'premium_expiry_date';
+  static const String _keyPremiumOriginalPurchaseDate = 'premium_original_purchase_date';
+  static const String _keyTrialEverUsed = 'trial_ever_used';
+  static const String _keyAutoRenewStatus = 'auto_renew_status';
+  static const String _keyAutoSubscribeAttempted = 'auto_subscribe_attempted';
 
   // ============================================================================
   // PROPERTIES
@@ -82,6 +109,12 @@ class SubscriptionService {
 
       // Load product details
       await _loadProducts();
+
+      // Auto-restore purchases on app launch (prevents data loss after "Delete All Data")
+      await restorePurchases();
+
+      // Check if user should be automatically subscribed (day 3 without cancellation)
+      await attemptAutoSubscribe();
 
       // Listen to purchase updates
       _purchaseSubscription = _iap.purchaseStream.listen(
@@ -203,7 +236,189 @@ class SubscriptionService {
 
   /// Check if user has active premium subscription
   bool get isPremium {
-    return _prefs?.getBool(_keyPremiumActive) ?? false;
+    // Check if premium flag is set
+    final premiumActive = _prefs?.getBool(_keyPremiumActive) ?? false;
+    if (!premiumActive) return false;
+
+    // Check if subscription has expired
+    final expiryDate = _getExpiryDate();
+    if (expiryDate != null) {
+      if (DateTime.now().isAfter(expiryDate)) {
+        // Subscription expired - should trigger restorePurchases() on next app launch
+        developer.log('Premium subscription expired on $expiryDate', name: 'SubscriptionService');
+        return false;
+      }
+    }
+
+    // Premium is active and not expired
+    return true;
+  }
+
+  /// Get detailed subscription status for granular state management
+  SubscriptionStatus getSubscriptionStatus() {
+    // Check if premium first
+    if (isPremium) {
+      final expiryDate = _getExpiryDate();
+      final autoRenew = _prefs?.getBool(_keyAutoRenewStatus) ?? true;
+
+      // Check if subscription has expired
+      if (expiryDate != null && DateTime.now().isAfter(expiryDate)) {
+        return SubscriptionStatus.premiumExpired;
+      }
+
+      // Check if subscription is cancelled but still active
+      if (!autoRenew) {
+        return SubscriptionStatus.premiumCancelled;
+      }
+
+      // Active premium with auto-renew
+      return SubscriptionStatus.premiumActive;
+    }
+
+    // Check trial status
+    final trialStartDate = _getTrialStartDate();
+
+    // User has never started trial
+    if (trialStartDate == null) {
+      return SubscriptionStatus.neverStarted;
+    }
+
+    // Check if still in trial period
+    if (isInTrial) {
+      return SubscriptionStatus.inTrial;
+    }
+
+    // Trial has expired
+    return SubscriptionStatus.trialExpired;
+  }
+
+  /// Check if user should be automatically subscribed on day 3
+  ///
+  /// Returns true if:
+  /// - Trial has expired (3+ days since start)
+  /// - User hasn't cancelled trial
+  /// - Auto-subscribe hasn't been attempted yet
+  Future<bool> shouldAutoSubscribe() async {
+    try {
+      // Only applies if premium is not active
+      if (isPremium) return false;
+
+      // Get trial start date
+      final trialStartDate = _getTrialStartDate();
+      if (trialStartDate == null) return false; // Never started trial
+
+      // Check if trial has expired (3+ days since start)
+      final daysSinceStart = DateTime.now().difference(trialStartDate).inDays;
+      if (daysSinceStart < trialDurationDays) return false; // Still in trial
+
+      // Check if we've already attempted auto-subscribe
+      final autoSubscribeAttempted = _prefs?.getBool(_keyAutoSubscribeAttempted) ?? false;
+      if (autoSubscribeAttempted) return false;
+
+      // Check if user cancelled trial via App Store/Play Store
+      final userCancelled = await _checkTrialCancellation();
+
+      return !userCancelled;
+    } catch (e) {
+      developer.log(
+        'Error checking auto-subscribe eligibility: $e',
+        name: 'SubscriptionService',
+        error: e,
+      );
+      // On error, don't auto-subscribe (fail safe)
+      return false;
+    }
+  }
+
+  /// Check if user cancelled trial via platform APIs
+  ///
+  /// Returns true if user has cancelled, false otherwise.
+  ///
+  /// Implementation: Uses client-side approach with in_app_purchase plugin
+  /// - Queries past purchases from App Store/Play Store
+  /// - If premium subscription not found, assumes cancelled
+  /// - Privacy-first: No backend, all local
+  /// - Trade-off: Detection is eventual (on app launch), not real-time
+  ///
+  /// See: openspec/changes/subscription-refactor/RESEARCH_CANCELLATION_DETECTION.md
+  Future<bool> _checkTrialCancellation() async {
+    try {
+      developer.log(
+        'Checking for subscription cancellation via restorePurchases',
+        name: 'SubscriptionService',
+      );
+
+      // Since restorePurchases() has already been called in initialize(),
+      // the isPremium flag reflects the current subscription status from the platform
+      //
+      // Implementation: Client-side detection using isPremium flag
+      // - restorePurchases() updates local state from App Store/Play Store
+      // - If premium subscription exists, isPremium will be true
+      // - If subscription was cancelled/expired, isPremium will be false
+      // - Privacy-first: No backend, all local validation
+      // - Trade-off: Detection is eventual (on app launch), not real-time
+      //
+      // See: openspec/changes/subscription-refactor/RESEARCH_CANCELLATION_DETECTION.md
+
+      final hasActivePremium = isPremium;
+
+      if (hasActivePremium) {
+        developer.log(
+          'Active premium subscription found - user has NOT cancelled',
+          name: 'SubscriptionService',
+        );
+        return false; // Has active subscription, did not cancel
+      } else {
+        developer.log(
+          'No active premium subscription found - assuming user cancelled or never subscribed',
+          name: 'SubscriptionService',
+        );
+        return true; // No active subscription found, assume cancelled
+      }
+    } catch (e) {
+      developer.log(
+        'Exception during cancellation check: $e',
+        name: 'SubscriptionService',
+        error: e,
+      );
+      // On error, assume not cancelled (fail-safe)
+      // This prevents blocking auto-subscribe due to temporary errors
+      return false;
+    }
+  }
+
+  /// Attempt automatic subscription if user is on day 3 and hasn't cancelled
+  ///
+  /// Should be called on app initialization to handle automatic subscription
+  /// when trial expires without user cancellation.
+  Future<void> attemptAutoSubscribe() async {
+    try {
+      final shouldSubscribe = await shouldAutoSubscribe();
+
+      if (!shouldSubscribe) {
+        developer.log('Auto-subscribe check: not applicable', name: 'SubscriptionService');
+        return;
+      }
+
+      // Mark attempt as started to prevent repeated attempts
+      await _prefs?.setBool(_keyAutoSubscribeAttempted, true);
+
+      developer.log(
+        'Auto-subscribe triggered: Trial expired without cancellation',
+        name: 'SubscriptionService',
+      );
+
+      // Initiate purchase flow
+      await purchasePremium();
+    } catch (e) {
+      developer.log(
+        'Auto-subscribe failed: $e',
+        name: 'SubscriptionService',
+        error: e,
+      );
+      // Don't throw - this is a background operation that shouldn't crash the app
+      // User will see the paywall when they try to send a message
+    }
   }
 
   /// Get premium messages used this month
@@ -236,6 +451,14 @@ class SubscriptionService {
 
   /// Check if user can send a message (has remaining messages)
   bool get canSendMessage {
+    // Bypass limits in debug mode for testing
+    developer.log('canSendMessage check: kDebugMode=$kDebugMode, isPremium=$isPremium, isInTrial=$isInTrial, trialMessagesRemainingToday=$trialMessagesRemainingToday', name: 'SubscriptionService');
+
+    if (kDebugMode) {
+      developer.log('Bypassing subscription check - debug mode', name: 'SubscriptionService');
+      return true;
+    }
+
     if (isPremium) {
       return premiumMessagesRemaining > 0;
     } else if (isInTrial) {
@@ -359,7 +582,42 @@ class SubscriptionService {
   Future<void> _verifyAndActivatePurchase(PurchaseDetails purchase) async {
     try {
       // Save subscription receipt
-      await _prefs?.setString(_keySubscriptionReceipt, purchase.verificationData.serverVerificationData);
+      final receiptData = purchase.verificationData.serverVerificationData;
+      await _prefs?.setString(_keySubscriptionReceipt, receiptData);
+
+      // Try to decode receipt and extract expiry information
+      // Note: Receipt format differs by platform (iOS: base64 JSON, Android: JWT)
+      try {
+        // For iOS: Receipt is base64-encoded JSON
+        // For Android: Receipt is a JWT token
+        // This is a simplified implementation - production should use platform-specific decoding
+
+        // TODO: Implement proper platform-specific receipt validation
+        // For now, we'll extract basic info if available
+
+        // Placeholder for receipt parsing
+        // In production, use:
+        // - iOS: Decode base64, parse JSON, extract fields from receipt.in_app array
+        // - Android: Decode JWT, parse claims
+
+        developer.log('Receipt data saved (expiry extraction requires platform-specific implementation)',
+          name: 'SubscriptionService');
+
+        // Store placeholder expiry (1 year from now for annual subscription)
+        // This will be replaced with actual expiry once receipt parsing is implemented
+        final expiryDate = DateTime.now().add(Duration(days: 365));
+        await _prefs?.setString(_keyPremiumExpiryDate, expiryDate.toIso8601String());
+        await _prefs?.setString(_keyPremiumOriginalPurchaseDate, DateTime.now().toIso8601String());
+        await _prefs?.setBool(_keyAutoRenewStatus, true); // Assume auto-renew unless receipt says otherwise
+
+        // Check if this was a trial purchase
+        // This will be extracted from receipt once parsing is implemented
+        // await _prefs?.setBool(_keyTrialEverUsed, wasTrialPurchase);
+
+      } catch (receiptError) {
+        developer.log('Receipt parsing skipped (will implement platform-specific logic): $receiptError',
+          name: 'SubscriptionService');
+      }
 
       // Activate premium
       await _prefs?.setBool(_keyPremiumActive, true);
@@ -381,6 +639,13 @@ class SubscriptionService {
   /// Get trial start date
   DateTime? _getTrialStartDate() {
     final dateString = _prefs?.getString(_keyTrialStartDate);
+    if (dateString == null) return null;
+    return DateTime.tryParse(dateString);
+  }
+
+  /// Get premium subscription expiry date
+  DateTime? _getExpiryDate() {
+    final dateString = _prefs?.getString(_keyPremiumExpiryDate);
     if (dateString == null) return null;
     return DateTime.tryParse(dateString);
   }

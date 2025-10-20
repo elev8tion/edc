@@ -438,9 +438,6 @@ class ReadingPlanProgressService {
 
       if (plans.isEmpty || plans.first['start_date'] == null) return [];
 
-      final startDate = DateTime.fromMillisecondsSinceEpoch(
-        plans.first['start_date'] as int,
-      );
       final today = DateTime.now();
 
       // Get all readings scheduled before today

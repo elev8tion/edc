@@ -1,8 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'time_range_sheet_style.dart';
 import 'models/time_range_data.dart';
+import '../../components/base_bottom_sheet.dart';
 
 /// A highly customizable time range picker bottom sheet widget
 ///
@@ -728,7 +728,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
     );
   }
 
-  /// Builds an AM/PM toggle button with glass styling
+  /// Builds an AM/PM toggle button with dark gradient styling
   Widget _buildAmPmButton(
     BuildContext context,
     ThemeData theme,
@@ -738,7 +738,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
   ) {
     final borderColor = isSelected
         ? const Color(0xFF9C7FFF) // AppTheme.primaryColor for selected
-        : Colors.white.withValues(alpha: 0.3); // Subtle border for unselected
+        : Colors.white.withValues(alpha: 0.2); // Subtle border for unselected
 
     return GestureDetector(
       onTap: () {
@@ -747,53 +747,47 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
           HapticFeedback.selectionClick();
         }
       },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-          child: Container(
-            height: (_style.pickerItemHeight ?? 50) * 0.8,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isSelected
-                    ? [
-                        Colors.white.withValues(alpha: 0.15),
-                        Colors.white.withValues(alpha: 0.05),
-                      ]
-                    : [
-                        Colors.white.withValues(alpha: 0.08),
-                        Colors.white.withValues(alpha: 0.02),
-                      ],
-                begin: const AlignmentDirectional(0.98, -1.0),
-                end: const AlignmentDirectional(-0.98, 1.0),
-              ),
-              borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
-              border: Border.all(
-                color: borderColor,
-                width: 2,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: isSelected
-                      ? Colors.white
-                      : Colors.white.withValues(alpha: 0.5),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: _style.fontFamily,
-                ),
-              ),
+      child: Container(
+        height: (_style.pickerItemHeight ?? 50) * 0.8,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isSelected
+                ? [
+                    Colors.white.withValues(alpha: 0.25),
+                    Colors.white.withValues(alpha: 0.15),
+                  ]
+                : [
+                    Colors.white.withValues(alpha: 0.12),
+                    Colors.white.withValues(alpha: 0.05),
+                  ],
+            begin: const AlignmentDirectional(0.98, -1.0),
+            end: const AlignmentDirectional(-0.98, 1.0),
+          ),
+          borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 12),
+          border: Border.all(
+            color: borderColor,
+            width: 2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: isSelected
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.6),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              fontFamily: _style.fontFamily,
             ),
           ),
         ),
@@ -826,7 +820,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
     );
   }
 
-  /// Builds a glass-styled button matching the app's GlassButton component
+  /// Builds an action button with dark gradient styling
   Widget _buildGlassButton({
     required BuildContext context,
     required ThemeData theme,
@@ -836,7 +830,7 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
   }) {
     final borderColor = isPrimary
         ? const Color(0xFF9C7FFF) // AppTheme.primaryColor
-        : Colors.white.withValues(alpha: 0.3);
+        : Colors.white.withValues(alpha: 0.2);
 
     final textColor = onPressed != null
         ? (_style.buttonTextColor ?? Colors.white)
@@ -845,50 +839,49 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
     return SizedBox(
       width: double.infinity,
       height: _style.buttonHeight ?? 56,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.15),
-                  Colors.white.withValues(alpha: 0.05),
-                ],
-                begin: const AlignmentDirectional(0.98, -1.0),
-                end: const AlignmentDirectional(-0.98, 1.0),
-              ),
-              borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
-              border: Border.all(
-                color: borderColor,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isPrimary
+                ? [
+                    Colors.white.withValues(alpha: 0.25),
+                    Colors.white.withValues(alpha: 0.15),
+                  ]
+                : [
+                    Colors.white.withValues(alpha: 0.12),
+                    Colors.white.withValues(alpha: 0.05),
+                  ],
+            begin: const AlignmentDirectional(0.98, -1.0),
+            end: const AlignmentDirectional(-0.98, 1.0),
+          ),
+          borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
+          border: Border.all(
+            color: borderColor,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onPressed,
-                borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: _style.buttonTextStyle ??
-                        TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: textColor,
-                          fontFamily: _style.fontFamily,
-                        ),
-                  ),
-                ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(_style.buttonCornerRadius ?? 28),
+            child: Center(
+              child: Text(
+                text,
+                style: _style.buttonTextStyle ??
+                    TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                      fontFamily: _style.fontFamily,
+                    ),
               ),
             ),
           ),
@@ -908,10 +901,10 @@ class _TimeRangeSheetState extends State<TimeRangeSheet> with TickerProviderStat
   }
 }
 
-/// Helper function to show the TimeRangeSheet in a modal bottom sheet
+/// Helper function to show the TimeRangeSheet in a modal bottom sheet with dark gradient styling
 ///
 /// This is the recommended way to display the time range picker as a modal.
-/// It automatically handles theme detection and provides sensible defaults.
+/// Uses the app's standard dark gradient bottom sheet for consistent UI.
 ///
 /// Returns a [TimeRangeData] object if the user confirms their selection,
 /// or null if they cancel or dismiss the sheet.
@@ -933,13 +926,13 @@ Future<TimeRangeData?> showTimeRangeSheet({
   final effectiveStyle =
       style ?? (Theme.of(context).brightness == Brightness.dark ? TimeRangeSheetStyle.dark() : TimeRangeSheetStyle.light());
 
-  return showModalBottomSheet<TimeRangeData>(
+  return showCustomBottomSheet<TimeRangeData>(
     context: context,
     isScrollControlled: isScrollControlled,
     enableDrag: enableDrag,
     isDismissible: isDismissible && effectiveStyle.dismissOnTapOutside,
-    backgroundColor: Colors.transparent,
-    builder: (context) => TimeRangeSheet(
+    showHandle: true,
+    child: TimeRangeSheet(
       initialStartTime: initialStartTime,
       initialEndTime: initialEndTime,
       style: effectiveStyle,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,16 +25,35 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProviderStateMixin {
   late String greeting;
   late String userName;
   final GlobalKey _backgroundKey = GlobalKey();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     _setGreeting();
     userName = "Friend"; // In production, get from user preferences
+
+    // Single animation controller for entire screen (better performance)
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void _setGreeting() {
@@ -57,34 +77,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: const GradientBackground(),
           ),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(top: AppSpacing.xl),
-              // Optimize scrolling performance
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                _buildHeader(),
-                const SizedBox(height: AppSpacing.xxl),
-                _buildStatsRow(),
-                const SizedBox(height: AppSpacing.xxl),
-                _buildMainFeatures(),
-                const SizedBox(height: AppSpacing.xxl),
-                _buildQuickActions(),
-                const SizedBox(height: AppSpacing.xxl),
-                _buildDailyVerse(),
-                const SizedBox(height: AppSpacing.xxl),
-                _buildStartChatButton(),
-              ],
-            ),
-          ),
-        ),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.xl),
+                // Optimize scrolling performance
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  _buildHeader(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  _buildStatsRow(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  _buildMainFeatures(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  _buildQuickActions(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  _buildDailyVerse(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  _buildStartChatButton(),
+                ],
+              ), // closes Column
+            ), // closes SingleChildScrollView
+          ), // closes FadeTransition
+          ), // closes SafeArea
         ],
       ),
     );
   }
 
   Widget _buildHeader() {
+    final profilePicturePath = ref.watch(profilePicturePathProvider);
+
     return Padding(
       padding: AppSpacing.horizontalXl,
       child: Row(
@@ -119,29 +144,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ).animate().fadeIn(duration: AppAnimations.slow),
+              ),
             ),
           ),
           // Profile on right
-          Container(
-            width: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
-            height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppTheme.goldColor.withValues(alpha: 0.6),
-                width: 1.5,
+          profilePicturePath.when(
+            data: (path) => _buildAvatarCircle(path),
+            loading: () => _buildAvatarCircle(null),
+            error: (_, __) => _buildAvatarCircle(null),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatarCircle(String? imagePath) {
+    final hasImage = imagePath != null && File(imagePath).existsSync();
+
+    return Container(
+      width: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
+      height: ResponsiveUtils.scaleSize(context, 40, minScale: 0.85, maxScale: 1.2),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppTheme.goldColor.withValues(alpha: 0.6),
+          width: 1.5,
+        ),
+        color: hasImage ? null : AppTheme.primaryColor.withValues(alpha: 0.3),
+      ),
+      child: hasImage
+          ? ClipOval(
+              child: Image.file(
+                File(imagePath),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.person,
+                    color: AppColors.primaryText,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  );
+                },
               ),
-              color: AppTheme.primaryColor.withValues(alpha: 0.3),
-            ),
-            child: Icon(
+            )
+          : Icon(
               Icons.person,
               color: AppColors.primaryText,
               size: ResponsiveUtils.iconSize(context, 20),
             ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal).scale(begin: const Offset(0.8, 0.8)),
-        ],
-      ),
     );
   }
 
@@ -342,7 +391,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
+    );
   }
 
   Widget _buildStatCardLoading({
@@ -388,12 +437,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          SizedBox(
-            width: ResponsiveUtils.scaleSize(context, 20, minScale: 0.9, maxScale: 1.2),
-            height: ResponsiveUtils.scaleSize(context, 20, minScale: 0.9, maxScale: 1.2),
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white.withValues(alpha: 0.5),
+          // Placeholder text instead of infinite spinner (fixes test timeouts)
+          Flexible(
+            child: AutoSizeText(
+              "...",
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 16, maxSize: 22),
+                fontWeight: FontWeight.w800,
+                color: AppColors.primaryText.withValues(alpha: 0.5),
+                shadows: AppTheme.textShadowStrong,
+              ),
+              maxLines: 1,
+              minFontSize: 14,
+              maxFontSize: 22,
+              textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 2),
@@ -419,7 +476,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).slideY(begin: 0.3);
+    );
   }
 
   Widget _buildMainFeatures() {
@@ -445,7 +502,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      "AI Guidance",
+                      "Biblical Chat",
                       style: TextStyle(
                         fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
                         fontWeight: FontWeight.w700,
@@ -467,7 +524,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: AppAnimations.slow, delay: 900.ms).slideX(begin: -0.3),
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -508,7 +565,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1000.ms).slideX(begin: 0.3),
+              ),
             ),
           ],
         ),
@@ -553,7 +610,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1100.ms).slideX(begin: -0.3),
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -594,7 +651,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: AppAnimations.slow, delay: 1200.ms).slideX(begin: 0.3),
+              ),
             ),
           ],
         ),
@@ -617,7 +674,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               color: AppColors.primaryText,
               shadows: AppTheme.textShadowStrong,
             ),
-          ).animate().fadeIn(duration: AppAnimations.slow, delay: 1300.ms),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         LayoutBuilder(
@@ -741,7 +798,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         ),
-      ).animate().fadeIn(duration: AppAnimations.slow, delay: delay.ms).scale(begin: const Offset(0.8, 0.8)),
+      ),
     );
   }
 
@@ -859,13 +916,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: 1800.ms).slideY(begin: 0.3);
+    );
   }
 
   Widget _buildStartChatButton() {
     return GlassButton(
       text: 'Start Spiritual Conversation',
       onPressed: () => NavigationService.goToChat(),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: 1900.ms).slideY(begin: 0.5);
+    );
   }
 }

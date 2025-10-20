@@ -60,7 +60,6 @@ class VerseService {
       )).toList();
     } catch (e) {
       // Fallback to LIKE search if FTS5 fails
-      print('FTS5 search failed, using fallback: $e');
       final maps = await db.query(
         'verses',
         where: 'text LIKE ? ${version != null ? 'AND version = ?' : ''}',
@@ -79,8 +78,6 @@ class VerseService {
 
   /// Search by theme/topic (searches themes column if exists, or uses keywords)
   Future<List<BibleVerse>> searchByTheme(String theme, {String? version, int limit = 50}) async {
-    final db = await _database.database;
-
     // Save to search history
     await _saveSearchHistory(theme, 'theme');
 
@@ -123,7 +120,6 @@ class VerseService {
 
   /// Get smart daily verse based on user preferences and history
   Future<BibleVerse?> getVerseOfTheDay({String? forceTheme}) async {
-    final db = await _database.database;
     final today = _getTodayTimestamp();
 
     // Check if we already selected a verse for today

@@ -6,7 +6,6 @@ import 'dart:math';
 import '../../core/database/models/bible_verse.dart';
 import '../../core/database/database_helper.dart';
 import '../../theme/app_theme.dart';
-import '../../core/navigation/navigation_service.dart';
 import '../../screens/chapter_reading_screen.dart';
 
 /// Model for parsed verse reference

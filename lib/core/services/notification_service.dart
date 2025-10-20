@@ -33,7 +33,6 @@ class NotificationService {
 
   void _onNotificationTapped(NotificationResponse response) {
     // Handle notification tap with payload routing
-    print('Notification tapped: ${response.payload}');
     if (response.payload != null) {
       _handleNotificationPayload(response.payload!);
     }
@@ -66,16 +65,15 @@ class NotificationService {
 
   void _navigateToDailyVerse(String reference) {
     // This will be handled by the app's navigation service
-    // For now, just log the action
-    print('Navigate to daily verse: $reference');
+    // TODO: Implement navigation to daily verse screen
   }
 
   void _navigateToPrayer(String prayerId) {
-    print('Navigate to prayer: $prayerId');
+    // TODO: Implement navigation to prayer journal
   }
 
   void _navigateToReading(String planId) {
-    print('Navigate to reading plan: $planId');
+    // TODO: Implement navigation to reading plan
   }
 
   Future<void> scheduleDailyDevotional({
@@ -147,34 +145,49 @@ class NotificationService {
     required String verseReference,
     required String verseText,
   }) async {
-    // Immediate notification for testing or on-demand
-    final payload = 'verse:$verseReference';
+    try {
+      // Check permission status first
+      final permissionStatus = await Permission.notification.status;
 
-    await _notifications.show(
-      4,
-      'Verse of the Day',
-      '$verseReference - ${verseText.substring(0, verseText.length > 50 ? 50 : verseText.length)}...',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'daily_verse_channel',
-          'Daily Verse',
-          channelDescription: 'Daily verse notifications',
-          importance: Importance.high,
-          priority: Priority.high,
-          styleInformation: BigTextStyleInformation(
-            verseText,
-            contentTitle: 'Verse of the Day',
-            summaryText: verseReference,
+      if (!permissionStatus.isGranted) {
+        final newStatus = await Permission.notification.request();
+        if (!newStatus.isGranted) {
+          return;
+        }
+      }
+
+      // Immediate notification for testing or on-demand
+      final payload = 'verse:$verseReference';
+
+      await _notifications.show(
+        4,
+        'Verse of the Day',
+        '$verseReference - ${verseText.substring(0, verseText.length > 50 ? 50 : verseText.length)}...',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'daily_verse_channel',
+            'Daily Verse',
+            channelDescription: 'Daily verse notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+            styleInformation: BigTextStyleInformation(
+              verseText,
+              contentTitle: 'Verse of the Day',
+              summaryText: verseReference,
+            ),
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
           ),
         ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      payload: payload,
-    );
+        payload: payload,
+      );
+    } catch (e) {
+      // Silent failure in production
+      // Error details: $e
+    }
   }
 
   Future<void> schedulePrayerReminder({

@@ -156,11 +156,11 @@ class ModernMessageBubble extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.grey.shade900.withValues(alpha: 0.95),
-              Colors.grey.shade800.withValues(alpha: 0.95),
+              const Color(0xFF1E293B).withValues(alpha: 0.95), // Standard slate-800
+              const Color(0xFF0F172A).withValues(alpha: 0.98), // Standard slate-900
             ],
           ),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
         ),
         child: SafeArea(
           child: Column(

@@ -4,9 +4,9 @@ import 'package:share_plus/share_plus.dart';
 import '../../../models/chat_message.dart';
 import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
+import '../../../components/base_bottom_sheet.dart';
 import '../../../components/glass_card.dart';
 import 'verse_card.dart';
-import '../../../theme/app_theme.dart';
 
 /// Widget that displays a single chat message in a bubble
 class MessageBubble extends StatelessWidget {
@@ -212,21 +212,13 @@ class MessageBubble extends StatelessWidget {
   void _showMessageOptions(BuildContext context) {
     HapticFeedback.mediumImpact();
 
-    showGlassBottomSheet(
+    showCustomBottomSheet(
       context: context,
-      child: GlassBottomSheet(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(AppRadius.xs / 4),
-              ),
-            ),
+      showHandle: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 8),
 
             _buildOptionTile(
               context,
@@ -284,7 +276,6 @@ class MessageBubble extends StatelessWidget {
             const SizedBox(height: 16),
           ],
         ),
-      ),
     );
   }
 

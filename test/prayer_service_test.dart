@@ -30,34 +30,34 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Test Prayer',
         description: 'Please help me with this test',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       expect(prayer.id, isNotEmpty);
       expect(prayer.title, equals('Test Prayer'));
       expect(prayer.description, equals('Please help me with this test'));
-      expect(prayer.category, equals(PrayerCategory.general));
+      expect(prayer.categoryId, equals('cat_general'));
       expect(prayer.isAnswered, isFalse);
       expect(prayer.dateAnswered, isNull);
     });
 
     test('should create prayers with different categories', () async {
       final categories = [
-        PrayerCategory.health,
-        PrayerCategory.family,
-        PrayerCategory.work,
-        PrayerCategory.protection,
-        PrayerCategory.guidance,
-        PrayerCategory.gratitude,
+        'cat_health',
+        'cat_family',
+        'cat_work',
+        'cat_protection',
+        'cat_guidance',
+        'cat_gratitude',
       ];
 
-      for (final category in categories) {
+      for (final categoryId in categories) {
         final prayer = await prayerService.createPrayer(
-          title: 'Prayer for ${category.name}',
+          title: 'Prayer for $categoryId',
           description: 'Test prayer',
-          category: category,
+          categoryId: categoryId,
         );
-        expect(prayer.category, equals(category));
+        expect(prayer.categoryId, equals(categoryId));
       }
     });
 
@@ -66,8 +66,9 @@ void main() {
         id: 'test-id',
         title: 'Manual Prayer',
         description: 'Added manually',
-        category: PrayerCategory.family,
+        categoryId: 'cat_family',
         dateCreated: DateTime.now(),
+        isAnswered: false,
       );
 
       await prayerService.addPrayer(prayer);
@@ -79,7 +80,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Original Title',
         description: 'Original description',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final updated = prayer.copyWith(
@@ -99,7 +100,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'To Delete',
         description: 'This will be deleted',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.deletePrayer(prayer.id);
@@ -113,7 +114,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Prayer to Answer',
         description: 'Waiting for answer',
-        category: PrayerCategory.health,
+        categoryId: 'cat_health',
       );
 
       await prayerService.markPrayerAnswered(
@@ -133,13 +134,13 @@ void main() {
       await prayerService.createPrayer(
         title: 'Active Prayer',
         description: 'Still waiting',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final answered = await prayerService.createPrayer(
         title: 'Will be answered',
         description: 'Answer coming',
-        category: PrayerCategory.guidance,
+        categoryId: 'cat_guidance',
       );
 
       await prayerService.markPrayerAnswered(
@@ -156,13 +157,13 @@ void main() {
       final active = await prayerService.createPrayer(
         title: 'Active Prayer',
         description: 'Still praying',
-        category: PrayerCategory.protection,
+        categoryId: 'cat_protection',
       );
 
       final toAnswer = await prayerService.createPrayer(
         title: 'To Answer',
         description: 'Will be answered',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.markPrayerAnswered(toAnswer.id, 'Done');
@@ -176,7 +177,7 @@ void main() {
       final prayer1 = await prayerService.createPrayer(
         title: 'First',
         description: 'First prayer',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await Future.delayed(const Duration(milliseconds: 10));
@@ -184,7 +185,7 @@ void main() {
       final prayer2 = await prayerService.createPrayer(
         title: 'Second',
         description: 'Second prayer',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.markPrayerAnswered(prayer1.id, 'First answer');
@@ -201,13 +202,13 @@ void main() {
       await prayerService.createPrayer(
         title: 'Prayer 1',
         description: 'First prayer',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.createPrayer(
         title: 'Prayer 2',
         description: 'Second prayer',
-        category: PrayerCategory.family,
+        categoryId: 'cat_family',
       );
 
       final all = await prayerService.getAllPrayers();
@@ -218,7 +219,7 @@ void main() {
       final prayer1 = await prayerService.createPrayer(
         title: 'Old Prayer',
         description: 'Created first',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await Future.delayed(const Duration(milliseconds: 10));
@@ -226,7 +227,7 @@ void main() {
       final prayer2 = await prayerService.createPrayer(
         title: 'New Prayer',
         description: 'Created second',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final all = await prayerService.getAllPrayers();
@@ -240,7 +241,7 @@ void main() {
       await prayerService.createPrayer(
         title: 'Test',
         description: 'Count test',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final newCount = await prayerService.getPrayerCount();
@@ -251,13 +252,13 @@ void main() {
       final prayer1 = await prayerService.createPrayer(
         title: 'Prayer 1',
         description: 'First',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final prayer2 = await prayerService.createPrayer(
         title: 'Prayer 2',
         description: 'Second',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.markPrayerAnswered(prayer1.id, 'Answered');
@@ -277,16 +278,24 @@ void main() {
 
   group('Prayer Categories', () {
     test('should handle all prayer categories', () async {
-      final categories = PrayerCategory.values;
+      final categories = [
+        'cat_general',
+        'cat_health',
+        'cat_family',
+        'cat_work',
+        'cat_protection',
+        'cat_guidance',
+        'cat_gratitude',
+      ];
 
-      for (final category in categories) {
+      for (final categoryId in categories) {
         final prayer = await prayerService.createPrayer(
-          title: 'Test ${category.name}',
+          title: 'Test $categoryId',
           description: 'Testing category',
-          category: category,
+          categoryId: categoryId,
         );
 
-        expect(prayer.category, equals(category));
+        expect(prayer.categoryId, equals(categoryId));
       }
 
       final all = await prayerService.getAllPrayers();
@@ -297,7 +306,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Test',
         description: 'Test',
-        category: PrayerCategory.health,
+        categoryId: 'cat_health',
       );
 
       final updated = prayer.copyWith(description: 'Updated');
@@ -305,17 +314,7 @@ void main() {
 
       final prayers = await prayerService.getAllPrayers();
       final found = prayers.firstWhere((p) => p.id == prayer.id);
-      expect(found.category, equals(PrayerCategory.health));
-    });
-
-    test('should display correct category names', () {
-      expect(PrayerCategory.general.displayName, equals('General'));
-      expect(PrayerCategory.health.displayName, equals('Health'));
-      expect(PrayerCategory.family.displayName, equals('Family'));
-      expect(PrayerCategory.work.displayName, equals('Work/Career'));
-      expect(PrayerCategory.protection.displayName, equals('Protection'));
-      expect(PrayerCategory.guidance.displayName, equals('Guidance'));
-      expect(PrayerCategory.gratitude.displayName, equals('Gratitude'));
+      expect(found.categoryId, equals('cat_health'));
     });
   });
 
@@ -324,7 +323,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Serialization Test',
         description: 'Testing serialization',
-        category: PrayerCategory.guidance,
+        categoryId: 'cat_guidance',
       );
 
       await prayerService.markPrayerAnswered(prayer.id, 'Test answer');
@@ -334,7 +333,7 @@ void main() {
 
       expect(found.title, equals(prayer.title));
       expect(found.description, equals(prayer.description));
-      expect(found.category, equals(prayer.category));
+      expect(found.categoryId, equals(prayer.categoryId));
       expect(found.isAnswered, isTrue);
       expect(found.answerDescription, equals('Test answer'));
     });
@@ -344,7 +343,7 @@ void main() {
         id: 'null-test',
         title: 'Null Test',
         description: 'Testing nulls',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
         dateCreated: DateTime.now(),
         isAnswered: false,
         dateAnswered: null,
@@ -365,7 +364,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: '',
         description: '',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       expect(prayer.title, equals(''));
@@ -377,7 +376,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: longText,
         description: longText,
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       expect(prayer.title, equals(longText));
@@ -388,7 +387,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Prayer with "quotes" and \'apostrophes\'',
         description: 'Special chars: @#\$%^&*()',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       final retrieved = await prayerService.getAllPrayers();
@@ -401,7 +400,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Original',
         description: 'Original',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       for (int i = 1; i <= 5; i++) {
@@ -421,7 +420,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Test',
         description: 'Test',
-        category: PrayerCategory.general,
+        categoryId: 'cat_general',
       );
 
       await prayerService.markPrayerAnswered(prayer.id, 'First answer');
@@ -438,13 +437,13 @@ void main() {
         (i) => prayerService.createPrayer(
           title: 'Prayer $i',
           description: 'Description $i',
-          category: PrayerCategory.general,
+          categoryId: 'cat_general',
         ),
       );
 
       final prayers = await Future.wait(futures);
       expect(prayers.length, equals(10));
-      
+
       final allIds = prayers.map((p) => p.id).toSet();
       expect(allIds.length, equals(10)); // All unique IDs
     });
@@ -457,7 +456,7 @@ void main() {
         await prayerService.createPrayer(
           title: 'Prayer $i',
           description: 'Test prayer',
-          category: PrayerCategory.general,
+          categoryId: 'cat_general',
         );
       }
 
@@ -475,7 +474,7 @@ void main() {
       final prayer = await prayerService.createPrayer(
         title: 'Lifecycle Test',
         description: 'Testing full lifecycle',
-        category: PrayerCategory.guidance,
+        categoryId: 'cat_guidance',
       );
 
       // Initially active

@@ -43,7 +43,7 @@ class _GlassmorphicFABMenuState extends State<GlassmorphicFABMenu>
       route: AppRoutes.bibleBrowser,
     ),
     MenuOption(
-      title: "AI Guidance",
+      title: "Biblical Chat",
       icon: Icons.chat_bubble_outline,
       color: Colors.blue,
       route: AppRoutes.chat,

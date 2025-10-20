@@ -3,6 +3,7 @@ import '../services/ai_service.dart';
 import '../services/gemini_ai_service.dart';
 import '../services/unified_verse_service.dart';
 import '../models/bible_verse.dart';
+import '../core/services/content_filter_service.dart';
 
 /// Provider for AI service instance (Gemini AI)
 final aiServiceProvider = Provider<AIService>((ref) {
@@ -113,6 +114,7 @@ class _Error extends AIServiceState {
 class GeminiAIServiceAdapter implements AIService {
   final GeminiAIService _gemini = GeminiAIService.instance;
   final UnifiedVerseService _verseService = UnifiedVerseService();
+  final ContentFilterService _contentFilter = ContentFilterService();
 
   @override
   Future<void> initialize() async {
@@ -153,6 +155,29 @@ class GeminiAIServiceAdapter implements AIService {
 
     stopwatch.stop();
 
+    // Filter AI response for harmful theology
+    final filterResult = _contentFilter.filterResponse(response.content);
+
+    if (filterResult.isRejected) {
+      // Log the filtered response
+      _contentFilter.logFilteredResponse(filterResult, response.content);
+
+      // Use safe fallback response
+      final fallbackContent = _contentFilter.getFallbackResponse(theme);
+
+      return AIResponse(
+        content: fallbackContent,
+        verses: response.verses,
+        metadata: {
+          ...(response.metadata ?? {}),
+          'filtered': true,
+          'filter_reason': filterResult.rejectionReason,
+        },
+        processingTime: stopwatch.elapsed,
+        confidence: 0.5, // Lower confidence for fallback
+      );
+    }
+
     // Return with proper processing time
     return AIResponse(
       content: response.content,
@@ -190,9 +215,27 @@ class GeminiAIServiceAdapter implements AIService {
       conversationHistory: historyStrings,
     );
 
-    // Stream chunks as they arrive
+    // Buffer all chunks to filter complete response
+    final buffer = StringBuffer();
     await for (final chunk in stream) {
-      yield chunk;
+      buffer.write(chunk);
+    }
+
+    final completeResponse = buffer.toString();
+
+    // Filter AI response for harmful theology
+    final filterResult = _contentFilter.filterResponse(completeResponse);
+
+    if (filterResult.isRejected) {
+      // Log the filtered response
+      _contentFilter.logFilteredResponse(filterResult, completeResponse);
+
+      // Yield safe fallback response instead
+      final fallbackContent = _contentFilter.getFallbackResponse(theme);
+      yield fallbackContent;
+    } else {
+      // Yield the approved response
+      yield completeResponse;
     }
   }
 

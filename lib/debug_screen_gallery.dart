@@ -4,6 +4,7 @@ import 'theme/app_theme.dart';
 
 // Import all duplicate screens
 import 'screens/chat_screen.dart' as screens_chat;
+// import 'features/chat/screens/chat_screen.dart' as features_chat; // Path doesn't exist
 import 'screens/home_screen.dart';
 import 'screens/prayer_journal_screen.dart';
 import 'screens/verse_library_screen.dart';
@@ -27,15 +28,15 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
 
   final List<ScreenInfo> screens = [
     ScreenInfo(
-      title: 'DUPLICATE: Chat Screen (screens/)',
+      title: 'Chat Screen',
       description: 'lib/screens/chat_screen.dart',
       widget: screens_chat.ChatScreen(),
     ),
-    ScreenInfo(
-      title: 'DUPLICATE: Chat Screen (features/)',
-      description: 'lib/features/chat/screens/chat_screen.dart',
-      widget: features_chat.ChatScreen(),
-    ),
+    // ScreenInfo(
+    //   title: 'DUPLICATE: Chat Screen (features/)',
+    //   description: 'lib/features/chat/screens/chat_screen.dart',
+    //   widget: features_chat.ChatScreen(),
+    // ),
     ScreenInfo(
       title: 'Home Screen',
       description: 'lib/screens/home_screen.dart',

@@ -39,6 +39,7 @@ class _LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<_LoadingScreen> {
   final List<String> _loadingMessages = [
     'Loading Bible...',
+    'Restoring subscription...',
     'Preparing devotionals...',
     'Setting up your journey...',
   ];

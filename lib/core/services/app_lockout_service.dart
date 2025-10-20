@@ -72,7 +72,7 @@ class AppLockoutService {
       }
 
       // Get available biometric types
-      final availableBiometrics = await _localAuth.getAvailableBiometrics();
+      // await _localAuth.getAvailableBiometrics();
 
       // Authenticate using device PIN/biometric
       final authenticated = await _localAuth.authenticate(
