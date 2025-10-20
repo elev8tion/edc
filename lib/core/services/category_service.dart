@@ -205,21 +205,21 @@ class CategoryService {
     // Get total prayers for this category
     final totalResult = await db.rawQuery(
       'SELECT COUNT(*) as count FROM prayer_requests WHERE category = ?',
-      [category.name],
+      [category.id],
     );
     final total = (totalResult.first['count'] as int?) ?? 0;
 
     // Get active prayers
     final activeResult = await db.rawQuery(
       'SELECT COUNT(*) as count FROM prayer_requests WHERE category = ? AND is_answered = 0',
-      [category.name],
+      [category.id],
     );
     final active = (activeResult.first['count'] as int?) ?? 0;
 
     // Get answered prayers
     final answeredResult = await db.rawQuery(
       'SELECT COUNT(*) as count FROM prayer_requests WHERE category = ? AND is_answered = 1',
-      [category.name],
+      [category.id],
     );
     final answered = (answeredResult.first['count'] as int?) ?? 0;
 
@@ -261,7 +261,7 @@ class CategoryService {
     final db = await _database.database;
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM prayer_requests WHERE category = ?',
-      [category.name],
+      [category.id],
     );
 
     return (result.first['count'] as int?) ?? 0;

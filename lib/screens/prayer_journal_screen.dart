@@ -513,7 +513,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                       BlurPopupMenuItem(
                         value: 'mark_answered',
                         icon: Icons.check,
-                        label: 'Mark as Answered',
+                        label: 'Answered',
                       ),
                       BlurPopupMenuItem(
                         value: 'delete',
@@ -840,7 +840,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Mark as Answered',
+                  'Answered',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 20, minSize: 18, maxSize: 24),
                     fontWeight: FontWeight.w700,
@@ -887,7 +887,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: GlassButton(
-                        text: 'Mark Answered',
+                        text: 'Answered',
                         height: 48,
                         onPressed: () async {
                           if (answerDescription.isNotEmpty) {
