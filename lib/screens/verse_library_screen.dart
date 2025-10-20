@@ -125,17 +125,6 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
-                const SizedBox(height: 4),
-                AutoSizeText(
-                  'Find comfort in God\'s word',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                    color: AppColors.secondaryText,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.fast),
               ],
             ),
           ),
