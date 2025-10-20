@@ -154,41 +154,59 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                           ),
                           child: Material(
                             color: Colors.transparent,
-                            child: CheckboxListTile(
-                              title: Text(
-                                theme,
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                                  color: AppColors.primaryText,
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                ),
-                              ),
-                              value: isSelected,
-                              onChanged: canSelect
-                                  ? (bool? value) {
+                            child: InkWell(
+                              onTap: canSelect
+                                  ? () {
                                       setState(() {
-                                        if (value == true) {
-                                          _selectedThemes.add(theme);
-                                        } else {
+                                        if (isSelected) {
                                           _selectedThemes.remove(theme);
+                                        } else {
+                                          _selectedThemes.add(theme);
                                         }
                                       });
                                     }
                                   : null,
-                              activeColor: Colors.transparent,
-                              checkColor: AppTheme.goldColor,
-                              hoverColor: Colors.transparent,
-                              overlayColor: WidgetStateProperty.all(Colors.transparent),
-                              splashRadius: 0,
-                              side: BorderSide(
-                                color: AppTheme.goldColor.withValues(alpha: 0.3),
-                                width: 2,
-                              ),
-                              shape: const CircleBorder(),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: AppSpacing.md,
-                                vertical: AppSpacing.xs,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.md,
+                                  vertical: AppSpacing.sm,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Checkbox(
+                                      value: isSelected,
+                                      onChanged: canSelect
+                                          ? (bool? value) {
+                                              setState(() {
+                                                if (value == true) {
+                                                  _selectedThemes.add(theme);
+                                                } else {
+                                                  _selectedThemes.remove(theme);
+                                                }
+                                              });
+                                            }
+                                          : null,
+                                      activeColor: Colors.transparent,
+                                      checkColor: AppTheme.goldColor,
+                                      side: BorderSide(
+                                        color: AppTheme.goldColor.withValues(alpha: 0.3),
+                                        width: 2,
+                                      ),
+                                      shape: const CircleBorder(),
+                                    ),
+                                    SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: Text(
+                                        theme,
+                                        style: TextStyle(
+                                          fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                                          color: AppColors.primaryText,
+                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -218,8 +236,8 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            Navigator.pop(context);
                             widget.onThemesSelected([]);
+                            Navigator.pop(context);
                           },
                           borderRadius: BorderRadius.circular(24),
                           child: Center(
@@ -270,8 +288,8 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                           onTap: _selectedThemes.isEmpty
                               ? null
                               : () {
-                                  Navigator.pop(context);
                                   widget.onThemesSelected(_selectedThemes.toList());
+                                  Navigator.pop(context);
                                 },
                           borderRadius: BorderRadius.circular(24),
                           child: Center(
