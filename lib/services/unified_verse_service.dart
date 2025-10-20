@@ -78,12 +78,13 @@ class UnifiedVerseService {
   Future<List<BibleVerse>> searchByTheme(String theme, {int limit = 20}) async {
     final database = await _db.database;
 
+    // Search in themes JSON array or category field
     final results = await database.rawQuery('''
       SELECT * FROM bible_verses
-      WHERE text LIKE ?
+      WHERE themes LIKE ? OR category LIKE ? OR text LIKE ?
       ORDER BY RANDOM()
       LIMIT ?
-    ''', ['%$theme%', limit]);
+    ''', ['%"${theme.toLowerCase()}"%', '%${theme.toLowerCase()}%', '%$theme%', limit]);
 
     final favoriteIds = await _getFavoriteVerseIds();
 

@@ -91,8 +91,8 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildAllVerses(),
-                      _buildFavoriteVerses(),
+                      _buildSavedVerses(),
+                      _buildSharedVerses(),
                     ],
                   ),
                 ),
@@ -246,8 +246,12 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                   ),
                 ),
                 const Spacer(),
-                if (selectedTheme != 'All')
-                  TextButton(
+                Visibility(
+                  visible: selectedTheme != 'All',
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: TextButton(
                     onPressed: () {
                       ref.read(selectedThemeProvider.notifier).state = 'All';
                     },
@@ -259,6 +263,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
@@ -335,7 +340,11 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
                       onTap: () {
-                        ref.read(selectedThemeProvider.notifier).state = theme;
+                        if (isSelected) {
+                          ref.read(selectedThemeProvider.notifier).state = 'All';
+                        } else {
+                          ref.read(selectedThemeProvider.notifier).state = theme;
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -420,48 +429,27 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
           ),
           tabs: [
-            Tab(text: 'All Verses ($allCount)'),
-            Tab(text: 'Favorites ($favoriteCount)'),
+            Tab(text: 'Saved Verses ($favoriteCount)'),
+            Tab(text: 'Shared (0)'),
           ],
         ),
       ),
     ).animate().fadeIn(duration: AppAnimations.slow, delay: 800.ms);
   }
 
-  Widget _buildAllVerses() {
-    final versesAsync = ref.watch(filteredVersesProvider);
-
-    return versesAsync.when(
-      data: (verses) {
-        if (verses.isEmpty) {
-          return _buildEmptyState(
-            icon: Icons.search_off,
-            title: 'No verses found',
-            subtitle: 'Try adjusting your search or filter',
-          );
-        }
-
-        return ListView.builder(
-          padding: AppSpacing.screenPadding,
-          itemCount: verses.length,
-          itemBuilder: (context, index) {
-            final verse = verses[index];
-            return _buildVerseCard(verse, index).animate()
-                .fadeIn(duration: AppAnimations.slow, delay: (100 + index * 50).ms)
-                .slideY(begin: 0.3);
-          },
-        );
-      },
-      loading: () => const Center(
-        child: CircularProgressIndicator(
-          color: AppTheme.primaryColor,
-        ),
-      ),
-      error: (error, stack) => _buildErrorState(error.toString()),
+  Widget _buildSharedVerses() {
+    // Placeholder for shared verses feature (to be implemented)
+    return _buildEmptyState(
+      icon: Icons.share_outlined,
+      title: 'No shared verses yet',
+      subtitle: 'Verses you share via Messages, Mail, etc. will appear here',
     );
   }
 
-  Widget _buildFavoriteVerses() {
+  // Deprecated: Removed pre-populated "All Verses" tab
+  // Widget _buildAllVerses() { ... }
+
+  Widget _buildSavedVerses() {
     final favoritesAsync = ref.watch(favoriteVersesProvider);
 
     return favoritesAsync.when(
@@ -469,8 +457,8 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
         if (verses.isEmpty) {
           return _buildEmptyState(
             icon: Icons.favorite_outline,
-            title: 'No favorite verses yet',
-            subtitle: 'Tap the heart icon on any verse to add it to your favorites',
+            title: 'No saved verses yet',
+            subtitle: '💡 Save verses while reading to build your collection',
           );
         }
 

@@ -10,6 +10,7 @@ import '../core/providers/app_providers.dart';
 import '../services/bible_chapter_service.dart';
 import '../models/bible_verse.dart';
 import '../utils/responsive_utils.dart';
+import '../components/theme_selection_dialog.dart';
 
 /// Chapter Reading Screen - displays Bible chapters with verse-by-verse reading
 class ChapterReadingScreen extends ConsumerStatefulWidget {
@@ -520,27 +521,70 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
           );
         }
       } else {
-        await verseService.addToFavorites(
-          verse.id!,
-          text: verse.text,
-          reference: verse.reference,
-          category: verse.category,
-        );
+        // Show theme selection dialog before adding to favorites
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.favorite, color: Colors.red, size: ResponsiveUtils.iconSize(context, 20)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('Added to Verse Library!'),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.green.shade700,
-              duration: const Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
+          await showDialog(
+            context: context,
+            builder: (context) => ThemeSelectionDialog(
+              availableThemes: const [
+                'Faith',
+                'Hope',
+                'Love',
+                'Peace',
+                'Strength',
+                'Comfort',
+                'Courage',
+                'Wisdom',
+                'Forgiveness',
+                'Grace',
+                'Joy',
+                'Trust',
+                'Healing',
+                'Protection',
+                'Guidance',
+                'Patience',
+                'Perseverance',
+                'Salvation',
+                'Prayer',
+                'Praise',
+                'Thanksgiving',
+                'Redemption',
+                'Victory',
+                'Rest',
+                'Blessing',
+              ],
+              onThemesSelected: (selectedThemes) async {
+                // Add verse with selected themes
+                await verseService.addToFavorites(
+                  verse.id!,
+                  text: verse.text,
+                  reference: verse.reference,
+                  category: verse.category,
+                  tags: selectedThemes, // Store selected themes as tags
+                );
+
+                if (mounted) {
+                  final themeText = selectedThemes.isEmpty
+                      ? ''
+                      : ' (${selectedThemes.join(', ')})';
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(Icons.favorite, color: Colors.red, size: ResponsiveUtils.iconSize(context, 20)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text('Added to Verse Library!$themeText'),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: Colors.green.shade700,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
             ),
           );
         }

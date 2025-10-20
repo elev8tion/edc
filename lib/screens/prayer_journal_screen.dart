@@ -179,8 +179,12 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                       ),
                     ),
                     const Spacer(),
-                    if (selectedCategory != null)
-                      TextButton(
+                    Visibility(
+                      visible: selectedCategory != null,
+                      maintainSize: true,
+                      maintainAnimation: true,
+                      maintainState: true,
+                      child: TextButton(
                         onPressed: () {
                           ref.read(selectedCategoryFilterProvider.notifier).state = null;
                         },
@@ -192,6 +196,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
