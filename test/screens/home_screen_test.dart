@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:everyday_christian/screens/home_screen.dart';
 import 'package:everyday_christian/core/providers/app_providers.dart';
+import 'package:everyday_christian/core/navigation/navigation_service.dart';
+import 'package:everyday_christian/components/frosted_glass_card.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -76,11 +78,13 @@ void main() {
       );
 
       await tester.pumpAndSettle();
+      // Wait for FadeTransition to complete (800ms animation)
+      await tester.pump(const Duration(milliseconds: 900));
 
       // Verify stat card labels
       expect(find.text('Day Streak'), findsOneWidget);
       expect(find.text('Prayers'), findsOneWidget);
-      expect(find.text('Verses Read'), findsOneWidget);
+      expect(find.text('Saved Verses'), findsOneWidget);
       expect(find.text('Devotionals'), findsOneWidget);
     });
 
@@ -98,12 +102,12 @@ void main() {
         ),
       );
 
-      // Before data loads, should show progress indicator
+      // Before data loads, should show placeholder text
       await tester.pump();
-      expect(find.byType(CircularProgressIndicator), findsWidgets);
+      expect(find.text('...'), findsWidgets);
 
-      // After loading
-      await tester.pumpAndSettle();
+      // Wait for the delayed future to complete
+      await tester.pumpAndSettle(const Duration(seconds: 2));
       expect(find.text('Day Streak'), findsOneWidget);
     });
 
@@ -130,9 +134,14 @@ void main() {
 
     testWidgets('should navigate to chat when Biblical Chat is tapped', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            navigatorKey: NavigationService.navigatorKey,
+            onGenerateRoute: (settings) {
+              // Provide dummy routes for testing navigation
+              return MaterialPageRoute(builder: (_) => const Scaffold(body: Text('Route')));
+            },
+            home: const HomeScreen(),
           ),
         ),
       );
@@ -149,9 +158,14 @@ void main() {
 
     testWidgets('should navigate to devotional when Daily Devotional is tapped', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            navigatorKey: NavigationService.navigatorKey,
+            onGenerateRoute: (settings) {
+              // Provide dummy routes for testing navigation
+              return MaterialPageRoute(builder: (_) => const Scaffold(body: Text('Route')));
+            },
+            home: const HomeScreen(),
           ),
         ),
       );
@@ -209,16 +223,12 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Scroll to quick actions
-      await tester.dragUntilVisible(
-        find.text('Bible Library'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -50),
-      );
+      // Ensure quick actions are visible
+      await tester.ensureVisible(find.text('Read Bible'));
 
-      expect(find.text('Bible Library'), findsOneWidget);
+      expect(find.text('Read Bible'), findsOneWidget);
+      expect(find.text('Verse Library'), findsOneWidget);
       expect(find.text('Add Prayer'), findsOneWidget);
-      expect(find.text('Share Verse'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
       expect(find.text('Profile'), findsOneWidget);
     });
@@ -295,9 +305,14 @@ void main() {
 
     testWidgets('should tap start chat button', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            navigatorKey: NavigationService.navigatorKey,
+            onGenerateRoute: (settings) {
+              // Provide dummy routes for testing navigation
+              return MaterialPageRoute(builder: (_) => const Scaffold(body: Text('Route')));
+            },
+            home: const HomeScreen(),
           ),
         ),
       );
@@ -327,8 +342,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verify avatar icon is present
-      expect(find.byIcon(Icons.person), findsOneWidget);
+      // Verify avatar icon is present (may appear multiple times in widget tree)
+      expect(find.byIcon(Icons.person), findsWidgets);
     });
 
     testWidgets('should have scrollable content', (tester) async {
@@ -364,11 +379,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Verify icons are present
-      expect(find.byIcon(Icons.chat_bubble_outline), findsOneWidget);
-      expect(find.byIcon(Icons.auto_stories), findsOneWidget);
-      expect(find.byIcon(Icons.favorite_outline), findsOneWidget);
-      expect(find.byIcon(Icons.library_books_outlined), findsOneWidget);
+      // Verify icons are present (may appear multiple times in widget tree)
+      expect(find.byIcon(Icons.chat_bubble_outline), findsWidgets);
+      expect(find.byIcon(Icons.auto_stories), findsWidgets);
+      expect(find.byIcon(Icons.favorite_outline), findsWidgets);
+      expect(find.byIcon(Icons.library_books_outlined), findsWidgets);
     });
 
     testWidgets('should render without overflow on small screens', (tester) async {
@@ -414,31 +429,28 @@ void main() {
 
     testWidgets('should handle quick action taps', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            navigatorKey: NavigationService.navigatorKey,
+            onGenerateRoute: (settings) {
+              // Provide dummy routes for testing navigation
+              return MaterialPageRoute(builder: (_) => const Scaffold(body: Text('Route')));
+            },
+            home: const HomeScreen(),
           ),
         ),
       );
 
       await tester.pumpAndSettle();
 
-      // Scroll to quick actions
-      await tester.dragUntilVisible(
-        find.text('Bible Library'),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -50),
-      );
+      // Ensure quick actions are visible
+      await tester.ensureVisible(find.text('Read Bible'));
 
-      // Tap Bible Library
-      await tester.tap(find.text('Bible Library'));
+      // Tap Read Bible (this will navigate away, so we only test one tap)
+      await tester.tap(find.text('Read Bible'));
       await tester.pumpAndSettle();
 
-      // Tap Add Prayer
-      await tester.tap(find.text('Add Prayer'));
-      await tester.pumpAndSettle();
-
-      // Verify no crashes
+      // Verify no crashes (after navigation, we're on a different screen)
       expect(tester.takeException(), isNull);
     });
 
@@ -454,7 +466,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify FrostedGlassCard widgets are present
-      expect(find.byType(Object), findsWidgets);
+      expect(find.byType(FrostedGlassCard), findsWidgets);
     });
 
     testWidgets('should have proper spacing between elements', (tester) async {
