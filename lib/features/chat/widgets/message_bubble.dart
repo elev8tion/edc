@@ -228,7 +228,52 @@ class MessageBubble extends StatelessWidget {
                 Clipboard.setData(ClipboardData(text: message.content));
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Message copied to clipboard')),
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                    margin: const EdgeInsets.all(16),
+                    padding: EdgeInsets.zero,
+                    content: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF1E293B), // slate-800
+                            Color(0xFF0F172A), // slate-900
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.goldColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.goldColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Message copied to clipboard',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -245,7 +290,52 @@ class MessageBubble extends StatelessWidget {
                   Clipboard.setData(ClipboardData(text: versesText));
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Verses copied to clipboard')),
+                    SnackBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                      margin: const EdgeInsets.all(16),
+                      padding: EdgeInsets.zero,
+                      content: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF1E293B), // slate-800
+                              Color(0xFF0F172A), // slate-900
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppTheme.goldColor.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: AppTheme.goldColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Verses copied to clipboard',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),

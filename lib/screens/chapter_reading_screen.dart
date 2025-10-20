@@ -71,15 +71,50 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
         setState(() => _isCompleted = true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Reading marked as complete!'),
-              ],
-            ),
-            backgroundColor: Colors.green.shade700,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.goldColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: AppTheme.goldColor,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Reading marked as complete!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -87,8 +122,50 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red.shade700,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.red.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red.shade300,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Error: $e',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -504,18 +581,50 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.heart_broken, color: Colors.white, size: ResponsiveUtils.iconSize(context, 20)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('Removed from Verse Library'),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.grey.shade700,
-              duration: const Duration(seconds: 2),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
               behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.heart_broken,
+                      color: AppTheme.goldColor,
+                      size: ResponsiveUtils.iconSize(context, 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Removed from Verse Library',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: ResponsiveUtils.fontSize(context, 14),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -540,26 +649,19 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
               content: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor.withValues(alpha: 0.2),
-                      AppTheme.primaryColor.withValues(alpha: 0.1),
-                    ],
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: AppTheme.goldColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
                 ),
                 child: Row(
                   children: [
@@ -593,8 +695,50 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red.shade700,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.red.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red.shade300,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Error: $e',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }

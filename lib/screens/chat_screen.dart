@@ -214,9 +214,51 @@ class ChatScreen extends HookConsumerWidget {
       if (!consumed) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to send message. Please try again.'),
-              backgroundColor: Colors.red,
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade300,
+                      size: ResponsiveUtils.iconSize(context, 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Failed to send message. Please try again.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -236,37 +278,58 @@ class ChatScreen extends HookConsumerWidget {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.info_outline, color: Colors.white, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Crisis Resources Available',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 10),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
                   ],
                 ),
-                const SizedBox(height: 8),
-                Text(crisisResult.getMessage(), style: TextStyle(fontSize: 14)),
-                const SizedBox(height: 8),
-                Text(
-                  'Tap to view resources →',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.orange.withValues(alpha: 0.7),
+                  width: 2,
                 ),
-              ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange.shade300, size: 20),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Crisis Resources Available',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(crisisResult.getMessage(), style: const TextStyle(fontSize: 14, color: Colors.white)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap to view resources →',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.orange.shade300),
+                  ),
+                ],
+              ),
             ),
-            backgroundColor: Colors.orange.shade700,
-            duration: const Duration(seconds: 10),
-            behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
               label: 'View',
-              textColor: Colors.white,
+              textColor: Colors.orange.shade300,
               onPressed: () {
                 // Use navigatorContext to ensure we have Navigator access
                 if (navigatorContext.mounted) {
@@ -456,9 +519,51 @@ class ChatScreen extends HookConsumerWidget {
       if (userInput == null) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not find previous user message'),
-              backgroundColor: Colors.red,
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade300,
+                      size: ResponsiveUtils.iconSize(context, 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Could not find previous user message',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -520,9 +625,50 @@ class ChatScreen extends HookConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('✨ Response regenerated successfully'),
-              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: AppTheme.goldColor,
+                      size: ResponsiveUtils.iconSize(context, 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '✨ Response regenerated successfully',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -533,8 +679,50 @@ class ChatScreen extends HookConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to regenerate response: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade300,
+                      size: ResponsiveUtils.iconSize(context, 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Failed to regenerate response: $e',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -546,7 +734,52 @@ class ChatScreen extends HookConsumerWidget {
       if (sessionId.value == null) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No conversation to export')),
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'No conversation to export',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         }
         return;
@@ -559,7 +792,52 @@ class ChatScreen extends HookConsumerWidget {
         if (exportText.isEmpty) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No messages to export')),
+              SnackBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
+                margin: const EdgeInsets.all(16),
+                padding: EdgeInsets.zero,
+                content: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF1E293B), // slate-800
+                        Color(0xFF0F172A), // slate-900
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.goldColor.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'No messages to export',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           }
           return;
@@ -644,8 +922,50 @@ class ChatScreen extends HookConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to export: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade300,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Failed to export: $e',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -657,7 +977,52 @@ class ChatScreen extends HookConsumerWidget {
       if (sessionId.value == null) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No conversation to share')),
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'No conversation to share',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         }
         return;
@@ -670,7 +1035,52 @@ class ChatScreen extends HookConsumerWidget {
         if (exportText.isEmpty) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No messages to share')),
+              SnackBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
+                margin: const EdgeInsets.all(16),
+                padding: EdgeInsets.zero,
+                content: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF1E293B), // slate-800
+                        Color(0xFF0F172A), // slate-900
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.goldColor.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'No messages to share',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           }
           return;
@@ -684,8 +1094,50 @@ class ChatScreen extends HookConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('📤 Conversation shared'),
-              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.goldColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: AppTheme.goldColor,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '📤 Conversation shared',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -694,8 +1146,50 @@ class ChatScreen extends HookConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to share: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+              margin: const EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
+              content: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF1E293B), // slate-800
+                      Color(0xFF0F172A), // slate-900
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade300,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Failed to share: $e',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -1561,8 +2055,50 @@ class ChatScreen extends HookConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('Conversation deleted'),
-                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+                          margin: const EdgeInsets.all(16),
+                          padding: EdgeInsets.zero,
+                          content: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF1E293B), // slate-800
+                                  Color(0xFF0F172A), // slate-900
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.goldColor.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: AppTheme.goldColor,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Text(
+                                    'Conversation deleted',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     }
@@ -1708,9 +2244,50 @@ class ChatScreen extends HookConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('✨ New conversation started'),
-            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.goldColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: AppTheme.goldColor,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      '✨ New conversation started',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -1791,9 +2368,50 @@ class ChatScreen extends HookConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Text('✨ New conversation started! Previous chat saved to history.'),
-                          backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          behavior: SnackBarBehavior.floating,
                           duration: const Duration(seconds: 3),
+                          margin: const EdgeInsets.all(16),
+                          padding: EdgeInsets.zero,
+                          content: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF1E293B), // slate-800
+                                  Color(0xFF0F172A), // slate-900
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.goldColor.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: AppTheme.goldColor,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Text(
+                                    '✨ New conversation started! Previous chat saved to history.',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     }

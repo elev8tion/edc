@@ -5764,13 +5764,78 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
 
   void _showSnackBar(String message) {
+    // Determine icon and border color based on message content
+    IconData icon;
+    Color borderColor;
+    Color iconColor;
+
+    if (message.startsWith('✅') || message.startsWith('✓')) {
+      icon = Icons.check_circle;
+      borderColor = AppTheme.goldColor.withValues(alpha: 0.3);
+      iconColor = AppTheme.goldColor;
+    } else if (message.startsWith('❌') || message.startsWith('✗')) {
+      icon = Icons.error_outline;
+      borderColor = Colors.red.withValues(alpha: 0.5);
+      iconColor = Colors.red.shade300;
+    } else if (message.startsWith('⚠️')) {
+      icon = Icons.warning_amber_outlined;
+      borderColor = Colors.orange.withValues(alpha: 0.5);
+      iconColor = Colors.orange.shade300;
+    } else if (message.startsWith('📤') || message.startsWith('📥')) {
+      icon = Icons.upload_outlined;
+      borderColor = AppTheme.goldColor.withValues(alpha: 0.3);
+      iconColor = AppTheme.goldColor;
+    } else {
+      icon = Icons.info_outline;
+      borderColor = AppTheme.goldColor.withValues(alpha: 0.3);
+      iconColor = Colors.white70;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.xs + 2),
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        padding: EdgeInsets.zero,
+        content: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF1E293B), // slate-800
+                Color(0xFF0F172A), // slate-900
+              ],
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: borderColor,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: iconColor,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

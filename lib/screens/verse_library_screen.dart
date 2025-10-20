@@ -434,13 +434,50 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              newStatus ? 'Added to favorites' : 'Removed from favorites',
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.goldColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    newStatus ? Icons.favorite : Icons.heart_broken,
+                    color: AppTheme.goldColor,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      newStatus ? 'Added to favorites' : 'Removed from favorites',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -448,12 +485,50 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Error updating favorite: $e',
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red.withValues(alpha: 0.9),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.zero,
+            content: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF1E293B), // slate-800
+                    Color(0xFF0F172A), // slate-900
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.red.withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red.shade300,
+                    size: ResponsiveUtils.iconSize(context, 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Error updating favorite: $e',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ResponsiveUtils.fontSize(context, 14),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       }
@@ -478,9 +553,50 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 NavigationService.pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Verse copied to clipboard'),
-                    backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
                     behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                    margin: const EdgeInsets.all(16),
+                    padding: EdgeInsets.zero,
+                    content: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF1E293B), // slate-800
+                            Color(0xFF0F172A), // slate-900
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.goldColor.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.goldColor,
+                            size: ResponsiveUtils.iconSize(context, 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Verse copied to clipboard',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: ResponsiveUtils.fontSize(context, 14),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },
