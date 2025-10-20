@@ -96,13 +96,13 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                 ),
                 decoration: BoxDecoration(
                   color: _selectedThemes.length == maxThemes
-                      ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                      ? AppTheme.goldColor.withValues(alpha: 0.1)
                       : Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(AppRadius.xs),
                   border: Border.all(
                     color: _selectedThemes.length == maxThemes
-                        ? AppTheme.primaryColor.withValues(alpha: 0.3)
-                        : Colors.white.withValues(alpha: 0.1),
+                        ? AppTheme.goldColor.withValues(alpha: 0.3)
+                        : Colors.white.withValues(alpha: 0.15),
                   ),
                 ),
                 child: Row(
@@ -110,9 +110,7 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                     Icon(
                       Icons.info_outline,
                       size: ResponsiveUtils.iconSize(context, 16),
-                      color: _selectedThemes.length == maxThemes
-                          ? AppTheme.primaryColor
-                          : Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                     SizedBox(width: AppSpacing.sm),
                     Text(
@@ -121,9 +119,7 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                           : '${_selectedThemes.length}/$maxThemes themes selected',
                       style: TextStyle(
                         fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                        color: _selectedThemes.length == maxThemes
-                            ? AppTheme.primaryColor
-                            : Colors.white.withValues(alpha: 0.7),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: _selectedThemes.length == maxThemes
                             ? FontWeight.w600
                             : FontWeight.normal,
@@ -148,14 +144,12 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                           margin: EdgeInsets.only(bottom: AppSpacing.sm),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppTheme.primaryColor.withValues(alpha: 0.15)
+                                ? AppTheme.goldColor.withValues(alpha: 0.1)
                                 : Colors.white.withValues(alpha: 0.03),
                             borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(
-                              color: isSelected
-                                  ? AppTheme.primaryColor.withValues(alpha: 0.4)
-                                  : Colors.white.withValues(alpha: 0.1),
-                              width: isSelected ? 1.5 : 1,
+                              color: Colors.white.withValues(alpha: 0.15),
+                              width: 1,
                             ),
                           ),
                           child: CheckboxListTile(
@@ -179,8 +173,13 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                                     });
                                   }
                                 : null,
-                            activeColor: AppTheme.primaryColor,
-                            checkColor: Colors.white,
+                            activeColor: Colors.transparent,
+                            checkColor: AppTheme.goldColor,
+                            side: BorderSide(
+                              color: AppTheme.goldColor.withValues(alpha: 0.3),
+                              width: 2,
+                            ),
+                            shape: const CircleBorder(),
                             controlAffinity: ListTileControlAffinity.leading,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: AppSpacing.md,
@@ -232,7 +231,7 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                     ),
                   ),
                   SizedBox(width: AppSpacing.md),
-                  // Save button
+                  // Save button (GlassButton style)
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -243,18 +242,20 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                             ? null
                             : LinearGradient(
                                 colors: [
-                                  AppTheme.primaryColor.withValues(alpha: 0.8),
-                                  AppTheme.primaryColor.withValues(alpha: 0.6),
+                                  Colors.white.withValues(alpha: 0.15),
+                                  Colors.white.withValues(alpha: 0.05),
                                 ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
                         color: _selectedThemes.isEmpty
-                            ? Colors.white.withValues(alpha: 0.1)
+                            ? Colors.white.withValues(alpha: 0.05)
                             : null,
                         border: Border.all(
                           color: _selectedThemes.isEmpty
                               ? Colors.white.withValues(alpha: 0.2)
                               : AppTheme.primaryColor,
-                          width: 1.5,
+                          width: 2,
                         ),
                       ),
                       child: Material(
