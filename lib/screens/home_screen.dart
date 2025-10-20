@@ -25,35 +25,16 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   late String greeting;
   late String userName;
   final GlobalKey _backgroundKey = GlobalKey();
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     _setGreeting();
     userName = "Friend"; // In production, get from user preferences
-
-    // Single animation controller for entire screen (better performance)
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   void _setGreeting() {
@@ -77,15 +58,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
             child: const GradientBackground(),
           ),
           SafeArea(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(top: AppSpacing.xl),
-                // Optimize scrolling performance
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(top: AppSpacing.xl),
+              // Optimize scrolling performance
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   _buildHeader(),
                   const SizedBox(height: AppSpacing.xxl),
                   _buildStatsRow(),
@@ -98,10 +77,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                   const SizedBox(height: AppSpacing.xxl),
                   _buildStartChatButton(),
                 ],
-              ), // closes Column
-            ), // closes SingleChildScrollView
-          ), // closes FadeTransition
-          ), // closes SafeArea
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -155,7 +133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: AppAnimations.slow).slideY(begin: -0.3);
   }
 
   Widget _buildAvatarCircle(String? imagePath) {
@@ -391,7 +369,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ],
       ),
       ),
-    );
+    ).animate().fadeIn(delay: Duration(milliseconds: delay)).scale(delay: Duration(milliseconds: delay));
   }
 
   Widget _buildStatCardLoading({
@@ -476,7 +454,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ],
       ),
       ),
-    );
+    ).animate().fadeIn(delay: Duration(milliseconds: delay)).scale(delay: Duration(milliseconds: delay));
   }
 
   Widget _buildMainFeatures() {
@@ -568,7 +546,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               ),
             ),
           ],
-        ),
+        ).animate().fadeIn(delay: 1000.ms).scale(delay: 1000.ms),
         const SizedBox(height: AppSpacing.md),
         Row(
           children: [
@@ -654,7 +632,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               ),
             ),
           ],
-        ),
+        ).animate().fadeIn(delay: 1100.ms).scale(delay: 1100.ms),
       ],
       ),
     );
@@ -675,7 +653,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               shadows: AppTheme.textShadowStrong,
             ),
           ),
-        ),
+        ).animate().fadeIn(delay: 1200.ms).slideY(begin: 0.3, delay: 1200.ms),
         const SizedBox(height: AppSpacing.lg),
         LayoutBuilder(
           builder: (context, constraints) => SizedBox(
@@ -799,7 +777,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ),
         ),
       ),
-    );
+    ).animate().fadeIn(delay: Duration(milliseconds: delay)).scale(delay: Duration(milliseconds: delay));
   }
 
   Widget _buildDailyVerse() {
@@ -916,13 +894,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ],
       ),
       ),
-    );
+    ).animate().fadeIn(delay: 1900.ms).slideY(begin: 0.3, delay: 1900.ms);
   }
 
   Widget _buildStartChatButton() {
     return GlassButton(
       text: 'Start Spiritual Conversation',
       onPressed: () => NavigationService.goToChat(),
-    );
+    ).animate().fadeIn(delay: 2000.ms).scale(delay: 2000.ms);
   }
 }

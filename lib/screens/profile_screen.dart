@@ -156,7 +156,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   AutoSizeText(
-                    'Your spiritual journey and achievements',
+                    'Everyday Christian',
                     style: TextStyle(
                       fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                       color: AppColors.secondaryText,

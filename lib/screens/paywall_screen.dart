@@ -514,9 +514,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
   @override
   void dispose() {
-    // Clear callback
-    final subscriptionService = ref.read(subscriptionServiceProvider);
-    subscriptionService.onPurchaseUpdate = null;
+    // Clear callback (check if mounted to avoid using ref after dispose)
+    if (mounted) {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      subscriptionService.onPurchaseUpdate = null;
+    }
     super.dispose();
   }
 }

@@ -106,7 +106,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
                 ).animate().fadeIn(duration: AppAnimations.slow).slideX(begin: -0.3),
                 const SizedBox(height: 4),
                 Text(
-                  'Bring your requests to God',
+                  'Plan Pray Reflect',
                   style: TextStyle(
                     fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                     color: AppColors.secondaryText,

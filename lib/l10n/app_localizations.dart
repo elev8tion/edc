@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// Prayer journal subtitle
   ///
   /// In en, this message translates to:
-  /// **'Bring your requests to God'**
+  /// **'Plan Pray Reflect'**
   String get bringRequestsToGod;
 
   /// Tab label

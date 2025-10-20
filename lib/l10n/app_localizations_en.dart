@@ -204,7 +204,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'I\'m here to provide biblical guidance and spiritual support. Feel free to ask me about:\n\n• Scripture interpretation\n• Prayer requests\n• Life challenges\n• Faith questions\n• Daily encouragement\n\nHow can I help you today?';
 
   @override
-  String get bringRequestsToGod => 'Bring your requests to God';
+  String get bringRequestsToGod => 'Plan Pray Reflect';
 
   @override
   String get active => 'Active';
