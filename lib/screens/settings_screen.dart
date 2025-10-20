@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
@@ -1751,8 +1752,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _contactSupport() {
-    _showSnackBar('Opening email client...');
+  Future<void> _contactSupport() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'connect@everydaychristian.app',
+      queryParameters: {
+        'subject': 'Everyday Christian Support Request',
+        'body': 'Please describe your issue or question:\n\n',
+      },
+    );
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+      } else {
+        if (mounted) {
+          _showSnackBar('Could not open email client. Please email connect@everydaychristian.app');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Error opening email: Please email connect@everydaychristian.app');
+      }
+    }
   }
 
   void _rateApp() {
