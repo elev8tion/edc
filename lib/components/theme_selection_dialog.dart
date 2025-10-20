@@ -152,38 +152,44 @@ class _ThemeSelectionDialogState extends State<ThemeSelectionDialog> {
                               width: 1,
                             ),
                           ),
-                          child: CheckboxListTile(
-                            title: Text(
-                              theme,
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
-                                color: AppColors.primaryText,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: CheckboxListTile(
+                              title: Text(
+                                theme,
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                                  color: AppColors.primaryText,
+                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                ),
                               ),
-                            ),
-                            value: isSelected,
-                            onChanged: canSelect
-                                ? (bool? value) {
-                                    setState(() {
-                                      if (value == true) {
-                                        _selectedThemes.add(theme);
-                                      } else {
-                                        _selectedThemes.remove(theme);
-                                      }
-                                    });
-                                  }
-                                : null,
-                            activeColor: Colors.transparent,
-                            checkColor: AppTheme.goldColor,
-                            side: BorderSide(
-                              color: AppTheme.goldColor.withValues(alpha: 0.3),
-                              width: 2,
-                            ),
-                            shape: const CircleBorder(),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.xs,
+                              value: isSelected,
+                              onChanged: canSelect
+                                  ? (bool? value) {
+                                      setState(() {
+                                        if (value == true) {
+                                          _selectedThemes.add(theme);
+                                        } else {
+                                          _selectedThemes.remove(theme);
+                                        }
+                                      });
+                                    }
+                                  : null,
+                              activeColor: Colors.transparent,
+                              checkColor: AppTheme.goldColor,
+                              hoverColor: Colors.transparent,
+                              overlayColor: WidgetStateProperty.all(Colors.transparent),
+                              splashRadius: 0,
+                              side: BorderSide(
+                                color: AppTheme.goldColor.withValues(alpha: 0.3),
+                                width: 2,
+                              ),
+                              shape: const CircleBorder(),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: AppSpacing.md,
+                                vertical: AppSpacing.xs,
+                              ),
                             ),
                           ),
                         ),
