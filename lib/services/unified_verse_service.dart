@@ -166,7 +166,7 @@ class UnifiedVerseService {
   }
 
   /// Add verse to favorites
-  Future<void> addToFavorites(int verseId, {String? note, List<String>? tags, String? text, String? reference, String? category}) async {
+  Future<void> addToFavorites(int verseId, {String? note, String? text, String? reference, String? category}) async {
     final database = await _db.database;
 
     // Get verse details if not provided
@@ -200,7 +200,7 @@ class UnifiedVerseService {
         'reference': verseReference,
         'category': verseCategory,
         'note': note,
-        'tags': tags != null ? jsonEncode(tags) : null,
+        'tags': null, // Keep field in database but always set to null
         'date_added': DateTime.now().millisecondsSinceEpoch,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,

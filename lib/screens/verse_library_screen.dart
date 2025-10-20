@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,29 +18,9 @@ import '../models/bible_verse.dart';
 import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
 
-// State provider for search query
-final searchQueryProvider = StateProvider<String>((ref) => '');
-
-// State provider for selected theme filter
-final selectedThemeProvider = StateProvider<String>((ref) => 'All');
-
-// Combined provider for filtered verses
+// Provider for all saved verses
 final filteredVersesProvider = FutureProvider.autoDispose<List<BibleVerse>>((ref) async {
-  final searchQuery = ref.watch(searchQueryProvider);
-  final selectedTheme = ref.watch(selectedThemeProvider);
   final service = ref.watch(unifiedVerseServiceProvider);
-
-  // If searching, use search results
-  if (searchQuery.trim().isNotEmpty) {
-    return await service.searchVerses(searchQuery, limit: 50);
-  }
-
-  // If theme filter is applied
-  if (selectedTheme != 'All') {
-    return await service.searchByTheme(selectedTheme.toLowerCase(), limit: 50);
-  }
-
-  // Otherwise get all verses
   return await service.getAllVerses(limit: 100);
 });
 
@@ -54,8 +33,6 @@ class VerseLibraryScreen extends ConsumerStatefulWidget {
 
 class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with TickerProviderStateMixin {
   late TabController _tabController;
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -65,17 +42,12 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
 
   @override
   void dispose() {
-    _debounceTimer?.cancel();
     _tabController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final themes = ref.watch(availableThemesProvider);
-    final selectedTheme = ref.watch(selectedThemeProvider);
-
     return Scaffold(
       body: Stack(
         children: [
@@ -84,9 +56,12 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
             child: Column(
               children: [
                 _buildHeader(),
-                _buildSearchBar(),
-                _buildThemeFilter(themes.value ?? [], selectedTheme),
                 _buildTabBar(),
+                Container(
+                  height: 1,
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  color: AppTheme.primaryColor,
+                ),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
@@ -158,238 +133,6 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      margin: AppSpacing.horizontalXl,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.2),
-            Colors.white.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(AppRadius.xl + 1),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (value) {
-          // Cancel previous timer
-          _debounceTimer?.cancel();
-
-          // Start new timer - only update search after 300ms of no typing
-          _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-            ref.read(searchQueryProvider.notifier).state = value;
-          });
-        },
-        style: TextStyle(
-          color: AppColors.primaryText,
-          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-        ),
-        decoration: InputDecoration(
-          hintText: 'Search verses or references...',
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.5),
-            fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 15,
-          ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.white.withValues(alpha: 0.7),
-            size: ResponsiveUtils.iconSize(context, 20),
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? GestureDetector(
-                  onTap: () {
-                    _searchController.clear();
-                    ref.read(searchQueryProvider.notifier).state = '';
-                  },
-                  child: Icon(
-                    Icons.clear,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                )
-              : null,
-        ),
-      ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: AppAnimations.normal);
-  }
-
-  Widget _buildThemeFilter(List<String> themes, String selectedTheme) {
-    if (themes.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: Row(
-              children: [
-                Text(
-                  'Filter by Theme',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondaryText,
-                  ),
-                ),
-                const Spacer(),
-                Visibility(
-                  visible: selectedTheme != 'All',
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: TextButton(
-                    onPressed: () {
-                      ref.read(selectedThemeProvider.notifier).state = 'All';
-                    },
-                    child: Text(
-                      'Clear Filter',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: ResponsiveUtils.scaleSize(context, 36, minScale: 0.9, maxScale: 1.2),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              children: [
-                // "All" filter chip
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
-                    onTap: () {
-                      ref.read(selectedThemeProvider.notifier).state = 'All';
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        gradient: selectedTheme == 'All'
-                            ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
-                            : AppGradients.glassMedium,
-                        borderRadius: AppRadius.largeCardRadius,
-                        border: Border.all(
-                          color: selectedTheme == 'All'
-                              ? AppTheme.primaryColor
-                              : Colors.white.withValues(alpha: 0.2),
-                          width: selectedTheme == 'All' ? 2 : 1,
-                        ),
-                        boxShadow: selectedTheme == 'All'
-                            ? [
-                                BoxShadow(
-                                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 0,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.grid_view,
-                            size: ResponsiveUtils.iconSize(context, 16),
-                            color: selectedTheme == 'All'
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.6),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'All',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
-                              fontWeight: FontWeight.w600,
-                              color: selectedTheme == 'All'
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ).animate().fadeIn(duration: AppAnimations.slow, delay: 600.ms).scale(begin: const Offset(0.8, 0.8)),
-                ),
-                // Theme filter chips
-                ...themes.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final theme = entry.value;
-                  final isSelected = theme == selectedTheme;
-
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        if (isSelected) {
-                          ref.read(selectedThemeProvider.notifier).state = 'All';
-                        } else {
-                          ref.read(selectedThemeProvider.notifier).state = theme;
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          gradient: isSelected
-                              ? AppGradients.customColored(AppTheme.primaryColor, startAlpha: 0.4, endAlpha: 0.2)
-                              : AppGradients.glassMedium,
-                          borderRadius: AppRadius.largeCardRadius,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppTheme.primaryColor
-                                : Colors.white.withValues(alpha: 0.2),
-                            width: isSelected ? 2 : 1,
-                          ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    spreadRadius: 0,
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Text(
-                          theme,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.fontSize(context, 13, minSize: 11, maxSize: 15),
-                            fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.6),
-                          ),
-                        ),
-                      ),
-                    ).animate().fadeIn(duration: AppAnimations.slow, delay: (700 + index * 50).ms).scale(begin: const Offset(0.8, 0.8)),
-                  );
-                }),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: AppAnimations.slow, delay: 400.ms);
-  }
 
   Widget _buildTabBar() {
     final favorites = ref.watch(favoriteVersesProvider);
@@ -566,11 +309,6 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
   }
 
   Widget _buildVerseCard(BibleVerse verse, int index) {
-    // Get primary theme for display
-    final primaryTheme = verse.themes.isNotEmpty
-        ? verse.themes.first
-        : verse.category;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: FrostedGlassCard(
@@ -579,11 +317,6 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           children: [
             Row(
               children: [
-                CategoryBadge(
-                  text: primaryTheme.substring(0, 1).toUpperCase() + primaryTheme.substring(1),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                ),
                 const Spacer(),
                 Row(
                   children: [
@@ -796,7 +529,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
               ),
             ),
             subtitle: Text(
-              'Browse and search Bible verses by theme',
+              'Browse your saved Bible verses',
               style: TextStyle(
                 fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
                 color: AppColors.secondaryText,

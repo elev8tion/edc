@@ -356,11 +356,11 @@ void main() {
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
 
-      // Find checkbox
-      final checkbox = find.byType(CheckboxListTile);
+      // Find checkbox (now using Checkbox widget, not CheckboxListTile)
+      final checkbox = find.byType(Checkbox);
       expect(checkbox, findsOneWidget);
 
-      final checkboxWidget = tester.widget<CheckboxListTile>(checkbox);
+      final checkboxWidget = tester.widget<Checkbox>(checkbox);
       expect(checkboxWidget.shape, isA<CircleBorder>());
       expect(checkboxWidget.checkColor, AppTheme.goldColor);
       expect(checkboxWidget.activeColor, Colors.transparent);

@@ -35,9 +35,10 @@ class BibleVerse {
   /// Create verse from database map
   factory BibleVerse.fromMap(Map<String, dynamic> map, {bool isFavorite = false}) {
     List<String> themesList = [];
-    if (map['themes'] != null) {
+    // Check both 'themes' and 'tags' fields (favorite_verses uses 'tags')
+    final dynamic themesData = map['themes'] ?? map['tags'];
+    if (themesData != null) {
       try {
-        final dynamic themesData = map['themes'];
         if (themesData is String) {
           themesList = List<String>.from(jsonDecode(themesData));
         } else if (themesData is List) {
