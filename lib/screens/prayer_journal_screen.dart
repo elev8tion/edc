@@ -327,7 +327,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
         }
 
         return ListView.builder(
-          padding: AppSpacing.screenPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           itemCount: prayers.length,
           itemBuilder: (context, index) {
             final prayer = prayers[index];
@@ -379,7 +379,7 @@ class _PrayerJournalScreenState extends ConsumerState<PrayerJournalScreen> with 
         }
 
         return ListView.builder(
-          padding: AppSpacing.screenPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           itemCount: prayers.length,
           itemBuilder: (context, index) {
             final prayer = prayers[index];
