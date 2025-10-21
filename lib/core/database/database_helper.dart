@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,7 +12,7 @@ import 'migrations/database_migrator.dart';
 /// Unified database helper with all tables in one schema
 class DatabaseHelper {
   static const String _databaseName = 'everyday_christian.db';
-  static const int _databaseVersion = 5;
+  static const int _databaseVersion = 6;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -187,6 +188,20 @@ class DatabaseHelper {
       ''');
 
       await db.execute('CREATE INDEX idx_daily_verse_date ON daily_verse_history(shown_date DESC)');
+
+      // Daily verse schedule (365-day calendar of verses)
+      await db.execute('''
+        CREATE TABLE daily_verse_schedule (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          month INTEGER NOT NULL,
+          day INTEGER NOT NULL,
+          verse_id INTEGER NOT NULL,
+          FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+          UNIQUE(month, day)
+        )
+      ''');
+
+      await db.execute('CREATE INDEX idx_daily_verse_schedule_date ON daily_verse_schedule(month, day)');
 
       // Verse bookmarks
       await db.execute('''
@@ -519,6 +534,72 @@ class DatabaseHelper {
       } catch (e) {
         _logger.error('Migration v4→v5 failed: $e');
         // Continue - table may not exist in fresh installs
+      }
+    }
+
+    if (oldVersion < 6) {
+      try {
+        // v5→v6: Add daily_verse_schedule table for calendar-based verse rotation
+        _logger.info('Migrating v5→v6: Adding daily_verse_schedule table');
+
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS daily_verse_schedule (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            month INTEGER NOT NULL,
+            day INTEGER NOT NULL,
+            verse_id INTEGER NOT NULL,
+            FOREIGN KEY (verse_id) REFERENCES bible_verses (id),
+            UNIQUE(month, day)
+          )
+        ''');
+
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_daily_verse_schedule_date ON daily_verse_schedule(month, day)');
+
+        // If Bible verses are already loaded, populate the schedule from assets
+        final verseCount = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM bible_verses WHERE version = ?', ['WEB'])) ?? 0;
+
+        if (verseCount > 0) {
+          _logger.info('Bible data exists ($verseCount verses), populating daily_verse_schedule from assets...');
+
+          // Copy asset database to temp location
+          final databasesPath = await getDatabasesPath();
+          final assetDbPath = join(databasesPath, 'asset_bible_temp.db');
+
+          final data = await rootBundle.load('assets/bible.db');
+          final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          await File(assetDbPath).writeAsBytes(bytes, flush: true);
+
+          // Attach and copy schedule
+          await db.execute("ATTACH DATABASE '$assetDbPath' AS asset_db");
+
+          await db.execute('''
+            INSERT OR REPLACE INTO daily_verse_schedule (month, day, verse_id)
+            SELECT
+              s.month,
+              s.day,
+              bv.id
+            FROM asset_db.daily_verse_schedule s
+            JOIN asset_db.verses av ON s.verse_id = av.id
+            JOIN bible_verses bv ON (
+              av.book = bv.book AND
+              av.chapter = bv.chapter AND
+              av.verse_number = bv.verse AND
+              av.translation = bv.version
+            )
+            WHERE av.translation = 'WEB'
+          ''');
+
+          await db.execute('DETACH DATABASE asset_db');
+          await File(assetDbPath).delete();
+
+          final scheduleCount = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM daily_verse_schedule')) ?? 0;
+          _logger.info('✅ Populated $scheduleCount daily verses');
+        }
+
+        _logger.info('✅ Migration v5→v6 complete: Added daily_verse_schedule table');
+      } catch (e) {
+        _logger.error('Migration v5→v6 failed: $e');
+        // Continue - table may already exist
       }
     }
   }

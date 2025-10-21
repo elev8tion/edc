@@ -47,6 +47,34 @@ final profilePicturePathProvider = FutureProvider<String?>((ref) async {
   return await service.getProfilePicturePath();
 });
 
+// Daily Verse Provider (queries database schedule)
+final todaysVerseProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+  final db = ref.watch(databaseServiceProvider);
+
+  // Get today's date
+  final now = DateTime.now();
+  final month = now.month;
+  final day = now.day;
+
+  // Query daily_verse_schedule JOIN bible_verses
+  final results = await db.database.then((database) => database.rawQuery('''
+    SELECT
+      v.book || ' ' || v.chapter || ':' || v.verse as reference,
+      v.text
+    FROM daily_verse_schedule s
+    JOIN bible_verses v ON s.verse_id = v.id
+    WHERE s.month = ? AND s.day = ?
+    LIMIT 1
+  ''', [month, day]));
+
+  if (results.isEmpty) return null;
+
+  return {
+    'reference': results.first['reference'] as String,
+    'text': results.first['text'] as String,
+  };
+});
+
 // Feature Services
 final prayerServiceProvider = Provider<PrayerService>((ref) {
   final database = ref.watch(databaseServiceProvider);

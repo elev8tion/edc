@@ -47,6 +47,25 @@ class BibleLoaderService {
         WHERE translation = 'WEB'
       ''');
 
+      // Copy daily verse schedule from asset_db to main db
+      // Match verses by (book, chapter, verse) to get correct verse_id in target db
+      await db.execute('''
+        INSERT OR REPLACE INTO daily_verse_schedule (month, day, verse_id)
+        SELECT
+          s.month,
+          s.day,
+          bv.id
+        FROM asset_db.daily_verse_schedule s
+        JOIN asset_db.verses av ON s.verse_id = av.id
+        JOIN bible_verses bv ON (
+          av.book = bv.book AND
+          av.chapter = bv.chapter AND
+          av.verse_number = bv.verse AND
+          av.translation = bv.version
+        )
+        WHERE av.translation = 'WEB'
+      ''');
+
       // Detach the asset database
       await db.execute('DETACH DATABASE asset_db');
 

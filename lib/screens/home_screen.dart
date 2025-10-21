@@ -11,7 +11,6 @@ import '../components/clear_glass_card.dart';
 import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
-import '../components/category_badge.dart';
 import '../components/glassmorphic_fab_menu.dart';
 import '../core/navigation/app_routes.dart';
 import '../core/providers/app_providers.dart';
@@ -781,96 +780,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildDailyVerse() {
-    return Padding(
-      padding: AppSpacing.horizontalXl,
-      child: Container(
-        padding: AppSpacing.screenPaddingLarge,
-      decoration: BoxDecoration(
-        gradient: AppGradients.glassStrong,
-        borderRadius: AppRadius.cardRadius,
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: AppGradients.goldAccent,
-                  borderRadius: AppRadius.mediumRadius,
-                  border: Border.all(
-                    color: AppTheme.goldColor.withValues(alpha: 0.4),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.auto_awesome,
-                  color: AppColors.primaryText,
-                  size: ResponsiveUtils.iconSize(context, 20),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.lg),
-              Expanded(
-                child: Text(
-                  'Verse of the Day',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryText,
-                    shadows: AppTheme.textShadowStrong,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Container(
-            padding: AppSpacing.cardPadding,
+    final todaysVerseAsync = ref.watch(todaysVerseProvider);
+
+    return todaysVerseAsync.when(
+      data: (verseData) {
+        if (verseData == null) {
+          return const SizedBox.shrink(); // Hide if no verse available
+        }
+
+        final reference = verseData['reference'] as String? ?? '';
+        final text = verseData['text'] as String? ?? '';
+
+        return Padding(
+          padding: AppSpacing.horizontalXl,
+          child: Container(
+            padding: AppSpacing.screenPaddingLarge,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.1),
-              borderRadius: AppRadius.mediumRadius,
+              gradient: AppGradients.glassStrong,
+              borderRadius: AppRadius.cardRadius,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withValues(alpha: 0.3),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AutoSizeText(
-                  '"The Lord is my shepherd; I shall not want. He makes me lie down in green pastures. He leads me beside still waters."',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
-                    color: AppColors.primaryText,
-                    fontStyle: FontStyle.italic,
-                    height: 1.6,
-                    fontWeight: FontWeight.w500,
-                    shadows: AppTheme.textShadowSubtle,
-                  ),
-                  maxLines: 5,
-                  minFontSize: 12,
-                  maxFontSize: 18,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppSpacing.md),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(
-                      child: AutoSizeText(
-                        'Psalm 23:1-2 ESV',
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: AppGradients.goldAccent,
+                        borderRadius: AppRadius.mediumRadius,
+                        border: Border.all(
+                          color: AppTheme.goldColor.withValues(alpha: 0.4),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.auto_awesome,
+                        color: AppColors.primaryText,
+                        size: ResponsiveUtils.iconSize(context, 20),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.lg),
+                    Expanded(
+                      child: Text(
+                        'Verse of the Day',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryText,
+                          shadows: AppTheme.textShadowStrong,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                Container(
+                  padding: AppSpacing.cardPadding,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    borderRadius: AppRadius.mediumRadius,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Reference ABOVE text
+                      AutoSizeText(
+                        reference,
                         style: TextStyle(
                           fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
                           color: AppTheme.goldColor,
@@ -882,19 +873,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         maxFontSize: 16,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const CategoryBadge(
-                      text: 'Comfort',
-                    ),
-                  ],
+                      const SizedBox(height: AppSpacing.md),
+                      // Verse text
+                      AutoSizeText(
+                        text,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.fontSize(context, 16, minSize: 14, maxSize: 18),
+                          color: AppColors.primaryText,
+                          fontStyle: FontStyle.italic,
+                          height: 1.6,
+                          fontWeight: FontWeight.w500,
+                          shadows: AppTheme.textShadowSubtle,
+                        ),
+                        maxLines: 6,
+                        minFontSize: 12,
+                        maxFontSize: 18,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ).animate().fadeIn(delay: 1900.ms).slideY(begin: 0.3, delay: 1900.ms);
+      },
+      loading: () => Padding(
+        padding: AppSpacing.horizontalXl,
+        child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+            gradient: AppGradients.glassStrong,
+            borderRadius: AppRadius.cardRadius,
+          ),
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppTheme.goldColor,
+            ),
+          ),
+        ),
       ),
-      ),
-    ).animate().fadeIn(delay: 1900.ms).slideY(begin: 0.3, delay: 1900.ms);
+      error: (_, __) => const SizedBox.shrink(),
+    );
   }
 
   Widget _buildStartChatButton() {
