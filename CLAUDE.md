@@ -22,9 +22,42 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 # Everyday Christian - Implementation Decisions & Roadmap
 
 **Date Created:** 2025-01-19
-**Last Updated:** 2025-01-19
-**Status:** In Progress - Comprehensive Analysis Complete
-**Version:** 2.0
+**Last Updated:** 2025-01-20
+**Status:** Implementation 67% Complete - Phases 1-4 Implemented (Receipt Parsing Pending)
+**Version:** 2.1
+
+---
+
+## 🎯 Implementation Status Summary
+
+**OVERALL: 67% Complete (4 of 6 critical issues fully resolved)**
+
+### Critical Issues Status:
+1. ❌ **Trial Reset Abuse** - ⚠️ PARTIAL (infrastructure ready, receipt parsing TODO)
+2. ✅ **Auto Purchase Restoration** - ✅ COMPLETE
+3. ❌ **Expiry Date Tracking** - ⚠️ PARTIAL (logic works, but uses placeholder 365-day expiry)
+4. ✅ **Chat History Lockout** - ✅ COMPLETE
+5. ✅ **Message Limit Dialog** - ✅ COMPLETE
+6. ✅ **Automatic Subscription Logic** - ✅ COMPLETE
+
+### Phase Completion:
+- ✅ **Phase 1 (P0):** Critical Subscription Fixes - **MOSTLY COMPLETE** (Task 1.2 needs real receipt parsing)
+- ✅ **Phase 2 (P0):** Enhanced Trial & Paywall Logic - **COMPLETE**
+- ✅ **Phase 3 (P1):** Automatic Subscription Logic - **COMPLETE**
+- ✅ **Phase 4 (P2):** UI Polish & Error Handling - **COMPLETE**
+
+### 🔴 Outstanding Work:
+**Only 1 issue remains:** Implement platform-specific receipt parsing in `subscription_service.dart:598-620`
+- iOS: Decode base64 receipt → Parse JSON → Extract `receipt.in_app[]` fields
+- Android: Decode JWT → Parse claims → Extract subscription fields
+- Extract: `expires_date_ms`, `original_purchase_date`, `is_trial_period`, `auto_renew_status`
+
+### Git Commits (Oct 19-20, 2025):
+- `c9809e80` - Comprehensive subscription system refactor (Phases 1-4)
+- `71e13cbd` - Client-side trial cancellation detection
+- `b8fad517` - PaywallScreen UX optimization
+- `b8e9671a` - FTC-compliant regional pricing
+- `96d17fdf` - App Store launch preparation + iOS 17 privacy compliance
 
 ---
 
@@ -399,39 +432,35 @@ Future<void> _deleteAllData() async {
 
 ### Phase 1: Critical Subscription Fixes (Priority: P0)
 
-**Status:** Not Started
+**Status:** ✅ MOSTLY COMPLETE (Oct 19, 2025 - Commit c9809e80)
 
 **Objective:** Fix subscription restoration and prevent data loss
 
 **Tasks:**
 
-**Task 1.1: Auto-restore purchases on app launch**
-- File: `lib/core/services/subscription_service.dart`
-- Modify: `initialize()` method (line 69-102)
-- Add: `await restorePurchases()` after `_loadProducts()` (around line 90)
-- This ensures premium status is restored even after "Delete All Data"
+**✅ Task 1.1: Auto-restore purchases on app launch** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart:114`
+- ✅ Added: `await restorePurchases()` in `initialize()` method
+- ✅ Result: Premium status restored even after "Delete All Data"
 
-**Task 1.2: Extract and store expiry dates from receipts**
-- File: `lib/core/services/subscription_service.dart`
-- Modify: `_verifyAndActivatePurchase()` (line 367-383)
-- Add: Receipt decoding logic to extract:
-  - `expires_date_ms` → Store as `_keyPremiumExpiryDate`
-  - `original_purchase_date` → Store as `_keyPremiumOriginalPurchaseDate`
-  - `is_trial_period` → Store as `_keyTrialEverUsed`
-  - `auto_renew_status` → Store as `_keyAutoRenewStatus`
-- Add new SharedPreferences keys after line 48:
-```dart
-static const String _keyPremiumExpiryDate = 'premium_expiry_date';
-static const String _keyPremiumOriginalPurchaseDate = 'premium_original_purchase_date';
-static const String _keyTrialEverUsed = 'trial_ever_used';
-static const String _keyAutoRenewStatus = 'auto_renew_status';
-```
+**⚠️ Task 1.2: Extract and store expiry dates from receipts** - PARTIAL
+- ✅ File: `lib/core/services/subscription_service.dart`
+- ✅ Added SharedPreferences keys (lines 71-74):
+  - `_keyPremiumExpiryDate`
+  - `_keyPremiumOriginalPurchaseDate`
+  - `_keyTrialEverUsed`
+  - `_keyAutoRenewStatus`
+- ❌ **NOT DONE:** Receipt parsing in `_verifyAndActivatePurchase()` (lines 598-620)
+  - Currently uses placeholder: `DateTime.now().add(Duration(days: 365))`
+  - TODO: iOS base64 receipt decoding
+  - TODO: Android JWT receipt decoding
+  - TODO: Extract real `expires_date_ms`, `original_purchase_date`, `is_trial_period`, `auto_renew_status`
 
-**Task 1.3: Check expiry on app launch**
-- File: `lib/core/services/subscription_service.dart`
-- Modify: `initialize()` to check stored expiry date
-- If expired → Call `restorePurchases()` to check for renewal
-- Update `isPremium` getter (line 205) to check expiry date
+**✅ Task 1.3: Check expiry on app launch** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart`
+- ✅ `isPremium` getter checks expiry date (lines 238-255)
+- ✅ `_getExpiryDate()` helper method added (lines 646-651)
+- ✅ `restorePurchases()` called in `initialize()` (line 114)
 
 **Expected Outcome:**
 - User deletes all data → Subscription auto-restores on next launch ✅
@@ -442,140 +471,47 @@ static const String _keyAutoRenewStatus = 'auto_renew_status';
 
 ### Phase 2: Enhanced Trial & Paywall Logic (Priority: P0)
 
-**Status:** Not Started
+**Status:** ✅ COMPLETE (Oct 19, 2025 - Commit c9809e80)
 
 **Objective:** Implement business-critical trial expiration, message limits, and paywall lockouts
 
 **Tasks:**
 
-**Task 2.1: Create SubscriptionStatus enum**
-- File: `lib/core/services/subscription_service.dart`
-- Add after constants (line 48):
-```dart
-enum SubscriptionStatus {
-  neverStarted,      // Brand new user, no trial started
-  inTrial,           // Days 1-3 of trial
-  trialExpired,      // Trial used, not subscribed
-  premiumActive,     // Paid subscriber with active subscription
-  premiumCancelled,  // Cancelled but still has time remaining
-  premiumExpired     // Subscription fully expired
-}
-```
+**✅ Task 2.1: Create SubscriptionStatus enum** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart`
+- ✅ Enum created with 6 states: `neverStarted`, `inTrial`, `trialExpired`, `premiumActive`, `premiumCancelled`, `premiumExpired`
 
-**Task 2.2: Add `getSubscriptionStatus()` method**
-- File: `lib/core/services/subscription_service.dart`
-- Add new method after `isPremium` getter:
-```dart
-SubscriptionStatus getSubscriptionStatus() {
-  // Check if premium first
-  if (isPremium) {
-    final expiryDate = _getExpiryDate();
-    final autoRenew = _prefs?.getBool(_keyAutoRenewStatus) ?? true;
+**✅ Task 2.2: Add `getSubscriptionStatus()` method** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart`
+- ✅ Method implemented with expiry checking, auto-renew status, and trial status logic
 
-    if (expiryDate != null && DateTime.now().isAfter(expiryDate)) {
-      return SubscriptionStatus.premiumExpired;
-    } else if (!autoRenew) {
-      return SubscriptionStatus.premiumCancelled;
-    } else {
-      return SubscriptionStatus.premiumActive;
-    }
-  }
+**✅ Task 2.3: Add message limit dialog** - COMPLETE
+- ✅ File: `lib/components/message_limit_dialog.dart` (149 lines)
+- ✅ Design: Frosted glass with chat bubble icon (friendly, not lock)
+- ✅ Dynamic title: "Daily Limit Reached" (trial) / "Monthly Limit Reached" (premium)
+- ✅ Actions: "Subscribe Now" / "Maybe Later" buttons
+- ✅ Returns `bool?` (true = subscribe, false/null = declined)
 
-  // Check trial status
-  if (!hasStartedTrial) {
-    return SubscriptionStatus.neverStarted;
-  }
+**✅ Task 2.4: Update `sendMessage()` flow in chat screen** - COMPLETE
+- ✅ File: `lib/screens/chat_screen.dart:174-209`
+- ✅ Message limit check triggers `MessageLimitDialog.show()`
+- ✅ Dialog appears before paywall (progressive disclosure)
+- ✅ "Maybe Later" allows viewing history (Days 1-2)
+- ✅ Lockout handled separately in build method
 
-  if (isInTrial) {
-    return SubscriptionStatus.inTrial;
-  } else {
-    return SubscriptionStatus.trialExpired;
-  }
-}
-```
+**✅ Task 2.5: Create chat screen paywall overlay widget** - COMPLETE
+- ✅ File: `lib/components/chat_screen_lockout_overlay.dart` (184 lines)
+- ✅ Design: Full-screen frosted glass overlay matching settings screen
+- ✅ Content: Lock icon, "AI Chat Requires Subscription" title
+- ✅ Lists premium benefits (150 messages/month, chat history, personalized guidance)
+- ✅ "Subscribe Now" button → PaywallScreen
+- ✅ Notice: Other features remain free (Bible, prayer, verses)
 
-**Task 2.3: Add message limit dialog**
-- File: Create new `lib/components/message_limit_dialog.dart`
-- Design: Match existing glass theme (use `FrostedGlassCard`, `GlassButton`)
-- Parameters: `isPremium`, `remainingMessages`, `onSubscribePressed`, `onMaybeLaterPressed`
-- Dialog content:
-  - Title: "Daily Limit Reached" (trial) or "Monthly Limit Reached" (premium)
-  - Message: "You've used all 5 messages today. Subscribe now for 150 messages/month?"
-  - Actions: "Subscribe Now" / "Maybe Later"
-
-**Task 2.4: Update `sendMessage()` flow in chat screen**
-- File: `lib/screens/chat_screen.dart`
-- Modify: `sendMessage()` method (line 143-193)
-- New flow:
-```dart
-Future<void> sendMessage(String text) async {
-  final subscriptionService = ref.read(subscriptionServiceProvider);
-  final status = subscriptionService.getSubscriptionStatus();
-
-  // 1. Check if user is locked out (trial expired or premium expired)
-  if (status == SubscriptionStatus.trialExpired ||
-      status == SubscriptionStatus.premiumExpired) {
-    // Show paywall - NO messaging allowed
-    _showPaywall();
-    return;
-  }
-
-  // 2. Check if user has messages remaining
-  if (!subscriptionService.canSendMessage()) {
-    // Show dialog first (before paywall)
-    final shouldShowPaywall = await _showMessageLimitDialog();
-
-    if (shouldShowPaywall) {
-      // User clicked "Subscribe Now"
-      final upgraded = await _showPaywall();
-      if (!upgraded) return; // Didn't upgrade, don't send
-    } else {
-      // User clicked "Maybe Later"
-      // Days 1-2: Can still view history (just return)
-      // Day 3 + cancelled: Will be handled by chat screen lockout check
-      return;
-    }
-  }
-
-  // 3. Consume message credit
-  final consumed = await subscriptionService.consumeMessage();
-  if (!consumed) return;
-
-  // 4. Send message to AI
-  // ...
-}
-```
-
-**Task 2.5: Create chat screen paywall overlay widget**
-- File: Create new `lib/components/chat_screen_lockout_overlay.dart`
-- Design: Use same frosted glass design from settings screen (settings_screen.dart:1352-1373)
-- Content:
-  - Lock icon
-  - Title: "AI Chat Requires Subscription"
-  - Message: "Subscribe to view your chat history and continue conversations"
-  - Button: "Subscribe Now" → Navigate to PaywallScreen
-- Usage: Wrap chat screen ListView with Stack + conditional overlay
-
-**Task 2.6: Add lockout check to chat screen**
-- File: `lib/screens/chat_screen.dart`
-- Modify: `build()` method (line 41)
-- Add at top of widget tree (in Stack):
-```dart
-// Check subscription status for chat lockout
-final subscriptionService = ref.watch(subscriptionServiceProvider);
-final status = subscriptionService.getSubscriptionStatus();
-
-if (status == SubscriptionStatus.trialExpired ||
-    status == SubscriptionStatus.premiumExpired) {
-  return ChatScreenLockoutOverlay(
-    onSubscribePressed: () {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (_) => PaywallScreen(showTrialInfo: false),
-      ));
-    },
-  );
-}
-```
+**✅ Task 2.6: Add lockout check to chat screen** - COMPLETE
+- ✅ File: `lib/screens/chat_screen.dart:1280-1308`
+- ✅ Subscription status check in `build()` method
+- ✅ Returns lockout overlay if `trialExpired` or `premiumExpired`
+- ✅ Blocks both viewing history and sending messages
 
 **Expected Outcome:**
 - User hits message limit → Sees friendly dialog first ✅
@@ -587,73 +523,72 @@ if (status == SubscriptionStatus.trialExpired ||
 
 ### Phase 3: Automatic Subscription Logic (Priority: P1)
 
-**Status:** Not Started
+**Status:** ✅ COMPLETE (Oct 19, 2025 - Commit 71e13cbd)
 
 **Objective:** Implement automatic subscription purchase on day 3 if user doesn't cancel
 
 **Tasks:**
 
-**Task 3.1: Add auto-subscribe check on day 3**
-- File: `lib/core/services/subscription_service.dart`
-- Add new method:
-```dart
-Future<bool> shouldAutoSubscribe() async {
-  // Only applies to trial users on day 3
-  if (!isInTrial || trialDaysRemaining != 0) return false;
+**✅ Task 3.1: Add auto-subscribe check on day 3** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart:295-331`
+- ✅ Added `shouldAutoSubscribe()` method
+  - Checks trial expired (3+ days since start)
+  - Checks `_keyAutoSubscribeAttempted` flag (prevents duplicates)
+  - Calls `_checkTrialCancellation()` to detect user cancellation
+  - Returns true if eligible for auto-subscribe
+- ✅ Added `attemptAutoSubscribe()` method (lines 390-422)
+  - Sets attempt flag to prevent re-triggering
+  - Calls `purchasePremium()` to initiate purchase
+  - Error handling (doesn't crash app)
+- ✅ Integrated into `initialize()` method (line 117)
+  - Runs on every app launch after `restorePurchases()`
 
-  // Check if user has cancelled
-  // This requires querying App Store/Play Store for cancellation status
-  // Implementation TBD based on platform-specific APIs
-
-  return true; // Auto-subscribe if not cancelled
-}
-```
-
-**Task 3.2: Handle trial cancellation detection**
-- Research: How to detect if user cancelled trial via App Store/Play Store
-- Implementation: Platform-specific cancellation checking
-- Note: This may require server-side receipt validation for real-time detection
+**✅ Task 3.2: Handle trial cancellation detection** - COMPLETE
+- ✅ Research completed: `openspec/archive/subscription-refactor-completed-2025-01-19/RESEARCH_CANCELLATION_DETECTION.md` (333 lines)
+- ✅ Implementation: Client-side detection via `_checkTrialCancellation()` (lines 333-388)
+  - Uses `isPremium` flag after `restorePurchases()`
+  - Privacy-first approach (no backend)
+  - Returns true if no active premium subscription found
+  - Fail-safe: On error, assumes NOT cancelled
+- ✅ Trade-off documented: Detection is eventual (on app launch), not real-time
 
 **Expected Outcome:**
 - Day 3 + no cancellation → Automatic subscription triggered ✅
 - Day 3 + cancellation → Immediate lockout ✅
 
-**Note:** This phase may require additional research into Apple/Google APIs for cancellation detection
-
 ---
 
 ### Phase 4: UI Polish & Error Handling (Priority: P2)
 
-**Status:** Not Started
+**Status:** ✅ COMPLETE (Oct 19, 2025 - Commit c9809e80)
 
 **Objective:** Improve user experience and handle edge cases
 
 **Tasks:**
 
-**Task 4.1: Update "Delete All Data" dialog warning**
-- File: `lib/screens/settings_screen.dart`
-- Modify: `_showDeleteConfirmation()` method (around line 1300)
-- Add to dialog content:
-```
-⚠️ This will delete all local data including:
-• Prayer journal entries
-• Chat history
-• Saved verses
-• Settings and preferences
+**✅ Task 4.1: Update "Delete All Data" dialog warning** - COMPLETE
+- ✅ File: `lib/screens/settings_screen.dart`
+- ✅ Added blue info box in deletion confirmation dialog
+- ✅ Message: "Your subscription will remain active and will be automatically restored on next app launch"
+- ✅ Clear list of what gets deleted (prayer journal, chat history, saved verses, settings)
 
-Your subscription will remain active and will be
-automatically restored on next app launch.
-```
+**✅ Task 4.2: Add loading state to splash screen for subscription check** - COMPLETE
+- ✅ File: `lib/core/widgets/app_initializer.dart`
+- ✅ Added "Restoring subscription..." to cycling loading messages
+- ✅ Cycling messages with 2-second intervals for dynamic UX
+- ✅ Error screen with retry functionality
 
-**Task 4.2: Add loading state to splash screen for subscription check**
-- File: `lib/screens/splash_screen.dart`
-- Show "Restoring subscription..." message during initialization
-- Handle errors gracefully (network issues, etc.)
-
-**Task 4.3: Comprehensive error handling**
-- Add try-catch blocks around all subscription service methods
-- User-friendly error messages
-- Fallback behaviors when network unavailable
+**✅ Task 4.3: Comprehensive error handling** - COMPLETE
+- ✅ File: `lib/core/services/subscription_service.dart`
+- ✅ Try-catch blocks in all critical methods:
+  - `initialize()` (line 96)
+  - `shouldAutoSubscribe()` (line 295)
+  - `_checkTrialCancellation()` (line 333)
+  - `attemptAutoSubscribe()` (line 390)
+  - `restorePurchases()` (line 555)
+- ✅ Detailed error logging with `developer.log()`
+- ✅ Fail-safe logic (returns false on error, doesn't crash app)
+- ✅ User-friendly snackbars in UI (paywall_screen.dart)
 
 **Expected Outcome:**
 - Users understand subscription is preserved after data deletion ✅
