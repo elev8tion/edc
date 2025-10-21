@@ -42,14 +42,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           const GradientBackground(),
           SafeArea(
-            child: Column(
-              children: [
-                _buildAppBar(),
-                Expanded(
-                  child: _buildSettingsContent(),
-                ),
-              ],
-            ),
+            child: _buildSettingsContent(),
           ),
         ],
       ),
@@ -165,10 +158,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildSettingsContent() {
     return SingleChildScrollView(
-      padding: AppSpacing.horizontalXl,
+      padding: const EdgeInsets.only(
+        top: AppSpacing.xl,
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildAppBar(),
+          const SizedBox(height: AppSpacing.xxl),
           _buildSettingsSection(
             'Notifications',
             Icons.notifications,

@@ -36,24 +36,35 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
         children: [
           const GradientBackground(),
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(streakAsync, totalCompletedAsync),
-                Expanded(
-                  child: devotionalsAsync.when(
-                    data: (devotionals) {
-                      if (devotionals.isEmpty) {
-                        return _buildEmptyState();
-                      }
+            child: devotionalsAsync.when(
+              data: (devotionals) {
+                if (devotionals.isEmpty) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: AppSpacing.xl),
+                    child: Column(
+                      children: [
+                        _buildHeader(streakAsync, totalCompletedAsync),
+                        const SizedBox(height: AppSpacing.xxl),
+                        _buildEmptyState(),
+                      ],
+                    ),
+                  );
+                }
 
-                      // Ensure current day is within bounds
-                      if (_currentDay >= devotionals.length) {
-                        _currentDay = devotionals.length - 1;
-                      }
+                // Ensure current day is within bounds
+                if (_currentDay >= devotionals.length) {
+                  _currentDay = devotionals.length - 1;
+                }
 
-                      final currentDevotional = devotionals[_currentDay];
+                final currentDevotional = devotionals[_currentDay];
 
-                      return SingleChildScrollView(
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: AppSpacing.xl),
+                  child: Column(
+                    children: [
+                      _buildHeader(streakAsync, totalCompletedAsync),
+                      const SizedBox(height: AppSpacing.xxl),
+                      Padding(
                         padding: AppSpacing.horizontalXl,
                         child: Column(
                           children: [
@@ -65,17 +76,35 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
                             const SizedBox(height: AppSpacing.xl),
                           ],
                         ),
-                      );
-                    },
-                    loading: () => const Center(
+                      ),
+                    ],
+                  ),
+                );
+              },
+              loading: () => SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.xl),
+                child: Column(
+                  children: [
+                    _buildHeader(streakAsync, totalCompletedAsync),
+                    const SizedBox(height: AppSpacing.xxl),
+                    const Center(
                       child: CircularProgressIndicator(
                         color: AppColors.primaryText,
                       ),
                     ),
-                    error: (error, stack) => _buildErrorState(error),
-                  ),
+                  ],
                 ),
-              ],
+              ),
+              error: (error, stack) => SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.xl),
+                child: Column(
+                  children: [
+                    _buildHeader(streakAsync, totalCompletedAsync),
+                    const SizedBox(height: AppSpacing.xxl),
+                    _buildErrorState(error),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
