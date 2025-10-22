@@ -5,10 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
-import 'chat_screen.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
-import '../components/feature_card.dart';
 import '../components/glass_button.dart';
 import '../components/gradient_background.dart';
 import '../components/glassmorphic_fab_menu.dart';
@@ -906,7 +904,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             gradient: AppGradients.glassStrong,
             borderRadius: AppRadius.cardRadius,
           ),
-          child: Center(
+          child: const Center(
             child: CircularProgressIndicator(
               color: AppTheme.goldColor,
             ),

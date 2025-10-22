@@ -255,7 +255,7 @@ void main() {
         categoryId: 'cat_general',
       );
 
-      final prayer2 = await prayerService.createPrayer(
+      await prayerService.createPrayer(
         title: 'Prayer 2',
         description: 'Second',
         categoryId: 'cat_general',

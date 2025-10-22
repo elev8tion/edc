@@ -374,8 +374,7 @@ void main() {
       final estimatedDate =
           await progressService.getEstimatedCompletionDate(testPlanId);
 
-      // Might be null if started same day
-      // This is acceptable behavior
+      expect(estimatedDate, isNull);
     });
 
     test('should calculate estimated date based on current pace', () async {

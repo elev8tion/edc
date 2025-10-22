@@ -402,20 +402,10 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
   /// Initialize theme from saved preferences
   Future<void> _initializeTheme() async {
-    try {
-      _preferencesAsync.when(
-        data: (prefs) {
-          _preferences = prefs;
-          final savedTheme = prefs.loadThemeMode();
-          state = savedTheme;
-        },
-        loading: () {
-        },
-        error: (error, stack) {
-        },
-      );
-    } catch (e) {
-    }
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadThemeMode();
+    });
   }
 
   /// Toggle between light and dark theme
@@ -433,15 +423,14 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   Future<void> _setThemeAndSave(ThemeMode mode) async {
     state = mode;
 
-    if (_preferences != null) {
-      try {
-        final success = await _preferences!.saveThemeMode(mode);
-        if (success) {
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
+    if (_preferences == null) {
+      debugPrint('Theme preferences not yet loaded; skipping persistence.');
+      return;
+    }
+
+    final success = await _preferences!.saveThemeMode(mode);
+    if (!success) {
+      debugPrint('Failed to persist theme mode $mode');
     }
   }
 }
@@ -462,35 +451,24 @@ class LanguageNotifier extends StateNotifier<String> {
 
   /// Initialize language from saved preferences
   Future<void> _initializeLanguage() async {
-    try {
-      _preferencesAsync.when(
-        data: (prefs) {
-          _preferences = prefs;
-          final savedLanguage = prefs.loadLanguage();
-          state = savedLanguage;
-        },
-        loading: () {
-        },
-        error: (error, stack) {
-        },
-      );
-    } catch (e) {
-    }
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadLanguage();
+    });
   }
 
   /// Set language preference
   Future<void> setLanguage(String language) async {
     state = language;
 
-    if (_preferences != null) {
-      try {
-        final success = await _preferences!.saveLanguage(language);
-        if (success) {
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
+    if (_preferences == null) {
+      debugPrint('Language preferences not yet loaded; skipping persistence.');
+      return;
+    }
+
+    final success = await _preferences!.saveLanguage(language);
+    if (!success) {
+      debugPrint('Failed to persist language preference: $language');
     }
   }
 }
@@ -532,22 +510,12 @@ class TextSizeNotifier extends StateNotifier<double> {
 
   /// Initialize text size from saved preferences
   Future<void> _initializeTextSize() async {
-    try {
-      _preferencesAsync.when(
-        data: (prefs) {
-          _preferences = prefs;
-          final savedSize = prefs.loadTextSize();
-          // Migrate old pixel-based values (12-24) to scale factor (0.8-1.5)
-          final scaleFactor = _migrateToScaleFactor(savedSize);
-          state = scaleFactor;
-        },
-        loading: () {
-        },
-        error: (error, stack) {
-        },
-      );
-    } catch (e) {
-    }
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      final savedSize = prefs.loadTextSize();
+      final scaleFactor = _migrateToScaleFactor(savedSize);
+      state = scaleFactor;
+    });
   }
 
   /// Migrate old pixel-based text sizes (12-24) to scale factors (0.8-1.5)
@@ -571,15 +539,14 @@ class TextSizeNotifier extends StateNotifier<double> {
 
     state = size;
 
-    if (_preferences != null) {
-      try {
-        final success = await _preferences!.saveTextSize(size);
-        if (success) {
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
+    if (_preferences == null) {
+      debugPrint('Text size preferences not yet loaded; skipping persistence.');
+      return;
+    }
+
+    final success = await _preferences!.saveTextSize(size);
+    if (!success) {
+      debugPrint('Failed to persist text size $size');
     }
   }
 }
@@ -595,14 +562,10 @@ class DailyNotificationsNotifier extends StateNotifier<bool> {
   }
 
   Future<void> _initialize() async {
-    _preferencesAsync.when(
-      data: (prefs) {
-        _preferences = prefs;
-        state = prefs.loadDailyNotificationsEnabled();
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadDailyNotificationsEnabled();
+    });
   }
 
   Future<void> toggle(bool enabled) async {
@@ -635,14 +598,10 @@ class PrayerRemindersNotifier extends StateNotifier<bool> {
   }
 
   Future<void> _initialize() async {
-    _preferencesAsync.when(
-      data: (prefs) {
-        _preferences = prefs;
-        state = prefs.loadPrayerRemindersEnabled();
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadPrayerRemindersEnabled();
+    });
   }
 
   Future<void> toggle(bool enabled) async {
@@ -676,14 +635,10 @@ class VerseOfTheDayNotifier extends StateNotifier<bool> {
   }
 
   Future<void> _initialize() async {
-    _preferencesAsync.when(
-      data: (prefs) {
-        _preferences = prefs;
-        state = prefs.loadVerseOfTheDayEnabled();
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadVerseOfTheDayEnabled();
+    });
   }
 
   Future<void> toggle(bool enabled) async {
@@ -716,14 +671,10 @@ class NotificationTimeNotifier extends StateNotifier<String> {
   }
 
   Future<void> _initialize() async {
-    _preferencesAsync.when(
-      data: (prefs) {
-        _preferences = prefs;
-        state = prefs.loadNotificationTime();
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
+    _preferencesAsync.whenData((prefs) {
+      _preferences = prefs;
+      state = prefs.loadNotificationTime();
+    });
   }
 
   Future<void> setTime(String time) async {

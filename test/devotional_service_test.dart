@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:everyday_christian/core/services/database_service.dart';
 import 'package:everyday_christian/core/services/devotional_service.dart';
-import 'package:everyday_christian/core/models/devotional.dart';
 
 void main() {
   late DatabaseService databaseService;

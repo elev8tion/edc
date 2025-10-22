@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:everyday_christian/core/services/notification_service.dart';
@@ -183,9 +182,6 @@ void main() {
 
   group('Time Calculation Logic', () {
     test('should calculate next instance correctly for future time today', () {
-      final now = DateTime.now();
-      final futureHour = (now.hour + 1) % 24;
-      
       // The service should schedule for today if time hasn't passed
       try {
         final service = NotificationService();
@@ -196,9 +192,6 @@ void main() {
     });
 
     test('should calculate next instance correctly for past time today', () {
-      final now = DateTime.now();
-      final pastHour = (now.hour - 1) % 24;
-      
       // The service should schedule for tomorrow if time has passed
       try {
         final service = NotificationService();

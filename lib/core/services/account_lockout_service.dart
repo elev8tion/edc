@@ -184,7 +184,7 @@ class AccountLockoutService {
   /// Lock account for 30 days
   Future<void> _lockAccount() async {
     final now = DateTime.now();
-    final deletionDate = now.add(Duration(days: _lockoutDays));
+    final deletionDate = now.add(const Duration(days: _lockoutDays));
 
     await _prefs.setString(_keyStatus, LockoutStatus.locked.toString());
     await _prefs.setString(_keyLockoutDate, now.toIso8601String());

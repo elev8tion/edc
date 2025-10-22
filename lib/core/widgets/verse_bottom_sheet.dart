@@ -100,7 +100,7 @@ class VerseBottomSheet extends ConsumerWidget {
             const Color(0xFF0F172A).withValues(alpha: 0.98),
           ],
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.1),
           width: 1,
@@ -130,7 +130,7 @@ class VerseBottomSheet extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
+            const CircularProgressIndicator(
               color: AppTheme.primaryColor,
               strokeWidth: 3,
             ),
@@ -162,9 +162,9 @@ class VerseBottomSheet extends ConsumerWidget {
             color: Colors.red.withValues(alpha: 0.7),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Unable to load verse',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -255,7 +255,7 @@ class VerseBottomSheet extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
+                const Text(
                   'WEB',
                   style: TextStyle(
                     color: AppTheme.primaryColor,
@@ -524,7 +524,11 @@ class VerseBottomSheet extends ConsumerWidget {
   /// Share verse
   Future<void> _shareVerse(BibleVerse verse) async {
     final shareText = '"${verse.text}"\n\n${verse.reference} (WEB)\n\nShared from Everyday Christian';
-    await Share.share(shareText);
+    await SharePlus.instance.share(
+      ShareParams(
+        text: shareText,
+      ),
+    );
   }
 
   /// Copy verse to clipboard
@@ -559,15 +563,15 @@ class VerseBottomSheet extends ConsumerWidget {
                 width: 1,
               ),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(
                   Icons.check_circle,
                   color: AppTheme.goldColor,
                   size: 20,
                 ),
-                const SizedBox(width: 12),
-                const Expanded(
+                SizedBox(width: 12),
+                Expanded(
                   child: Text(
                     'Verse copied to clipboard',
                     style: TextStyle(

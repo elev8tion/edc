@@ -28,7 +28,7 @@ class GeminiAIService {
   bool _isInitialized = false;
 
   // Your 19,750 training examples loaded in memory
-  List<TrainingExample> _trainingExamples = [];
+  final List<TrainingExample> _trainingExamples = [];
 
   // API key from .env file (loaded at runtime)
   String get _apiKey {
@@ -361,7 +361,7 @@ Title:''';
       
       // Limit length
       if (title.length > 50) {
-        title = title.substring(0, 47) + '...';
+        title = '${title.substring(0, 47)}...';
       }
 
       _logger.info('✅ Generated title: "$title"', context: 'GeminiAIService');

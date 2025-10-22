@@ -224,7 +224,7 @@ class CategoryService {
     final answered = (answeredResult.first['count'] as int?) ?? 0;
 
     // For archived, we'll use 0 for now (as the current schema doesn't have archived status)
-    final archived = 0;
+    const archived = 0;
 
     return CategoryStatistics.fromCategory(
       category,

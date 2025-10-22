@@ -41,8 +41,6 @@ void main() {
       });
 
       test('should create session with default title when not provided', () async {
-        final sessionId = await conversationService.createSession();
-
         final sessions = await conversationService.getSessions();
         expect(sessions.first['title'], 'New Conversation');
       });
@@ -57,10 +55,10 @@ void main() {
       });
 
       test('should exclude archived sessions by default', () async {
-        final session1 = await conversationService.createSession(title: 'Active');
-        final session2 = await conversationService.createSession(title: 'To Archive');
+        await conversationService.createSession(title: 'Active');
+        final sessionToArchive = await conversationService.createSession(title: 'To Archive');
 
-        await conversationService.archiveSession(session2);
+        await conversationService.archiveSession(sessionToArchive);
 
         final sessions = await conversationService.getSessions();
         expect(sessions.length, 1);
@@ -68,10 +66,10 @@ void main() {
       });
 
       test('should include archived sessions when requested', () async {
-        final session1 = await conversationService.createSession(title: 'Active');
-        final session2 = await conversationService.createSession(title: 'Archived');
+        await conversationService.createSession(title: 'Active');
+        final sessionToArchive = await conversationService.createSession(title: 'Archived');
 
-        await conversationService.archiveSession(session2);
+        await conversationService.archiveSession(sessionToArchive);
 
         final sessions = await conversationService.getSessions(includeArchived: true);
         expect(sessions.length, 2);
@@ -324,8 +322,8 @@ void main() {
     group('Old Conversation Cleanup', () {
       test('should clear old conversations', () async {
         // Create old sessions by manipulating timestamp
-        final oldSession = await conversationService.createSession(title: 'Old');
-        final recentSession = await conversationService.createSession(title: 'Recent');
+        await conversationService.createSession(title: 'Old');
+        await conversationService.createSession(title: 'Recent');
 
         // Simulate old session (would need to manually update timestamp in real scenario)
         // For now, test the method doesn't crash
@@ -334,10 +332,10 @@ void main() {
       });
 
       test('should not delete recent conversations', () async {
-        final session1 = await conversationService.createSession(title: 'Recent 1');
-        final session2 = await conversationService.createSession(title: 'Recent 2');
+        await conversationService.createSession(title: 'Recent 1');
+        await conversationService.createSession(title: 'Recent 2');
 
-        final deleted = await conversationService.clearOldConversations(30);
+        await conversationService.clearOldConversations(30);
 
         final sessions = await conversationService.getSessions();
         expect(sessions.length, 2); // Both should still exist
@@ -430,7 +428,7 @@ void main() {
 
       test('should handle special characters in content', () async {
         final sessionId = await conversationService.createSession();
-        final specialContent = "Test 'quotes\" and \nNewlines\t\tTabs";
+        const specialContent = "Test 'quotes\" and \nNewlines\t\tTabs";
         final message = ChatMessage.user(content: specialContent, sessionId: sessionId);
 
         await conversationService.saveMessage(message);

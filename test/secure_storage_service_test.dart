@@ -728,7 +728,7 @@ void main() {
     });
 
     test('should create unhealthy check with error', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: false,
@@ -745,7 +745,7 @@ void main() {
     });
 
     test('should generate empty summary when no data stored', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: false,
@@ -756,7 +756,7 @@ void main() {
     });
 
     test('should generate summary with user data', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: true,
         hasCredentials: false,
         biometricEnabled: false,
@@ -768,7 +768,7 @@ void main() {
     });
 
     test('should generate summary with credentials', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: true,
         biometricEnabled: false,
@@ -780,7 +780,7 @@ void main() {
     });
 
     test('should generate summary with biometric enabled', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: true,
@@ -791,7 +791,7 @@ void main() {
     });
 
     test('should generate summary with last login days', () {
-      final threeDaysAgo = DateTime.now().subtract(Duration(days: 3));
+      final threeDaysAgo = DateTime.now().subtract(const Duration(days: 3));
       final health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
@@ -804,7 +804,7 @@ void main() {
     });
 
     test('should generate summary with all features', () {
-      final yesterday = DateTime.now().subtract(Duration(days: 1));
+      final yesterday = DateTime.now().subtract(const Duration(days: 1));
       final health = StorageHealthCheck(
         hasUserData: true,
         hasCredentials: true,
@@ -820,7 +820,7 @@ void main() {
     });
 
     test('should generate unhealthy summary with error', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: false,
@@ -832,7 +832,7 @@ void main() {
     });
 
     test('should generate unhealthy summary with unknown error', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: false,
@@ -843,7 +843,7 @@ void main() {
     });
 
     test('should generate toString representation', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: true,
         hasCredentials: false,
         biometricEnabled: true,
@@ -861,7 +861,7 @@ void main() {
     });
 
     test('should include error in toString when present', () {
-      final health = StorageHealthCheck(
+      const health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,
         biometricEnabled: false,
@@ -887,7 +887,7 @@ void main() {
     });
 
     test('should handle old login in summary', () {
-      final longAgo = DateTime.now().subtract(Duration(days: 365));
+      final longAgo = DateTime.now().subtract(const Duration(days: 365));
       final health = StorageHealthCheck(
         hasUserData: false,
         hasCredentials: false,

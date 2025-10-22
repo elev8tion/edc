@@ -88,7 +88,7 @@ class VerseCard extends StatelessWidget {
       child: Center(
         child: Text(
           '${verse.verseNumber}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -188,14 +188,14 @@ class VerseCardWithReference extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(AppRadius.lg),
                     topRight: Radius.circular(AppRadius.lg),
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.bookmark_outline,
                       size: AppSizes.iconSm,
                       color: AppTheme.goldColor,

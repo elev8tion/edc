@@ -384,7 +384,7 @@ void main() {
         final db = await databaseService.database;
 
         // Use unique version to avoid conflicts with other tests
-        final uniqueVersion = 'REPLACE_TEST';
+        const uniqueVersion = 'REPLACE_TEST';
 
         // Insert initial verse
         await db.insert(
@@ -453,7 +453,6 @@ void main() {
 
         // Check exact match
         final lowercaseLoaded = await bibleLoaderService.isBibleLoaded('kjv');
-        final uppercaseLoaded = await bibleLoaderService.isBibleLoaded('KJV');
 
         expect(lowercaseLoaded, isTrue);
         // Note: KJV might also be true due to initialization
@@ -472,7 +471,7 @@ void main() {
 
     group('Book Name Mapping', () {
       test('should map all Old Testament abbreviations correctly', () async {
-        final db = await databaseService.database;
+        await databaseService.database;
 
         final otBooks = {
           'gn': 'Genesis',
@@ -520,7 +519,7 @@ void main() {
       });
 
       test('should map all New Testament abbreviations correctly', () async {
-        final db = await databaseService.database;
+        await databaseService.database;
 
         final ntBooks = {
           'mt': 'Matthew',
@@ -556,7 +555,7 @@ void main() {
       });
 
       test('should handle unknown book abbreviations', () async {
-        final db = await databaseService.database;
+        await databaseService.database;
 
         // Unknown abbreviations should be returned as uppercase
         // This tests the fallback behavior in _getBookName

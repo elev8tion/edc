@@ -4,7 +4,6 @@ import '../services/auth_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/frosted_glass.dart';
 import '../../../components/glass_button.dart';
-import '../../../theme/app_theme.dart';
 
 class AuthForm extends ConsumerStatefulWidget {
   const AuthForm({super.key});
@@ -151,7 +150,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 decoration: InputDecoration(
                   labelText: 'Full Name',
                   labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                  prefixIcon: Icon(Icons.person_outline, color: AppTheme.goldColor),
+                  prefixIcon: const Icon(Icons.person_outline, color: AppTheme.goldColor),
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
@@ -160,7 +159,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.buttonRadius,
-                    borderSide: BorderSide(color: AppTheme.goldColor, width: 2),
+                    borderSide: const BorderSide(color: AppTheme.goldColor, width: 2),
                   ),
                 ),
                 style: const TextStyle(color: Colors.white),
@@ -176,7 +175,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
               decoration: InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                prefixIcon: Icon(Icons.email_outlined, color: AppTheme.goldColor),
+                prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.goldColor),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
@@ -185,7 +184,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.buttonRadius,
-                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
               style: const TextStyle(color: Colors.white),
@@ -202,7 +201,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                prefixIcon: Icon(Icons.lock_outline, color: AppTheme.goldColor),
+                prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.goldColor),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
@@ -220,7 +219,7 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.buttonRadius,
-                  borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
+                  borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
                 ),
               ),
               style: const TextStyle(color: Colors.white),
@@ -276,8 +275,8 @@ class _AuthFormState extends ConsumerState<AuthForm> {
                                   useBiometric: true,
                                 );
                               },
-                              icon: Icon(Icons.fingerprint, color: AppTheme.primaryColor),
-                              label: Text(
+                              icon: const Icon(Icons.fingerprint, color: AppTheme.primaryColor),
+                              label: const Text(
                                 'Use Biometric',
                                 style: TextStyle(color: AppTheme.primaryColor),
                               ),

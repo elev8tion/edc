@@ -98,11 +98,11 @@ void main() {
 
   testWidgets('FrostedGlassCard should accept custom border color', (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Scaffold(
           body: FrostedGlassCard(
             borderColor: Colors.blue,
-            child: const Text('Blue Border Card'),
+            child: Text('Blue Border Card'),
           ),
         ),
       ),

@@ -540,7 +540,7 @@ void main() {
         'updated_at': DateTime.now().millisecondsSinceEpoch,
       });
       final bookmarks = await verseService.getBookmarks();
-      // Should not crash
+      expect(bookmarks, isA<List<BibleVerse>>());
     });
 
     test('should handle special characters in search', () async {
@@ -552,7 +552,7 @@ void main() {
     test('should handle very long search queries', () async {
       final longQuery = 'love ' * 100;
       final results = await verseService.searchVerses(longQuery);
-      // Should not crash
+      expect(results.length, greaterThanOrEqualTo(0));
     });
 
     test('should handle concurrent daily verse requests', () async {

@@ -60,7 +60,7 @@ class GlassSectionHeader extends StatelessWidget {
             GlassIconAvatar.small(
               icon: icon!,
             ),
-            SizedBox(width: AppSpacing.md),
+            const SizedBox(width: AppSpacing.md),
           ],
 
           // Title and subtitle
@@ -75,7 +75,7 @@ class GlassSectionHeader extends StatelessWidget {
                     style: AppTheme.subheadingStyle,
                   ),
                   if (subtitle != null) ...[
-                    SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       subtitle!,
                       style: TextStyle(

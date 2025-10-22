@@ -165,8 +165,8 @@ class AppTheme {
   static BoxDecoration dropdownDecoration = BoxDecoration(
     gradient: LinearGradient(
       colors: [
-        Colors.black.withOpacity(0.85),
-        Colors.black.withOpacity(0.75),
+        Colors.black.withValues(alpha: 0.85),
+        Colors.black.withValues(alpha: 0.75),
       ],
       stops: const [0.0, 1.0],
       begin: const AlignmentDirectional(0.98, -1.0),
@@ -183,8 +183,8 @@ class AppTheme {
   static BoxDecoration dropdownButtonDecoration = BoxDecoration(
     gradient: LinearGradient(
       colors: [
-        Colors.black.withOpacity(0.15),
-        Colors.black.withOpacity(0.10),
+        Colors.black.withValues(alpha: 0.15),
+        Colors.black.withValues(alpha: 0.10),
       ],
       stops: const [0.0, 1.0],
       begin: const AlignmentDirectional(0.98, -1.0),

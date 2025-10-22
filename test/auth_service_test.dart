@@ -164,7 +164,7 @@ void main() {
   group('AuthService Sign In', () {
     test('should successfully sign in with valid credentials', () async {
       // Calculate the expected hash for 'password123' using the same algorithm
-      final password = 'password123';
+      const password = 'password123';
       const salt = 'everyday_christian_salt_2024';
       final bytes = utf8.encode(password + salt);
       final expectedHash = sha256.convert(bytes).toString();
@@ -390,13 +390,8 @@ void main() {
 
   group('AuthService Sign In Edge Cases', () {
     test('should reject sign in with incorrect password', () async {
-      final password = 'wrongpassword';
-      const salt = 'everyday_christian_salt_2024';
-      final bytes = utf8.encode(password + salt);
-      final wrongHash = sha256.convert(bytes).toString();
-
-      final correctPassword = 'password123';
-      final correctBytes = utf8.encode(correctPassword + salt);
+      const correctPassword = 'password123';
+      final correctBytes = utf8.encode('${correctPassword}everyday_christian_salt_2024');
       final correctHash = sha256.convert(correctBytes).toString();
 
       when(mockSecureStorage.getStoredPassword('test@example.com'))
@@ -420,7 +415,7 @@ void main() {
     });
 
     test('should handle missing user data after password validation', () async {
-      final password = 'password123';
+      const password = 'password123';
       const salt = 'everyday_christian_salt_2024';
       final bytes = utf8.encode(password + salt);
       final expectedHash = sha256.convert(bytes).toString();
@@ -798,7 +793,6 @@ void main() {
   group('AuthService Helper Methods', () {
     test('_generateUserId should generate unique IDs', () {
       final authService1 = AuthService(mockSecureStorage, mockBiometric, mockDatabase);
-      final authService2 = AuthService(mockSecureStorage, mockBiometric, mockDatabase);
 
       // Access private method via reflection is not possible, but we can test via sign up
       // which uses _generateUserId. We'll verify uniqueness through multiple sign ups.
@@ -821,7 +815,7 @@ void main() {
 
     test('_hashPassword should produce consistent hashes', () {
       // We can verify hash consistency through sign up and sign in
-      final password = 'testpassword';
+      const password = 'testpassword';
       const salt = 'everyday_christian_salt_2024';
       final bytes = utf8.encode(password + salt);
       final expectedHash = sha256.convert(bytes).toString();

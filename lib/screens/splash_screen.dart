@@ -209,7 +209,7 @@ class SplashScreen extends HookConsumerWidget {
                               end: Alignment.bottomRight,
                             ),
                           ),
-                          child: CircularProgressIndicator(
+                          child: const CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
                               AppTheme.goldColor,
                             ),

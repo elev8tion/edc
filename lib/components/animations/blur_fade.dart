@@ -16,7 +16,7 @@ class BlurFade extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _BlurFadeState createState() => _BlurFadeState();
+  State<BlurFade> createState() => _BlurFadeState();
 }
 
 class _BlurFadeState extends State<BlurFade>

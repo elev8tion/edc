@@ -17,7 +17,6 @@ import '../components/category_badge.dart';
 import '../components/glassmorphic_fab_menu.dart';
 import '../theme/app_theme.dart';
 import '../core/providers/app_providers.dart';
-import '../core/services/subscription_service.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
   /// Optional: show trial info (true) or expired message (false)
@@ -73,7 +72,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     child: Column(
                       children: [
                         // Title
-                      Text(
+                      const Text(
                         'Everyday Christian\nPremium',
                         style: TextStyle(
                           fontSize: 32,
@@ -155,7 +154,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   '\$',
                                   style: TextStyle(
                                     fontSize: 32,
@@ -166,7 +165,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                                 ),
                                 Text(
                                   premiumProduct?.price ?? '35',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 56,
                                     fontWeight: FontWeight.bold,
                                     color: AppTheme.goldColor,
@@ -196,7 +195,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                                   width: 1,
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 '150 AI messages per month',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -274,7 +273,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                           padding: const EdgeInsets.symmetric(
                             vertical: AppSpacing.md,
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               'Restore Previous Purchase',
                               style: TextStyle(
@@ -350,7 +349,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           const SizedBox(height: AppSpacing.sm),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.primaryText,
@@ -409,7 +408,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryText,
@@ -473,15 +472,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   width: 1,
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.check_circle,
                     color: AppTheme.goldColor,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Text(
                       'Premium activated! 150 Messages Monthly.',
                       style: TextStyle(
@@ -596,15 +595,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   width: 1,
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.check_circle,
                     color: AppTheme.goldColor,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Text(
                       'Purchase restored successfully!',
                       style: TextStyle(

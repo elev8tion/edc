@@ -22,9 +22,8 @@ class CrisisDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      // Prevent dismissing by back button
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Dialog(
         backgroundColor: Colors.transparent,
         child: Container(

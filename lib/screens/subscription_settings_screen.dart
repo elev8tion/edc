@@ -182,29 +182,18 @@ class SubscriptionSettingsScreen extends ConsumerWidget {
   }) {
     String status;
     String subtitle;
-    IconData icon;
-    Color color;
-
     if (isPremium) {
       status = 'Premium Active';
       subtitle = 'Enjoy unlimited AI guidance';
-      icon = Icons.workspace_premium;
-      color = AppTheme.goldColor;
     } else if (isInTrial) {
       status = 'Free Trial';
       subtitle = '$trialDaysRemaining days remaining';
-      icon = Icons.schedule;
-      color = Colors.blue;
     } else if (hasTrialExpired) {
       status = 'Trial Expired';
       subtitle = 'Upgrade to continue using AI chat';
-      icon = Icons.lock_outline;
-      color = Colors.orange;
     } else {
       status = 'Free Version';
       subtitle = 'Start your free trial';
-      icon = Icons.star_border;
-      color = Colors.purple;
     }
 
     return Column(

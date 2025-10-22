@@ -6,9 +6,9 @@ import 'package:everyday_christian/models/chat_message.dart';
 void main() {
   group('AIResponse', () {
     test('should create AIResponse with required fields', () {
-      final response = AIResponse(
+      const response = AIResponse(
         content: 'Test response',
-        processingTime: const Duration(milliseconds: 100),
+        processingTime: Duration(milliseconds: 100),
       );
 
       expect(response.content, 'Test response');
@@ -20,14 +20,14 @@ void main() {
 
     test('should create AIResponse with all fields', () {
       final verses = [
-        BibleVerse(
+        const BibleVerse(
           book: 'John',
           chapter: 3,
           verseNumber: 16,
           text: 'For God so loved the world...',
           translation: 'ESV',
           reference: 'John 3:16',
-          themes: const ['love'],
+          themes: ['love'],
           category: 'salvation',
         ),
       ];
@@ -57,14 +57,14 @@ void main() {
     });
 
     test('should detect errors correctly', () {
-      final normalResponse = AIResponse(
+      const normalResponse = AIResponse(
         content: 'Normal',
-        processingTime: const Duration(milliseconds: 100),
+        processingTime: Duration(milliseconds: 100),
       );
       expect(normalResponse.hasError, false);
       expect(normalResponse.error, isNull);
 
-      final errorResponse = AIResponse(
+      const errorResponse = AIResponse(
         content: 'Error',
         processingTime: Duration.zero,
         metadata: {'error': 'Something went wrong'},

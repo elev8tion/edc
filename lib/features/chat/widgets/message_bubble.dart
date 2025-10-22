@@ -104,14 +104,14 @@ class MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (message.isSystem) ...[
-              Row(
+              const Row(
                 children: [
                   Icon(
                     Icons.info_outline,
                     size: 16,
                     color: AppTheme.primaryColor,
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Text(
                     'System Message',
                     style: TextStyle(
@@ -127,7 +127,7 @@ class MessageBubble extends StatelessWidget {
 
             Text(
               message.content,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
                 height: 1.4,
@@ -252,15 +252,15 @@ class MessageBubble extends StatelessWidget {
                           width: 1,
                         ),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(
                             Icons.check_circle,
                             color: AppTheme.goldColor,
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
-                          const Expanded(
+                          SizedBox(width: 12),
+                          Expanded(
                             child: Text(
                               'Message copied to clipboard',
                               style: TextStyle(
@@ -314,15 +314,15 @@ class MessageBubble extends StatelessWidget {
                             width: 1,
                           ),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
                             Icon(
                               Icons.check_circle,
                               color: AppTheme.goldColor,
                               size: 20,
                             ),
-                            const SizedBox(width: 12),
-                            const Expanded(
+                            SizedBox(width: 12),
+                            Expanded(
                               child: Text(
                                 'Verses copied to clipboard',
                                 style: TextStyle(
@@ -397,7 +397,11 @@ class MessageBubble extends StatelessWidget {
 
     shareText += '\n\nShared from Everyday Christian App';
 
-    Share.share(shareText);
+    SharePlus.instance.share(
+      ShareParams(
+        text: shareText,
+      ),
+    );
   }
 }
 
@@ -485,7 +489,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                           margin: const EdgeInsets.only(right: 2),
                           child: Opacity(
                             opacity: opacity,
-                            child: Text(
+                            child: const Text(
                               '•',
                               style: TextStyle(
                                 fontSize: 16,

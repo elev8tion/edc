@@ -15,7 +15,7 @@ Future<T?> showGlassDialog<T>({
     context: context,
     barrierDismissible: barrierDismissible,
     barrierLabel: 'Dismiss',
-    barrierColor: barrierColor ?? Colors.black.withOpacity(0.5),
+    barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.5),
     transitionDuration: transitionDuration,
     pageBuilder: (context, animation, secondaryAnimation) {
       return child;

@@ -168,7 +168,7 @@ class InlineErrorWidget extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getBackgroundColor().withOpacity(0.1),
+        color: _getBackgroundColor().withValues(alpha: 0.1),
         border: Border.all(
           color: _getBorderColor(),
           width: 1,

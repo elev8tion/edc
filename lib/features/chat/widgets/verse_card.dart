@@ -5,7 +5,6 @@ import '../../../models/bible_verse.dart';
 import '../../../theme/app_theme.dart';
 import '../../../components/glass_card.dart';
 import '../../../components/category_badge.dart';
-import '../../../theme/app_theme.dart';
 
 /// Beautiful card widget for displaying Bible verses
 class VerseCard extends StatelessWidget {
@@ -256,15 +255,15 @@ class VerseCard extends StatelessWidget {
               width: 1,
             ),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(
                 Icons.check_circle,
                 color: AppTheme.goldColor,
                 size: 20,
               ),
-              const SizedBox(width: 12),
-              const Expanded(
+              SizedBox(width: 12),
+              Expanded(
                 child: Text(
                   'Verse copied to clipboard',
                   style: TextStyle(
@@ -290,7 +289,11 @@ ${verse.translation}
 
 Shared from Everyday Christian App''';
 
-    Share.share(text);
+    SharePlus.instance.share(
+      ShareParams(
+        text: text,
+      ),
+    );
   }
 }
 
@@ -334,7 +337,7 @@ class CompactVerseCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     verse.reference,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.primaryColor,
@@ -342,7 +345,7 @@ class CompactVerseCard extends StatelessWidget {
                   ),
                 ),
                 if (verse.isPopular)
-                  Icon(
+                  const Icon(
                     Icons.star,
                     size: 12,
                     color: Colors.amber,
@@ -402,7 +405,7 @@ class VerseCollection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: AppTheme.primaryColor,

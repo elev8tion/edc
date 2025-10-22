@@ -50,7 +50,7 @@ class ModernMessageBubble extends StatelessWidget {
             const SizedBox(height: 4),
             _buildTimestamp(),
           ],
-          if (message.verses?.isNotEmpty == true) ...[
+          if (message.verses.isNotEmpty == true) ...[
             const SizedBox(height: 8),
             _buildVerses(),
           ],
@@ -63,7 +63,7 @@ class ModernMessageBubble extends StatelessWidget {
     return CircleAvatar(
       radius: 16,
       backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-      child: Icon(
+      child: const Icon(
         Icons.psychology_outlined,
         size: 16,
         color: AppTheme.primaryColor,
@@ -75,7 +75,7 @@ class ModernMessageBubble extends StatelessWidget {
     return CircleAvatar(
       radius: 16,
       backgroundColor: AppTheme.accentColor.withValues(alpha: 0.1),
-      child: Icon(
+      child: const Icon(
         Icons.person,
         size: 16,
         color: AppTheme.accentColor,
@@ -176,7 +176,7 @@ class ModernMessageBubble extends StatelessWidget {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.refresh, color: AppTheme.primaryColor),
+                leading: const Icon(Icons.refresh, color: AppTheme.primaryColor),
                 title: const Text(
                   'Regenerate Response',
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
@@ -222,7 +222,7 @@ class ModernMessageBubble extends StatelessWidget {
         right: message.isUser ? 44 : 0,
       ),
       child: Column(
-        children: message.verses!.map((verse) =>
+        children: message.verses.map((verse) =>
           ModernVerseCard(
             verse: verse,
             onTap: onVersePressed != null ? () => onVersePressed!(verse) : null,
@@ -297,7 +297,7 @@ class ModernVerseCard extends StatelessWidget {
                         color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: AppRadius.smallRadius,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.auto_stories,
                         size: 16,
                         color: AppTheme.primaryColor,
@@ -346,7 +346,7 @@ class ModernVerseCard extends StatelessWidget {
                         ),
                         child: Text(
                           theme,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.primaryColor,

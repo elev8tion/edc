@@ -4,7 +4,7 @@ import 'package:everyday_christian/core/models/reading_plan.dart';
 void main() {
   group('ReadingPlan Model', () {
     test('should create ReadingPlan with required fields', () {
-      final plan = ReadingPlan(
+      const plan = ReadingPlan(
         id: '1',
         title: 'Bible in a Year',
         description: 'Read the entire Bible in 365 days',
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('should serialize to JSON', () {
-      final plan = ReadingPlan(
+      const plan = ReadingPlan(
         id: '1',
         title: 'Test Plan',
         description: 'Test',
@@ -96,7 +96,7 @@ void main() {
     });
 
     test('should handle copyWith', () {
-      final plan = ReadingPlan(
+      const plan = ReadingPlan(
         id: '1',
         title: 'Original',
         description: 'Test',
@@ -121,7 +121,7 @@ void main() {
     });
 
     test('should support equality', () {
-      final plan1 = ReadingPlan(
+      const plan1 = ReadingPlan(
         id: '1',
         title: 'Test',
         description: 'Test',
@@ -132,7 +132,7 @@ void main() {
         totalReadings: 7,
       );
 
-      final plan2 = ReadingPlan(
+      const plan2 = ReadingPlan(
         id: '1',
         title: 'Test',
         description: 'Test',
@@ -172,7 +172,7 @@ void main() {
 
     test('should create DailyReading with completion', () {
       final now = DateTime.now();
-      final completed = now.add(Duration(hours: 1));
+      final completed = now.add(const Duration(hours: 1));
 
       final reading = DailyReading(
         id: '1',

@@ -12,7 +12,7 @@ void main() {
         id: 'test_id',
         name: 'Test Category',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         dateCreated: DateTime.now(),
       );
     });

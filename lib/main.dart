@@ -10,7 +10,6 @@ import 'core/navigation/navigation_service.dart';
 import 'core/navigation/app_routes.dart';
 import 'core/providers/app_providers.dart';
 import 'core/error/error_handler.dart';
-import 'core/services/database_service.dart';
 import 'services/gemini_ai_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/legal_agreements_screen.dart';

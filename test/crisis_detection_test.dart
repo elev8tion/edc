@@ -30,7 +30,7 @@ void main() {
       });
 
       test('detects suicide phrases in longer text', () {
-        final input = 'I\'ve been feeling really down lately and sometimes I think everyone would be better off without me. I don\'t want to live anymore.';
+        const input = 'I\'ve been feeling really down lately and sometimes I think everyone would be better off without me. I don\'t want to live anymore.';
         final result = service.detectCrisis(input);
 
         expect(result, isNotNull);
@@ -105,7 +105,7 @@ void main() {
 
     group('Priority Detection', () {
       test('prioritizes suicide over other crises', () {
-        final input = 'I want to kill myself and I\'ve been cutting';
+        const input = 'I want to kill myself and I\'ve been cutting';
         final result = service.detectCrisis(input);
 
         expect(result, isNotNull);

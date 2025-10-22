@@ -559,7 +559,7 @@ void main() {
         final firstStartDate = (await readingPlanService.getCurrentPlan())!.startDate;
 
         // Wait a moment
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
 
         await readingPlanService.startPlan(plan.id);
         final secondStartDate = (await readingPlanService.getCurrentPlan())!.startDate;
@@ -579,7 +579,7 @@ void main() {
         final plan = plans.first;
         final db = await databaseService.database;
 
-        final completedDate = DateTime.now().subtract(Duration(days: 1));
+        final completedDate = DateTime.now().subtract(const Duration(days: 1));
 
         // Insert a reading that's already completed
         await db.insert('daily_readings', {

@@ -5,7 +5,7 @@ void main() {
   group('User Model', () {
     group('User Creation', () {
       test('should create User with required fields', () {
-        final user = User(
+        const user = User(
           id: '123',
           email: 'test@example.com',
           name: 'Test User',
@@ -22,7 +22,7 @@ void main() {
 
       test('should create User with all fields', () {
         final now = DateTime.now();
-        final profile = UserProfile(
+        const profile = UserProfile(
           bio: 'Test bio',
           favoriteVerse: 'John 3:16',
           prayerStreak: 5,
@@ -65,7 +65,7 @@ void main() {
 
     group('User Display Properties', () {
       test('should get display name from name', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John Doe',
           email: 'john@example.com',
@@ -75,7 +75,7 @@ void main() {
       });
 
       test('should get display name from email when no name', () {
-        final user = User(
+        const user = User(
           id: '123',
           email: 'john@example.com',
         );
@@ -84,7 +84,7 @@ void main() {
       });
 
       test('should get display name as Guest User for anonymous', () {
-        final user = User(
+        const user = User(
           id: '123',
           isAnonymous: true,
         );
@@ -93,13 +93,13 @@ void main() {
       });
 
       test('should default to User when no name or email', () {
-        final user = User(id: '123');
+        const user = User(id: '123');
 
         expect(user.displayName, equals('User'));
       });
 
       test('should get initials from full name', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John Doe',
         );
@@ -108,7 +108,7 @@ void main() {
       });
 
       test('should get initials from single name', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John',
         );
@@ -117,7 +117,7 @@ void main() {
       });
 
       test('should get initials from email when no name', () {
-        final user = User(
+        const user = User(
           id: '123',
           email: 'john@example.com',
         );
@@ -126,7 +126,7 @@ void main() {
       });
 
       test('should default to G for guest users', () {
-        final user = User(
+        const user = User(
           id: '123',
           isAnonymous: true,
         );
@@ -137,7 +137,7 @@ void main() {
 
     group('User Profile Status', () {
       test('should return true when profile is complete', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John Doe',
           preferredVerseThemes: ['hope', 'faith'],
@@ -147,7 +147,7 @@ void main() {
       });
 
       test('should return false when name is missing', () {
-        final user = User(
+        const user = User(
           id: '123',
           preferredVerseThemes: ['hope'],
         );
@@ -156,7 +156,7 @@ void main() {
       });
 
       test('should return false when preferred themes are empty', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John Doe',
           preferredVerseThemes: [],
@@ -168,7 +168,7 @@ void main() {
 
     group('Membership Duration', () {
       test('should calculate membership duration', () {
-        final dateJoined = DateTime.now().subtract(Duration(days: 30));
+        final dateJoined = DateTime.now().subtract(const Duration(days: 30));
         final user = User(
           id: '123',
           dateJoined: dateJoined,
@@ -180,7 +180,7 @@ void main() {
       });
 
       test('should return null when no date joined', () {
-        final user = User(id: '123');
+        const user = User(id: '123');
 
         expect(user.membershipDuration, isNull);
       });
@@ -277,7 +277,7 @@ void main() {
 
     group('User CopyWith', () {
       test('should copy with updated fields', () {
-        final original = User(
+        const original = User(
           id: '123',
           email: 'test@example.com',
           name: 'Original Name',
@@ -295,7 +295,7 @@ void main() {
       });
 
       test('should preserve original fields when not updated', () {
-        final original = User(
+        const original = User(
           id: '123',
           email: 'test@example.com',
           name: 'Test User',
@@ -311,22 +311,22 @@ void main() {
 
     group('User Equality', () {
       test('should be equal when IDs match', () {
-        final user1 = User(id: '123', name: 'User 1');
-        final user2 = User(id: '123', name: 'User 2');
+        const user1 = User(id: '123', name: 'User 1');
+        const user2 = User(id: '123', name: 'User 2');
 
         expect(user1, equals(user2));
       });
 
       test('should not be equal when IDs differ', () {
-        final user1 = User(id: '123');
-        final user2 = User(id: '456');
+        const user1 = User(id: '123');
+        const user2 = User(id: '456');
 
         expect(user1, isNot(equals(user2)));
       });
 
       test('should have same hash code when IDs match', () {
-        final user1 = User(id: '123');
-        final user2 = User(id: '123');
+        const user1 = User(id: '123');
+        const user2 = User(id: '123');
 
         expect(user1.hashCode, equals(user2.hashCode));
       });
@@ -334,7 +334,7 @@ void main() {
 
     group('User toString', () {
       test('should return readable string representation', () {
-        final user = User(
+        const user = User(
           id: '123',
           name: 'John Doe',
           email: 'john@example.com',
@@ -354,7 +354,7 @@ void main() {
   group('UserProfile Model', () {
     group('UserProfile Creation', () {
       test('should create UserProfile with default values', () {
-        final profile = UserProfile();
+        const profile = UserProfile();
 
         expect(profile.bio, isNull);
         expect(profile.favoriteVerse, isNull);
@@ -395,7 +395,7 @@ void main() {
 
     group('Answered Prayer Percentage', () {
       test('should calculate answered prayer percentage', () {
-        final profile = UserProfile(
+        const profile = UserProfile(
           totalPrayers: 100,
           answeredPrayers: 25,
         );
@@ -404,7 +404,7 @@ void main() {
       });
 
       test('should return 0 when no prayers', () {
-        final profile = UserProfile(
+        const profile = UserProfile(
           totalPrayers: 0,
           answeredPrayers: 0,
         );
@@ -413,7 +413,7 @@ void main() {
       });
 
       test('should handle 100% answered', () {
-        final profile = UserProfile(
+        const profile = UserProfile(
           totalPrayers: 10,
           answeredPrayers: 10,
         );
@@ -492,7 +492,7 @@ void main() {
 
     group('UserProfile CopyWith', () {
       test('should copy with updated fields', () {
-        final original = UserProfile(
+        const original = UserProfile(
           bio: 'Original bio',
           prayerStreak: 5,
         );
@@ -507,7 +507,7 @@ void main() {
       });
 
       test('should preserve original fields when not updated', () {
-        final original = UserProfile(
+        const original = UserProfile(
           bio: 'Test bio',
           verseStreak: 3,
           totalPrayers: 50,
@@ -523,7 +523,7 @@ void main() {
 
     group('UserProfile toString', () {
       test('should return readable string representation', () {
-        final profile = UserProfile(
+        const profile = UserProfile(
           prayerStreak: 10,
           verseStreak: 5,
           totalPrayers: 100,

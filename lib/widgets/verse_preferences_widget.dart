@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/services/verse_service.dart';
 import '../core/services/database_service.dart';
-import '../core/models/bible_verse.dart';
 import '../theme/app_theme.dart';
+import '../core/widgets/app_snackbar.dart';
 
 class VersePreferencesWidget extends StatefulWidget {
   const VersePreferencesWidget({super.key});
@@ -72,7 +72,9 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
             break;
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('Failed to load verse preferences: $e');
+      debugPrintStack(stackTrace: stack);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -81,45 +83,48 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
   Future<void> _saveThemes() async {
     try {
       await _verseService.updatePreferredThemes(_selectedThemes);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Theme preferences saved'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
+      if (!mounted) return;
+      AppSnackBar.show(context, message: 'Theme preferences saved');
+    } catch (e, stack) {
+      debugPrint('Failed to save theme preferences: $e');
+      debugPrintStack(stackTrace: stack);
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Could not save theme preferences. Please try again.',
+      );
     }
   }
 
   Future<void> _saveAvoidRecentDays() async {
     try {
       await _verseService.updateAvoidRecentDays(_avoidRecentDays);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Avoid recent days preference saved'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
+      if (!mounted) return;
+      AppSnackBar.show(context, message: 'Avoid recent days preference saved');
+    } catch (e, stack) {
+      debugPrint('Failed to save avoid recent days preference: $e');
+      debugPrintStack(stackTrace: stack);
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Could not save preference. Please try again.',
+      );
     }
   }
 
   Future<void> _savePreferredVersion() async {
     try {
       await _verseService.updatePreferredVersion(_preferredVersion);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Bible version preference saved'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
+      if (!mounted) return;
+      AppSnackBar.show(context, message: 'Bible version preference saved');
+    } catch (e, stack) {
+      debugPrint('Failed to save Bible version preference: $e');
+      debugPrintStack(stackTrace: stack);
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Could not save preference. Please try again.',
+      );
     }
   }
 
@@ -152,7 +157,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
             Text(
               'Customize your daily verse experience',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 14,
               ),
             ),
@@ -164,7 +169,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
             Text(
               'Select themes you\'d like to see in your daily verses',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
             ),
@@ -184,7 +189,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
             Text(
               'Avoid showing the same verse within this many days',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 13,
               ),
             ),
@@ -257,17 +262,17 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
               gradient: isSelected
                   ? LinearGradient(
                       colors: [
-                        AppTheme.goldColor.withOpacity(0.4),
-                        AppTheme.goldColor.withOpacity(0.2),
+                        AppTheme.goldColor.withValues(alpha: 0.4),
+                        AppTheme.goldColor.withValues(alpha: 0.2),
                       ],
                     )
                   : null,
-              color: isSelected ? null : Colors.white.withOpacity(0.1),
+              color: isSelected ? null : Colors.white.withValues(alpha: 0.1),
               borderRadius: AppRadius.cardRadius,
               border: Border.all(
                 color: isSelected
                     ? AppTheme.goldColor
-                    : Colors.white.withOpacity(0.2),
+                    : Colors.white.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -301,10 +306,10 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: AppRadius.mediumRadius,
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
         ),
       ),
       child: DropdownButtonHideUnderline(
@@ -353,7 +358,7 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
             Text(
               _getVarietyDescription(),
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 12,
               ),
             ),
@@ -363,9 +368,9 @@ class _VersePreferencesWidgetState extends State<VersePreferencesWidget> {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: AppTheme.goldColor,
-            inactiveTrackColor: Colors.white.withOpacity(0.2),
+            inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
             thumbColor: AppTheme.goldColor,
-            overlayColor: AppTheme.goldColor.withOpacity(0.2),
+            overlayColor: AppTheme.goldColor.withValues(alpha: 0.2),
             trackHeight: 4,
           ),
           child: Slider(

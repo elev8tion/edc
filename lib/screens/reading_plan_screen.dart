@@ -493,7 +493,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
           LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.white.withValues(alpha: 0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             borderRadius: BorderRadius.circular(AppRadius.xs / 2),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -706,7 +706,7 @@ class _ReadingPlanScreenState extends ConsumerState<ReadingPlanScreen>
               LinearProgressIndicator(
                 value: (plan.completedReadings / plan.totalReadings).clamp(0.0, 1.0),
                 backgroundColor: Colors.white.withValues(alpha: 0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                 borderRadius: BorderRadius.circular(AppRadius.xs / 2),
               ),
               if (progressPercentageAsync != null) ...[

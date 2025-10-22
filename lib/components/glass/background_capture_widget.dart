@@ -85,7 +85,7 @@ class _BackgroundCaptureWidgetState extends State<BackgroundCaptureWidget>
       left: position.dx,
       top: position.dy,
       child: Draggable(
-        feedback: SizedBox.square(),
+        feedback: const SizedBox.square(),
         childWhenDragging: child,
         onDragUpdate: (details) {
           setState(() {

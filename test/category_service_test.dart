@@ -50,7 +50,7 @@ void main() {
     test('should create custom category', () async {
       const categoryName = 'Test Category';
       final iconCodePoint = Icons.star.codePoint;
-      final colorValue = Colors.purple.value;
+      final colorValue = Colors.purple.toARGB32();
 
       final category = await categoryService.createCategory(
         name: categoryName,
@@ -68,7 +68,7 @@ void main() {
     test('should not create duplicate category', () async {
       const categoryName = 'Duplicate Test';
       final iconCodePoint = Icons.star.codePoint;
-      final colorValue = Colors.purple.value;
+      final colorValue = Colors.purple.toARGB32();
 
       // Create first category
       await categoryService.createCategory(
@@ -112,14 +112,14 @@ void main() {
       final category = await categoryService.createCategory(
         name: categoryName,
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
       );
 
       // Update the category
       final updatedCategory = category.copyWith(
         name: 'Updated Category',
         iconCodePoint: Icons.favorite.codePoint,
-        colorValue: Colors.red.value,
+        colorValue: Colors.red.toARGB32(),
       );
 
       await categoryService.updateCategory(updatedCategory);
@@ -128,7 +128,7 @@ void main() {
       final retrieved = await categoryService.getCategoryById(category.id);
       expect(retrieved!.name, equals('Updated Category'));
       expect(retrieved.iconCodePoint, equals(Icons.favorite.codePoint));
-      expect(retrieved.colorValue, equals(Colors.red.value));
+      expect(retrieved.colorValue, equals(Colors.red.toARGB32()));
     });
 
     test('should delete custom category', () async {
@@ -136,7 +136,7 @@ void main() {
       final category = await categoryService.createCategory(
         name: 'Delete Test',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
       );
 
       // Delete the category
@@ -162,7 +162,7 @@ void main() {
       final category = await categoryService.createCategory(
         name: 'Toggle Test',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
       );
 
       expect(category.isActive, isTrue);
@@ -203,7 +203,7 @@ void main() {
       await categoryService.createCategory(
         name: 'Count Test',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
       );
 
       final newCount = await categoryService.getCustomCategoryCount();
@@ -226,12 +226,12 @@ void main() {
       await categoryService.createCategory(
         name: 'Custom 1',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
       );
       await categoryService.createCategory(
         name: 'Custom 2',
         iconCodePoint: Icons.favorite.codePoint,
-        colorValue: Colors.red.value,
+        colorValue: Colors.red.toARGB32(),
       );
 
       final customCount = await categoryService.getCustomCategoryCount();
@@ -272,7 +272,7 @@ void main() {
         'id': 'test_id',
         'name': 'Test Category',
         'icon': Icons.star.codePoint.toString(),
-        'color': '0x${Colors.blue.value.toRadixString(16).toUpperCase()}',
+        'color': '0x${Colors.blue.toARGB32().toRadixString(16).toUpperCase()}',
         'is_default': 0,
         'is_active': 1,
         'display_order': 5,
@@ -285,7 +285,7 @@ void main() {
       expect(category.id, equals('test_id'));
       expect(category.name, equals('Test Category'));
       expect(category.iconCodePoint, equals(Icons.star.codePoint));
-      expect(category.colorValue, equals(Colors.blue.value));
+      expect(category.colorValue, equals(Colors.blue.toARGB32()));
       expect(category.isDefault, isFalse);
       expect(category.isActive, isTrue);
       expect(category.displayOrder, equals(5));
@@ -296,7 +296,7 @@ void main() {
         id: 'test_id',
         name: 'Test Category',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         isDefault: false,
         isActive: true,
         displayOrder: 5,
@@ -318,7 +318,7 @@ void main() {
         id: 'test_id',
         name: 'Test',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         dateCreated: DateTime.now(),
       );
 
@@ -332,13 +332,13 @@ void main() {
         id: 'test_id',
         name: 'Test',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         dateCreated: DateTime.now(),
       );
 
       final color = category.color;
 
-      expect(color.value, equals(Colors.blue.value));
+      expect(color.toARGB32(), equals(Colors.blue.toARGB32()));
     });
   });
 
@@ -348,7 +348,7 @@ void main() {
         id: 'test_id',
         name: 'Test Category',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         dateCreated: DateTime.now(),
       );
 
@@ -373,7 +373,7 @@ void main() {
         id: 'test_id',
         name: 'Test Category',
         iconCodePoint: Icons.star.codePoint,
-        colorValue: Colors.blue.value,
+        colorValue: Colors.blue.toARGB32(),
         dateCreated: DateTime.now(),
       );
 

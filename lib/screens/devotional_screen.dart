@@ -12,7 +12,6 @@ import '../theme/app_theme.dart';
 import '../theme/app_gradients.dart';
 import '../core/providers/app_providers.dart';
 import '../core/models/devotional.dart';
-import '../core/navigation/navigation_service.dart';
 import '../utils/responsive_utils.dart';
 
 class DevotionalScreen extends ConsumerStatefulWidget {
@@ -516,7 +515,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
           LinearProgressIndicator(
             value: (_currentDay + 1) / devotionals.length,
             backgroundColor: Colors.white.withValues(alpha: 0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             borderRadius: BorderRadius.circular(AppRadius.xs / 2),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -527,7 +526,7 @@ class _DevotionalScreenState extends ConsumerState<DevotionalScreen> {
               const spacing = 8.0;
               const runSpacing = 8.0;
               // Calculate item width based on available space and column count
-              final totalSpacing = spacing * (columns - 1);
+              const totalSpacing = spacing * (columns - 1);
               final itemWidth = (constraints.maxWidth - totalSpacing) / columns;
 
               return Wrap(

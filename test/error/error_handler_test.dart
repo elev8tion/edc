@@ -2,12 +2,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:everyday_christian/core/error/error_handler.dart';
 import 'package:everyday_christian/core/error/app_error.dart';
-import 'package:sqflite/sqflite.dart';
 
 void main() {
   group('ErrorHandler', () {
     test('should handle SocketException as network error', () {
-      final exception = const SocketException('No network');
+      const exception = SocketException('No network');
       final error = ErrorHandler.handle(exception);
 
       expect(error, isA<NetworkError>());
@@ -51,7 +50,7 @@ void main() {
     });
 
     test('should handle FormatException as validation error', () {
-      final exception = const FormatException('Invalid format');
+      const exception = FormatException('Invalid format');
       final error = ErrorHandler.handle(exception);
 
       expect(error, isA<ValidationError>());

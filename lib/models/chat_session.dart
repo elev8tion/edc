@@ -207,7 +207,6 @@ class ChatSession {
   /// Generate smart title from first message
   static String generateSmartTitle(String firstMessage) {
     // Extract key topics or emotions from the first message
-    final keywords = <String>[];
     final message = firstMessage.toLowerCase();
 
     // Common spiritual topics

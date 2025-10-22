@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 /// This service provides biometric authentication capabilities including
 /// fingerprint, face ID, and other device-supported biometric methods.
 class BiometricService {
-  static const MethodChannel _channel = MethodChannel('biometric_auth');
+  static const MethodChannel _channel = MethodChannel('biometric_auth'); // ignore: unused_field
 
   /// Check if biometric authentication is available on the device
   Future<bool> canCheckBiometrics() async {

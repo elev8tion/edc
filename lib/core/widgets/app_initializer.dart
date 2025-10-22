@@ -77,7 +77,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                   center: Alignment.center,
                   radius: 1.2,
                   colors: [
-                    AppTheme.primaryColor.withOpacity(0.15),
+                    AppTheme.primaryColor.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -103,7 +103,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                             borderRadius: AppRadius.cardRadius,
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.primaryColor.withOpacity(0.3),
+                                color: AppTheme.primaryColor.withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -133,13 +133,13 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                           onPlay: (controller) => controller.repeat(),
                         ).shimmer(
                           duration: 2000.ms,
-                          color: AppTheme.primaryColor.withOpacity(0.3),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.3),
                         ),
 
                         const SizedBox(height: 24),
 
                         // App name
-                        Text(
+                        const Text(
                           'EVERYDAY',
                           style: TextStyle(
                             fontSize: 18,
@@ -148,9 +148,9 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                             color: AppTheme.primaryColor,
                           ),
                         ).animate().fadeIn(duration: 600.ms),
-                        Text(
+                        const Text(
                           'CHRISTIAN',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
@@ -161,7 +161,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                         const SizedBox(height: 32),
 
                         // Loading indicator
-                        SizedBox(
+                        const SizedBox(
                           width: 50,
                           height: 50,
                           child: CircularProgressIndicator(
@@ -196,7 +196,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                             key: ValueKey<int>(_currentMessageIndex),
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontWeight: FontWeight.w500,
                             ),
                             textAlign: TextAlign.center,
@@ -218,7 +218,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                                 shape: BoxShape.circle,
                                 color: index == _currentMessageIndex
                                     ? AppTheme.primaryColor
-                                    : Colors.white.withOpacity(0.3),
+                                    : Colors.white.withValues(alpha: 0.3),
                               ),
                             ).animate(
                               target: index == _currentMessageIndex ? 1 : 0,
@@ -243,16 +243,16 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 40),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: AppRadius.mediumRadius,
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                       ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.lightbulb_outline,
                           color: AppTheme.goldColor,
                           size: 20,
@@ -263,7 +263,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                             'First launch may take a moment to load Bible data',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -290,7 +290,7 @@ class _LoadingScreenState extends State<_LoadingScreen> {
                   'Version 1.0.0',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -329,7 +329,7 @@ class _ErrorScreen extends StatelessWidget {
                   center: Alignment.center,
                   radius: 1.2,
                   colors: [
-                    Colors.red.withOpacity(0.1),
+                    Colors.red.withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -353,9 +353,9 @@ class _ErrorScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.red.withOpacity(0.1),
+                              color: Colors.red.withValues(alpha: 0.1),
                               border: Border.all(
-                                color: Colors.red.withOpacity(0.3),
+                                color: Colors.red.withValues(alpha: 0.3),
                                 width: 2,
                               ),
                             ),
@@ -390,7 +390,7 @@ class _ErrorScreen extends StatelessWidget {
                           Text(
                             errorMessage,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 15,
                               height: 1.5,
                             ),
@@ -440,17 +440,17 @@ class _ErrorScreen extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: AppRadius.mediumRadius,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(
                         children: [
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.info_outline,
                                 color: AppTheme.goldColor,
                                 size: 18,
@@ -461,7 +461,7 @@ class _ErrorScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -473,7 +473,7 @@ class _ErrorScreen extends StatelessWidget {
                             '• Restart the app if issue persists',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               height: 1.6,
                             ),
                           ),

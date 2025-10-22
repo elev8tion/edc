@@ -7,16 +7,15 @@ import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/glassmorphic_fab_menu.dart';
-import '../components/category_badge.dart';
 import '../components/base_bottom_sheet.dart';
+import '../components/glass_button.dart';
 import '../theme/app_theme.dart';
-import '../theme/app_gradients.dart';
 import '../core/navigation/navigation_service.dart';
 import '../models/bible_verse.dart';
 import '../core/providers/app_providers.dart';
 import '../utils/responsive_utils.dart';
+import '../core/widgets/app_snackbar.dart';
 
 // Provider for all saved verses
 final filteredVersesProvider = FutureProvider.autoDispose<List<BibleVerse>>((ref) async {
@@ -111,7 +110,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: AppGradients.glassStrong,
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: AppRadius.mediumRadius,
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.2),
@@ -132,13 +131,6 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
   Widget _buildTabBar() {
     final favorites = ref.watch(favoriteVersesProvider);
     final favoriteCount = favorites.when(
-      data: (verses) => verses.length,
-      loading: () => 0,
-      error: (_, __) => 0,
-    );
-
-    final allVerses = ref.watch(filteredVersesProvider);
-    final allCount = allVerses.when(
       data: (verses) => verses.length,
       loading: () => 0,
       error: (_, __) => 0,
@@ -168,7 +160,7 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
           ),
           tabs: [
             Tab(text: 'Saved Verses ($favoriteCount)'),
-            Tab(text: 'Shared (0)'),
+            const Tab(text: 'Shared (0)'),
           ],
         ),
       ),
@@ -434,107 +426,18 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
       ref.invalidate(favoriteVersesProvider);
 
       // Show feedback
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            margin: const EdgeInsets.all(16),
-            padding: EdgeInsets.zero,
-            content: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1E293B), // slate-800
-                    Color(0xFF0F172A), // slate-900
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.goldColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    newStatus ? Icons.favorite : Icons.heart_broken,
-                    color: AppTheme.goldColor,
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      newStatus ? 'Added to favorites' : 'Removed from favorites',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ResponsiveUtils.fontSize(context, 14),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.show(
+        context,
+        message: newStatus ? 'Added to favorites' : 'Removed from favorites',
+        icon: newStatus ? Icons.favorite : Icons.heart_broken,
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-            margin: const EdgeInsets.all(16),
-            padding: EdgeInsets.zero,
-            content: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1E293B), // slate-800
-                    Color(0xFF0F172A), // slate-900
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red.shade300,
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Error updating favorite: $e',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ResponsiveUtils.fontSize(context, 14),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Error updating favorite: $e',
+      );
     }
   }
 
@@ -554,53 +457,9 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 final text = '"${verse.text}"\n\n${verse.reference} (${verse.translation})';
                 Clipboard.setData(ClipboardData(text: text));
                 NavigationService.pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    behavior: SnackBarBehavior.floating,
-                    duration: const Duration(seconds: 2),
-                    margin: const EdgeInsets.all(16),
-                    padding: EdgeInsets.zero,
-                    content: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF1E293B), // slate-800
-                            Color(0xFF0F172A), // slate-900
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppTheme.goldColor.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: AppTheme.goldColor,
-                            size: ResponsiveUtils.iconSize(context, 20),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Verse copied to clipboard',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: ResponsiveUtils.fontSize(context, 14),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                AppSnackBar.show(
+                  context,
+                  message: 'Verse copied to clipboard',
                 );
               },
             ),
@@ -611,9 +470,11 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
                 NavigationService.pop();
                 // Share verse with friends using share_plus
                 final shareText = '"${verse.text}"\n\n— ${verse.reference}';
-                await Share.share(
-                  shareText,
-                  subject: 'Bible Verse - ${verse.reference}',
+                await SharePlus.instance.share(
+                  ShareParams(
+                    text: shareText,
+                    subject: 'Bible Verse - ${verse.reference}',
+                  ),
                 );
               },
             ),
@@ -628,38 +489,179 @@ class _VerseLibraryScreenState extends ConsumerState<VerseLibraryScreen> with Ti
     showCustomBottomSheet(
       context: context,
       title: 'Verse Library Options',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: AppGradients.customColored(AppTheme.primaryColor),
-                borderRadius: AppRadius.mediumRadius,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.info_outline, color: Colors.white),
+              title: const Text(
+                'About Verse Library',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
               ),
-              child: Icon(Icons.info_outline, color: AppTheme.primaryColor),
-            ),
-            title: const Text(
-              'About Verse Library',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryText,
+              subtitle: Text(
+                'Browse and manage your saved verses',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                  color: AppColors.secondaryText,
+                ),
               ),
+              onTap: () => Navigator.pop(context),
             ),
-            subtitle: Text(
-              'Browse your saved Bible verses',
-              style: TextStyle(
-                fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
-                color: AppColors.secondaryText,
+            const SizedBox(height: AppSpacing.md),
+            ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
+              title: const Text(
+                'Clear saved verses',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
               ),
+              subtitle: Text(
+                'Remove all verses from your saved collection',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                  color: AppColors.secondaryText,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _confirmClearSavedVerses();
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+            ListTile(
+              leading: const Icon(Icons.upcoming, color: AppTheme.accentColor),
+              title: const Text(
+                'Shared verses',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              subtitle: Text(
+                'Shared verse management coming soon',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 12, minSize: 10, maxSize: 14),
+                  color: AppColors.secondaryText,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                AppSnackBar.show(
+                  context,
+                  message: 'Shared verse history management is coming soon.',
+                  icon: Icons.info_outline,
+                  iconColor: AppTheme.accentColor,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _confirmClearSavedVerses() async {
+    final shouldClear = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: FrostedGlassCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.delete_sweep,
+                    color: Colors.redAccent,
+                    size: ResponsiveUtils.iconSize(context, 32),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text(
+                      'Clear saved verses?',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.fontSize(context, 18, minSize: 16, maxSize: 20),
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryText,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                'This will remove every verse from your Saved list. You can always add them again later.',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.fontSize(context, 14, minSize: 12, maxSize: 16),
+                  color: AppColors.secondaryText,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassButton(
+                      text: 'Cancel',
+                      height: 48,
+                      onPressed: () => Navigator.pop(context, false),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        'Clear All',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldClear == true) {
+      try {
+        final service = ref.read(unifiedVerseServiceProvider);
+        await service.clearFavoriteVerses();
+        ref.invalidate(favoriteVersesProvider);
+        ref.invalidate(filteredVersesProvider);
+        if (!mounted) return;
+        AppSnackBar.show(
+          context,
+          message: 'Saved verses cleared',
+          icon: Icons.delete_forever,
+          iconColor: Colors.redAccent,
+        );
+      } catch (e) {
+        if (!mounted) return;
+        AppSnackBar.showError(
+          context,
+          message: 'Unable to clear saved verses: $e',
+        );
+      }
+    }
   }
 }

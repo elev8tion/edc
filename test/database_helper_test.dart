@@ -172,7 +172,7 @@ void main() {
       });
 
       test('should get chat messages by session', () async {
-        final sessionId = 'session123';
+        const sessionId = 'session123';
 
         await dbHelper.insertChatMessage({
           'session_id': sessionId,
@@ -212,7 +212,7 @@ void main() {
       });
 
       test('should limit chat messages', () async {
-        final sessionId = 'session123';
+        const sessionId = 'session123';
 
         for (int i = 0; i < 10; i++) {
           await dbHelper.insertChatMessage({
@@ -231,7 +231,7 @@ void main() {
       });
 
       test('should use offset for pagination', () async {
-        final sessionId = 'session123';
+        const sessionId = 'session123';
 
         for (int i = 0; i < 10; i++) {
           await dbHelper.insertChatMessage({
@@ -259,7 +259,7 @@ void main() {
       });
 
       test('should delete old chat messages', () async {
-        final old = DateTime.now().subtract(Duration(days: 31));
+        final old = DateTime.now().subtract(const Duration(days: 31));
         final recent = DateTime.now();
 
         await dbHelper.insertChatMessage({

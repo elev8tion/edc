@@ -152,7 +152,7 @@ class ReferralService {
     if (referral == null) return response;
 
     // Add spacing and referral message
-    final separator = '\n\n---\n\n';
+    const separator = '\n\n---\n\n';
     return '$response$separator📋 **Professional Support:**\n${referral.message}';
   }
 

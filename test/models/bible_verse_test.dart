@@ -4,7 +4,7 @@ import 'package:everyday_christian/core/models/bible_verse.dart';
 void main() {
   group('BibleVerse Model', () {
     test('should create BibleVerse with required fields', () {
-      final verse = BibleVerse(
+      const verse = BibleVerse(
         id: '1',
         text: 'For God so loved the world...',
         reference: 'John 3:16',
@@ -36,7 +36,7 @@ void main() {
     });
 
     test('should serialize to JSON', () {
-      final verse = BibleVerse(
+      const verse = BibleVerse(
         id: '1',
         text: 'Test',
         reference: 'Test 1:1',
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('should handle copyWith', () {
-      final verse = BibleVerse(
+      const verse = BibleVerse(
         id: '1',
         text: 'Original',
         reference: 'Test 1:1',
@@ -91,14 +91,14 @@ void main() {
     });
 
     test('should support equality', () {
-      final verse1 = BibleVerse(
+      const verse1 = BibleVerse(
         id: '1',
         text: 'Test',
         reference: 'Test 1:1',
         category: VerseCategory.love,
       );
 
-      final verse2 = BibleVerse(
+      const verse2 = BibleVerse(
         id: '1',
         text: 'Test',
         reference: 'Test 1:1',

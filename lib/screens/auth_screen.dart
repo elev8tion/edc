@@ -3,15 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/auth/services/auth_service.dart';
 import '../features/auth/widgets/auth_form.dart';
 import '../theme/app_theme.dart';
-import '../components/frosted_glass_card.dart';
-import '../components/clear_glass_card.dart';
-import '../components/glass_card.dart';
 import '../components/gradient_background.dart';
 import '../components/animations/blur_fade.dart';
 import '../components/glass/static_liquid_glass_lens.dart';
 import '../core/navigation/navigation_service.dart';
 import '../core/navigation/app_routes.dart';
 import '../utils/responsive_utils.dart';
+import '../core/widgets/app_snackbar.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -55,14 +53,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
         },
         unauthenticated: () {},
         error: (message) {
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          if (!mounted) return;
+          AppSnackBar.showError(context, message: message);
         },
       );
     });

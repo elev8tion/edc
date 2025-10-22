@@ -30,7 +30,7 @@ void main() {
 
     test('should create Devotional with all fields', () {
       final now = DateTime.now();
-      final completed = now.add(Duration(hours: 1));
+      final completed = now.add(const Duration(hours: 1));
 
       final devotional = Devotional(
         id: '1',

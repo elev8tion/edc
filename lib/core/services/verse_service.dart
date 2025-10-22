@@ -411,17 +411,6 @@ class VerseService {
     );
   }
 
-  Map<String, dynamic> _verseToMap(BibleVerse verse) {
-    return {
-      'id': verse.id,
-      'text': verse.text,
-      'reference': verse.reference,
-      'category': verse.category.name,
-      'is_favorite': verse.isFavorite ? 1 : 0,
-      'date_added': verse.dateAdded?.millisecondsSinceEpoch,
-    };
-  }
-
   // ============================================================================
   // BOOKMARK METHODS
   // ============================================================================

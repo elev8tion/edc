@@ -53,7 +53,7 @@ class ErrorHandler {
 
     // Validation errors
     if (error is FormatException) {
-      final appError = AppError.validation(
+      const appError = AppError.validation(
         message: 'Invalid data format',
       );
       _logError(appError, stackTrace: stackTrace, context: context);
@@ -81,7 +81,7 @@ class ErrorHandler {
 
     // Timeout errors
     if (error is TimeoutException) {
-      final appError = AppError.network(
+      const appError = AppError.network(
         message: 'Request timeout',
         details: 'The operation took too long to complete',
       );

@@ -30,7 +30,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
     ScreenInfo(
       title: 'Chat Screen',
       description: 'lib/screens/chat_screen.dart',
-      widget: screens_chat.ChatScreen(),
+      widget: const screens_chat.ChatScreen(),
     ),
     // ScreenInfo(
     //   title: 'DUPLICATE: Chat Screen (features/)',
@@ -40,52 +40,52 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
     ScreenInfo(
       title: 'Home Screen',
       description: 'lib/screens/home_screen.dart',
-      widget: HomeScreen(),
+      widget: const HomeScreen(),
     ),
     ScreenInfo(
       title: 'Prayer Journal Screen',
       description: 'lib/screens/prayer_journal_screen.dart',
-      widget: PrayerJournalScreen(),
+      widget: const PrayerJournalScreen(),
     ),
     ScreenInfo(
       title: 'Verse Library Screen',
       description: 'lib/screens/verse_library_screen.dart',
-      widget: VerseLibraryScreen(),
+      widget: const VerseLibraryScreen(),
     ),
     ScreenInfo(
       title: 'Devotional Screen',
       description: 'lib/screens/devotional_screen.dart',
-      widget: DevotionalScreen(),
+      widget: const DevotionalScreen(),
     ),
     ScreenInfo(
       title: 'Reading Plan Screen',
       description: 'lib/screens/reading_plan_screen.dart',
-      widget: ReadingPlanScreen(),
+      widget: const ReadingPlanScreen(),
     ),
     ScreenInfo(
       title: 'Settings Screen',
       description: 'lib/screens/settings_screen.dart',
-      widget: SettingsScreen(),
+      widget: const SettingsScreen(),
     ),
     ScreenInfo(
       title: 'Profile Screen',
       description: 'lib/screens/profile_screen.dart',
-      widget: ProfileScreen(),
+      widget: const ProfileScreen(),
     ),
     ScreenInfo(
       title: 'Auth Screen',
       description: 'lib/screens/auth_screen.dart',
-      widget: AuthScreen(),
+      widget: const AuthScreen(),
     ),
     ScreenInfo(
       title: 'Onboarding Screen',
       description: 'lib/screens/onboarding_screen.dart',
-      widget: OnboardingScreen(),
+      widget: const OnboardingScreen(),
     ),
     ScreenInfo(
       title: 'Splash Screen',
       description: 'lib/screens/splash_screen.dart',
-      widget: SplashScreen(),
+      widget: const SplashScreen(),
     ),
   ];
 
@@ -105,11 +105,11 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: AppRadius.mediumRadius,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -159,7 +159,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
                 // Back button
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: AppRadius.smallRadius,
                   ),
                   child: IconButton(
@@ -175,7 +175,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
                 // Forward button
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: AppRadius.smallRadius,
                   ),
                   child: IconButton(
@@ -197,7 +197,7 @@ class _DebugScreenGalleryState extends ConsumerState<DebugScreenGallery> {
             right: 20,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.8),
+                color: Colors.red.withValues(alpha: 0.8),
                 borderRadius: AppRadius.smallRadius,
               ),
               child: IconButton(

@@ -44,7 +44,7 @@ class ChatScreenLockoutOverlay extends StatelessWidget {
                 intensity: GlassIntensity.strong,
                 borderColor: AppTheme.goldColor.withValues(alpha: 0.6),
                 child: Padding(
-                  padding: EdgeInsets.all(AppSpacing.xxl),
+                  padding: const EdgeInsets.all(AppSpacing.xxl),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [

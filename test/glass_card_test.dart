@@ -247,12 +247,12 @@ void main() {
 
   testWidgets('GlassCard should accept custom border color and width', (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(
+      const MaterialApp(
         home: Scaffold(
           body: GlassCard(
             borderColor: Colors.blue,
             borderWidth: 3,
-            child: const Text('Bordered Card'),
+            child: Text('Bordered Card'),
           ),
         ),
       ),

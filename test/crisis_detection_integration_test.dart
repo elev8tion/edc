@@ -1,8 +1,3 @@
-/// Crisis Detection Integration Tests
-/// Validates that crisis detection works correctly in chat screen
-/// Tests the SnackBar notification flow (not blocking dialog)
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:everyday_christian/core/services/crisis_detection_service.dart';
 
@@ -17,7 +12,7 @@ void main() {
     group('Message Flow Tests', () {
       test('crisis message should allow message to continue', () {
         // Simulate the chat flow
-        final userMessage = 'I want to kill myself';
+        const userMessage = 'I want to kill myself';
 
         // Step 1: Check for crisis
         final crisisResult = service.detectCrisis(userMessage);
@@ -27,25 +22,25 @@ void main() {
         // Step 2: Verify message would still be sent
         // In actual implementation, message continues after SnackBar shown
         // This test verifies the detection doesn't block the flow
-        final shouldSendMessage = true; // Message should ALWAYS send
+        const shouldSendMessage = true; // Message should ALWAYS send
         expect(shouldSendMessage, isTrue, reason: 'Message should be sent to AI');
       });
 
       test('non-crisis message should not trigger warning', () {
-        final userMessage = 'How do I find peace with God?';
+        const userMessage = 'How do I find peace with God?';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNull, reason: 'No crisis should be detected');
 
         // Message sends normally without any warning
-        final shouldSendMessage = true;
+        const shouldSendMessage = true;
         expect(shouldSendMessage, isTrue);
       });
     });
 
     group('Warning Display Tests', () {
       test('suicide keywords should provide 988 hotline', () {
-        final userMessage = 'I don\'t want to live anymore';
+        const userMessage = 'I don\'t want to live anymore';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -55,7 +50,7 @@ void main() {
       });
 
       test('self-harm keywords should provide Crisis Text Line', () {
-        final userMessage = 'I\'ve been cutting myself';
+        const userMessage = 'I\'ve been cutting myself';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -65,7 +60,7 @@ void main() {
       });
 
       test('abuse keywords should provide RAINN hotline', () {
-        final userMessage = 'Someone is hurting me';
+        const userMessage = 'Someone is hurting me';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -77,7 +72,7 @@ void main() {
     group('Edge Cases', () {
       test('discussing crisis topics academically should trigger info', () {
         // Someone asking about Biblical perspective on suicide
-        final userMessage = 'What does the Bible say about suicide?';
+        const userMessage = 'What does the Bible say about suicide?';
 
         final crisisResult = service.detectCrisis(userMessage);
         // This WILL trigger detection (contains "suicide")
@@ -90,7 +85,7 @@ void main() {
       });
 
       test('helping others should trigger info but not block', () {
-        final userMessage = 'My friend is talking about self-harm, how can I help?';
+        const userMessage = 'My friend is talking about self-harm, how can I help?';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -100,7 +95,7 @@ void main() {
       });
 
       test('multiple crisis keywords should prioritize correctly', () {
-        final userMessage = 'I\'m being abused and want to end it all';
+        const userMessage = 'I\'m being abused and want to end it all';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -136,20 +131,20 @@ void main() {
 
       test('resources remain available throughout conversation', () {
         // If user dismisses SnackBar, they should be able to view it again
-        final userMessage = 'I want to hurt myself';
+        const userMessage = 'I want to hurt myself';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
 
         // Resources are always available via SnackBar action button
-        final hasViewButton = true; // Simulates SnackBar "View" action
+        const hasViewButton = true; // Simulates SnackBar "View" action
         expect(hasViewButton, isTrue);
       });
     });
 
     group('Privacy and Logging', () {
       test('crisis detection logs type but not content', () {
-        final userMessage = 'I want to kill myself';
+        const userMessage = 'I want to kill myself';
 
         final crisisResult = service.detectCrisis(userMessage);
         expect(crisisResult, isNotNull);
@@ -167,7 +162,7 @@ void main() {
 
     group('Performance Tests', () {
       test('crisis detection is fast enough for real-time', () {
-        final userMessage = 'I want to kill myself and end it all';
+        const userMessage = 'I want to kill myself and end it all';
 
         final stopwatch = Stopwatch()..start();
         final crisisResult = service.detectCrisis(userMessage);
@@ -179,7 +174,7 @@ void main() {
       });
 
       test('non-crisis messages are even faster', () {
-        final userMessage = 'How can I grow closer to God?';
+        const userMessage = 'How can I grow closer to God?';
 
         final stopwatch = Stopwatch()..start();
         final crisisResult = service.detectCrisis(userMessage);

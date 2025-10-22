@@ -73,7 +73,7 @@ void main() {
         expect(await service.isLockedOut(), true);
 
         // Simulate time passing by manually setting past timestamp
-        final pastTime = DateTime.now().subtract(Duration(minutes: 31));
+        final pastTime = DateTime.now().subtract(const Duration(minutes: 31));
         await prefs.setInt('app_lockout_time', pastTime.millisecondsSinceEpoch);
 
         expect(await service.isLockedOut(), false);

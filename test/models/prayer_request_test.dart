@@ -26,7 +26,7 @@ void main() {
 
     test('should create PrayerRequest with all fields', () {
       final created = DateTime.now();
-      final answered = created.add(Duration(days: 7));
+      final answered = created.add(const Duration(days: 7));
 
       final prayer = PrayerRequest(
         id: '1',

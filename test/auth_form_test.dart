@@ -5,9 +5,6 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:everyday_christian/features/auth/widgets/auth_form.dart';
 import 'package:everyday_christian/features/auth/services/auth_service.dart';
-import 'package:everyday_christian/features/auth/services/secure_storage_service.dart';
-import 'package:everyday_christian/features/auth/services/biometric_service.dart';
-import 'package:everyday_christian/core/database/database_helper.dart';
 
 import 'auth_service_test.mocks.dart';
 
@@ -37,7 +34,7 @@ void main() {
       overrides: [
         authServiceProvider.overrideWith((ref) => authService),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         home: Scaffold(
           body: AuthForm(),
         ),
@@ -625,7 +622,7 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        final specialPassword = 'P@ssw0rd!#\$%^&*()';
+        const specialPassword = 'P@ssw0rd!#\$%^&*()';
         await tester.enterText(find.byType(TextFormField).first, 'test@example.com');
         await tester.enterText(find.byType(TextFormField).at(1), specialPassword);
         await tester.pumpAndSettle();

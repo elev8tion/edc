@@ -6,8 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../theme/app_theme.dart';
-import '../theme/app_gradients.dart';
-import '../core/navigation/navigation_service.dart';
 import '../core/providers/app_providers.dart';
 import '../models/chat_message.dart';
 import '../providers/ai_provider.dart';
@@ -182,6 +180,9 @@ class ChatScreen extends HookConsumerWidget {
             );
 
             if (shouldShowPaywall == true) {
+              if (!context.mounted) {
+                return;
+              }
               // User clicked "Subscribe Now"
               final upgraded = await Navigator.push(
                 context,
@@ -852,7 +853,7 @@ class ChatScreen extends HookConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.download, color: AppTheme.primaryColor),
+                      const Icon(Icons.download, color: AppTheme.primaryColor),
                       const SizedBox(width: 12),
                       Expanded(
                         child: AutoSizeText(
@@ -904,9 +905,11 @@ class ChatScreen extends HookConsumerWidget {
                         isPrimary: true,
                         onTap: () {
                           Navigator.pop(context);
-                          Share.share(
-                            exportText,
-                            subject: 'Biblical AI Conversation Export',
+                          SharePlus.instance.share(
+                            ShareParams(
+                              text: exportText,
+                              subject: 'Biblical AI Conversation Export',
+                            ),
                           );
                         },
                       ),
@@ -1086,9 +1089,11 @@ class ChatScreen extends HookConsumerWidget {
           return;
         }
 
-        await Share.share(
-          exportText,
-          subject: 'Biblical AI Conversation',
+        await SharePlus.instance.share(
+          ShareParams(
+            text: exportText,
+            subject: 'Biblical AI Conversation',
+          ),
         );
 
         if (context.mounted) {
@@ -1117,15 +1122,15 @@ class ChatScreen extends HookConsumerWidget {
                     width: 1,
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(
                       Icons.check_circle,
                       color: AppTheme.goldColor,
                       size: 20,
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
+                    SizedBox(width: 12),
+                    Expanded(
                       child: Text(
                         '📤 Conversation shared',
                         style: TextStyle(
@@ -1216,7 +1221,7 @@ class ChatScreen extends HookConsumerWidget {
                   ),
                   borderRadius: AppRadius.mediumRadius,
                 ),
-                child: Icon(Icons.download, color: AppTheme.primaryColor),
+                child: const Icon(Icons.download, color: AppTheme.primaryColor),
               ),
               title: const Text(
                 'Export Conversation',
@@ -1250,7 +1255,7 @@ class ChatScreen extends HookConsumerWidget {
                   ),
                   borderRadius: AppRadius.mediumRadius,
                 ),
-                child: Icon(Icons.share, color: AppTheme.accentColor),
+                child: const Icon(Icons.share, color: AppTheme.accentColor),
               ),
               title: const Text(
                 'Share Conversation',
@@ -1594,7 +1599,7 @@ class ChatScreen extends HookConsumerWidget {
                           ),
                           borderRadius: AppRadius.mediumRadius,
                         ),
-                        child: Icon(Icons.refresh, color: AppTheme.primaryColor),
+                        child: const Icon(Icons.refresh, color: AppTheme.primaryColor),
                       ),
                       title: const Text(
                         'Regenerate Response',
@@ -1747,13 +1752,6 @@ class ChatScreen extends HookConsumerWidget {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
-    final hour = dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
-    final period = dateTime.hour >= 12 ? 'PM' : 'AM';
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute $period';
-  }
-
   Widget _buildTypingIndicator() {
     return const GlassTypingIndicator();
   }
@@ -1795,7 +1793,7 @@ class ChatScreen extends HookConsumerWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.chat_bubble_outline,
                         size: 14,
                         color: AppTheme.goldColor,
@@ -1803,7 +1801,7 @@ class ChatScreen extends HookConsumerWidget {
                       const SizedBox(width: 8),
                       Text(
                         '$remainingMessages ${isPremium ? "messages left this month" : isInTrial ? "messages left today" : "messages left"}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryText,
@@ -2078,15 +2076,15 @@ class ChatScreen extends HookConsumerWidget {
                                 width: 1,
                               ),
                             ),
-                            child: Row(
+                            child: const Row(
                               children: [
                                 Icon(
                                   Icons.check_circle,
                                   color: AppTheme.goldColor,
                                   size: 20,
                                 ),
-                                const SizedBox(width: 12),
-                                const Expanded(
+                                SizedBox(width: 12),
+                                Expanded(
                                   child: Text(
                                     'Conversation deleted',
                                     style: TextStyle(
@@ -2267,15 +2265,15 @@ class ChatScreen extends HookConsumerWidget {
                   width: 1,
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(
                     Icons.check_circle,
                     color: AppTheme.goldColor,
                     size: 20,
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  SizedBox(width: 12),
+                  Expanded(
                     child: Text(
                       '✨ New conversation started',
                       style: TextStyle(
@@ -2391,15 +2389,15 @@ class ChatScreen extends HookConsumerWidget {
                                 width: 1,
                               ),
                             ),
-                            child: Row(
+                            child: const Row(
                               children: [
                                 Icon(
                                   Icons.check_circle,
                                   color: AppTheme.goldColor,
                                   size: 20,
                                 ),
-                                const SizedBox(width: 12),
-                                const Expanded(
+                                SizedBox(width: 12),
+                                Expanded(
                                   child: Text(
                                     '✨ New conversation started! Previous chat saved to history.',
                                     style: TextStyle(

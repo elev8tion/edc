@@ -37,7 +37,7 @@ void main() {
 
   group('BiometricSettings Model', () {
     test('should create settings with all properties', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face, BiometricType.fingerprint],
         isStrongSupported: true,
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('should check if specific type is available', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face],
         isStrongSupported: true,
@@ -66,7 +66,7 @@ void main() {
     });
 
     test('should generate description when not available', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: false,
         availableTypes: [],
         isStrongSupported: false,
@@ -77,7 +77,7 @@ void main() {
     });
 
     test('should generate description with single type', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face],
         isStrongSupported: true,
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('should generate description with two types', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face, BiometricType.fingerprint],
         isStrongSupported: true,
@@ -99,7 +99,7 @@ void main() {
     });
 
     test('should generate description with multiple types', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [
           BiometricType.face,
@@ -114,7 +114,7 @@ void main() {
     });
 
     test('should generate description with no types but available', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [],
         isStrongSupported: false,
@@ -125,7 +125,7 @@ void main() {
     });
 
     test('should convert to JSON', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face, BiometricType.fingerprint],
         isStrongSupported: true,
@@ -145,7 +145,7 @@ void main() {
     });
 
     test('should generate toString representation', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face],
         isStrongSupported: true,
@@ -162,7 +162,7 @@ void main() {
     });
 
     test('should handle all biometric type names in description', () {
-      final faceSettings = BiometricSettings(
+      const faceSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face],
         isStrongSupported: true,
@@ -170,7 +170,7 @@ void main() {
       );
       expect(faceSettings.description, contains('Face ID'));
 
-      final fingerprintSettings = BiometricSettings(
+      const fingerprintSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.fingerprint],
         isStrongSupported: true,
@@ -178,7 +178,7 @@ void main() {
       );
       expect(fingerprintSettings.description, contains('Fingerprint'));
 
-      final irisSettings = BiometricSettings(
+      const irisSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.iris],
         isStrongSupported: true,
@@ -186,7 +186,7 @@ void main() {
       );
       expect(irisSettings.description, contains('Iris'));
 
-      final voiceSettings = BiometricSettings(
+      const voiceSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.voice],
         isStrongSupported: true,
@@ -379,7 +379,7 @@ void main() {
     test('should generate description for single biometric type', () {
       // This test verifies the description logic, not actual platform behavior
       // We test via BiometricSettings which has the same logic
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [BiometricType.face],
         isStrongSupported: true,
@@ -493,7 +493,7 @@ void main() {
 
   group('BiometricSettings JSON Serialization', () {
     test('should serialize all biometric types correctly', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [
           BiometricType.face,
@@ -514,7 +514,7 @@ void main() {
     });
 
     test('should serialize all platform support levels', () {
-      final noneSettings = BiometricSettings(
+      const noneSettings = BiometricSettings(
         isAvailable: false,
         availableTypes: [],
         isStrongSupported: false,
@@ -522,7 +522,7 @@ void main() {
       );
       expect(noneSettings.toJson()['platformSupport'], equals('none'));
 
-      final limitedSettings = BiometricSettings(
+      const limitedSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [],
         isStrongSupported: false,
@@ -530,7 +530,7 @@ void main() {
       );
       expect(limitedSettings.toJson()['platformSupport'], equals('limited'));
 
-      final fullSettings = BiometricSettings(
+      const fullSettings = BiometricSettings(
         isAvailable: true,
         availableTypes: [],
         isStrongSupported: true,
@@ -542,9 +542,9 @@ void main() {
 
   group('BiometricSettings Edge Cases', () {
     test('should handle empty available types list', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
-        availableTypes: const [],
+        availableTypes: [],
         isStrongSupported: false,
         platformSupport: BiometricPlatformSupport.full,
       );
@@ -555,7 +555,7 @@ void main() {
     });
 
     test('should handle duplicate types in list', () {
-      final settings = BiometricSettings(
+      const settings = BiometricSettings(
         isAvailable: true,
         availableTypes: [
           BiometricType.face,

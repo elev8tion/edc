@@ -446,7 +446,7 @@ class _Error extends AuthState {
 
 /// Providers for dependency injection
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
-  return SecureStorageService();
+  return const SecureStorageService();
 });
 
 final biometricServiceProvider = Provider<BiometricService>((ref) {

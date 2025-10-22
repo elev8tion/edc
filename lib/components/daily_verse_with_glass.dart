@@ -93,7 +93,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Verse of the Day',
                       style: TextStyle(
@@ -122,7 +122,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                   children: [
                     Text(
                       verse,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white,
                         fontStyle: FontStyle.italic,
@@ -137,7 +137,7 @@ class DailyVerseWithGlassDecoration extends HookWidget {
                       children: [
                         Text(
                           reference,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppTheme.goldColor,
                             fontWeight: FontWeight.w700,

@@ -6,10 +6,10 @@ void main() {
   group('CalendarHeatmapWidget', () {
     testWidgets('should render without activity data', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CalendarHeatmapWidget(
-              activityData: const {},
+              activityData: {},
             ),
           ),
         ),
@@ -43,10 +43,10 @@ void main() {
 
     testWidgets('should display legend', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CalendarHeatmapWidget(
-              activityData: const {},
+              activityData: {},
             ),
           ),
         ),
@@ -59,10 +59,10 @@ void main() {
 
     testWidgets('should display day labels', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CalendarHeatmapWidget(
-              activityData: const {},
+              activityData: {},
             ),
           ),
         ),

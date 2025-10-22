@@ -147,8 +147,8 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false, // Prevent dismissal by back button
+    return PopScope(
+      canPop: false, // Prevent dismissal by back button
       child: Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
@@ -257,7 +257,7 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
                                       minimumSize: const Size(0, 30),
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       'Terms of Service',
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,
@@ -317,7 +317,7 @@ class _TermsAcceptanceDialogState extends ConsumerState<TermsAcceptanceDialog> {
                                       minimumSize: const Size(0, 30),
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       'Privacy Policy',
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,

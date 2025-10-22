@@ -4,6 +4,7 @@ import '../components/frosted_glass_card.dart';
 import '../components/glass_button.dart';
 import '../core/models/prayer_category.dart';
 import '../core/providers/category_providers.dart';
+import '../core/widgets/app_snackbar.dart';
 import '../theme/app_theme.dart';
 import '../utils/responsive_utils.dart';
 
@@ -319,7 +320,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                 itemCount: CategoryPresets.availableColors.length,
                 itemBuilder: (context, index) {
                   final color = CategoryPresets.availableColors[index];
-                  final isSelected = selectedColor.value == color.value;
+                  final isSelected = selectedColor.toARGB32() == color.toARGB32();
 
                   return GestureDetector(
                     onTap: () => setState(() => selectedColor = color),
@@ -366,7 +367,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                         await _createCategory(
                           categoryName,
                           selectedIcon.codePoint,
-                          selectedColor.value,
+                          selectedColor.toARGB32(),
                         );
                         _tabController.animateTo(0);
                       }
@@ -497,7 +498,7 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                       itemCount: CategoryPresets.availableColors.length,
                       itemBuilder: (context, index) {
                         final color = CategoryPresets.availableColors[index];
-                        final isSelected = selectedColor.value == color.value;
+                        final isSelected = selectedColor.toARGB32() == color.toARGB32();
 
                         return GestureDetector(
                           onTap: () => setState(() => selectedColor = color),
@@ -545,12 +546,11 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
                                 category.copyWith(
                                   name: categoryName,
                                   iconCodePoint: selectedIcon.codePoint,
-                                  colorValue: selectedColor.value,
+                                  colorValue: selectedColor.toARGB32(),
                                 ),
                               );
-                              if (mounted) {
-                                Navigator.of(context).pop();
-                              }
+                              if (!context.mounted) return;
+                              Navigator.of(context).pop();
                             }
                           },
                         ),
@@ -572,25 +572,17 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
     try {
       await actions.createCategory(name, iconCodePoint, colorValue);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Category "$name" created successfully'),
-            backgroundColor: AppTheme.primaryColor,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.show(
+        context,
+        message: 'Category "$name" created successfully',
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating category: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Error creating category: $e',
+      );
     }
   }
 
@@ -600,25 +592,17 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
     try {
       await actions.updateCategory(category);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Category "${category.name}" updated successfully'),
-            backgroundColor: AppTheme.primaryColor,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.show(
+        context,
+        message: 'Category "${category.name}" updated successfully',
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating category: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Error updating category: $e',
+      );
     }
   }
 
@@ -710,25 +694,19 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
       try {
         await actions.deleteCategory(category.id);
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Category "${category.name}" deleted'),
-              backgroundColor: AppTheme.primaryColor,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
+        if (!mounted) return;
+        AppSnackBar.show(
+          context,
+          message: 'Category "${category.name}" deleted',
+          icon: Icons.delete_forever,
+          iconColor: Colors.redAccent,
+        );
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error deleting category: $e'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
+        if (!mounted) return;
+        AppSnackBar.showError(
+          context,
+          message: 'Error deleting category: $e',
+        );
       }
     }
   }
@@ -739,27 +717,17 @@ class _CategoryManagementDialogState extends ConsumerState<CategoryManagementDia
     try {
       await actions.toggleCategoryActive(category.id);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Category "${category.name}" ${category.isActive ? "deactivated" : "activated"}',
-            ),
-            backgroundColor: AppTheme.primaryColor,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.show(
+        context,
+        message: 'Category "${category.name}" ${category.isActive ? "deactivated" : "activated"}',
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error toggling category: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Error toggling category: $e',
+      );
     }
   }
 }

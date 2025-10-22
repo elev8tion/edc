@@ -16,8 +16,6 @@ import 'package:everyday_christian/core/services/devotional_content_loader.dart'
 import 'package:everyday_christian/core/services/devotional_progress_service.dart';
 import 'package:everyday_christian/core/services/reading_plan_progress_service.dart';
 import 'package:everyday_christian/core/services/prayer_streak_service.dart';
-import 'package:everyday_christian/core/models/devotional.dart';
-import 'package:everyday_christian/core/models/reading_plan.dart';
 
 void main() {
   setUpAll(() {

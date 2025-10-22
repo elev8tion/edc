@@ -218,6 +218,12 @@ class UnifiedVerseService {
     );
   }
 
+  /// Remove all favorite verses.
+  Future<void> clearFavoriteVerses() async {
+    final database = await _db.database;
+    await database.delete('favorite_verses');
+  }
+
   /// Toggle favorite status
   Future<bool> toggleFavorite(int verseId) async {
     final isFavorite = await isVerseFavorite(verseId);
@@ -343,10 +349,6 @@ class UnifiedVerseService {
 
     final themes = situationThemes[situation.toLowerCase()] ?? [situation];
     final database = await _db.database;
-
-    // Build WHERE clause for multiple themes
-    final themeClauses = themes.map((_) => 'themes LIKE ?').join(' OR ');
-    final args = themes.map((theme) => '%"$theme"%').toList();
 
     final results = await database.rawQuery('''
       SELECT * FROM bible_verses

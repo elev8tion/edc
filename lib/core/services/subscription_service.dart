@@ -70,7 +70,7 @@ class SubscriptionService {
   // New keys for expiry tracking and trial abuse prevention
   static const String _keyPremiumExpiryDate = 'premium_expiry_date';
   static const String _keyPremiumOriginalPurchaseDate = 'premium_original_purchase_date';
-  static const String _keyTrialEverUsed = 'trial_ever_used';
+  static const String _keyTrialEverUsed = 'trial_ever_used'; // ignore: unused_field
   static const String _keyAutoRenewStatus = 'auto_renew_status';
   static const String _keyAutoSubscribeAttempted = 'auto_subscribe_attempted';
 
@@ -605,7 +605,7 @@ class SubscriptionService {
 
         // Store placeholder expiry (1 year from now for annual subscription)
         // This will be replaced with actual expiry once receipt parsing is implemented
-        final expiryDate = DateTime.now().add(Duration(days: 365));
+        final expiryDate = DateTime.now().add(const Duration(days: 365));
         await _prefs?.setString(_keyPremiumExpiryDate, expiryDate.toIso8601String());
         await _prefs?.setString(_keyPremiumOriginalPurchaseDate, DateTime.now().toIso8601String());
         await _prefs?.setBool(_keyAutoRenewStatus, true); // Assume auto-renew unless receipt says otherwise

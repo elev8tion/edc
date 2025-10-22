@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 
 /// Centralized gradient definitions for consistent glassmorphic design
 ///

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import '../components/gradient_background.dart';
 import '../components/frosted_glass_card.dart';
 import '../components/glass_button.dart';
@@ -10,6 +9,7 @@ import '../core/providers/app_providers.dart';
 import '../services/bible_chapter_service.dart';
 import '../models/bible_verse.dart';
 import '../utils/responsive_utils.dart';
+import '../core/widgets/app_snackbar.dart';
 
 /// Chapter Reading Screen - displays Bible chapters with verse-by-verse reading
 class ChapterReadingScreen extends ConsumerStatefulWidget {
@@ -69,104 +69,16 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
       await _chapterService.markReadingComplete(widget.readingId!);
       if (mounted) {
         setState(() => _isCompleted = true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-            margin: const EdgeInsets.all(16),
-            padding: EdgeInsets.zero,
-            content: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1E293B), // slate-800
-                    Color(0xFF0F172A), // slate-900
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.goldColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: AppTheme.goldColor,
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Reading marked as complete!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ResponsiveUtils.fontSize(context, 14),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        AppSnackBar.show(
+          context,
+          message: 'Reading marked as complete!',
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-            margin: const EdgeInsets.all(16),
-            padding: EdgeInsets.zero,
-            content: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1E293B), // slate-800
-                    Color(0xFF0F172A), // slate-900
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red.shade300,
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Error: $e',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ResponsiveUtils.fontSize(context, 14),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        AppSnackBar.showError(
+          context,
+          message: 'Error: $e',
         );
       }
     }
@@ -360,7 +272,7 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppRadius.xs / 4),
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [
                         AppTheme.primaryColor,
                         AppTheme.secondaryColor,
@@ -578,56 +490,12 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
 
       if (wasFavorite) {
         await verseService.removeFromFavorites(verse.id!);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-              margin: const EdgeInsets.all(16),
-              padding: EdgeInsets.zero,
-              content: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF1E293B), // slate-800
-                      Color(0xFF0F172A), // slate-900
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.goldColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.heart_broken,
-                      color: AppTheme.goldColor,
-                      size: ResponsiveUtils.iconSize(context, 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Removed from Verse Library',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ResponsiveUtils.fontSize(context, 14),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
+        if (!mounted) return;
+        AppSnackBar.show(
+          context,
+          message: 'Removed from Verse Library',
+          icon: Icons.heart_broken,
+        );
       } else {
         // Add verse to favorites directly (no theme selection)
         await verseService.addToFavorites(
@@ -637,111 +505,22 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
           category: verse.category,
         );
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-              margin: const EdgeInsets.all(16),
-              padding: EdgeInsets.zero,
-              content: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF1E293B), // slate-800
-                      Color(0xFF0F172A), // slate-900
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.goldColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.favorite,
-                      color: AppTheme.goldColor,
-                      size: ResponsiveUtils.iconSize(context, 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Added to Verse Library!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ResponsiveUtils.fontSize(context, 14),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
+        if (!mounted) return;
+        AppSnackBar.show(
+          context,
+          message: 'Added to Verse Library!',
+          icon: Icons.favorite,
+        );
       }
 
       // Trigger UI update
       setState(() {});
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-            margin: const EdgeInsets.all(16),
-            padding: EdgeInsets.zero,
-            content: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF1E293B), // slate-800
-                    Color(0xFF0F172A), // slate-900
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.5),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red.shade300,
-                    size: ResponsiveUtils.iconSize(context, 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Error: $e',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ResponsiveUtils.fontSize(context, 14),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
+      if (!mounted) return;
+      AppSnackBar.showError(
+        context,
+        message: 'Error: $e',
+      );
     }
   }
 
@@ -757,33 +536,10 @@ class _ChapterReadingScreenState extends ConsumerState<ChapterReadingScreen> {
   }
 
   Widget _buildLoading() {
-    return Center(
-      child: FrostedGlassCard(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Loading Bible chapter...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
+    return const Center(
+      child: CircularProgressIndicator(
+        strokeWidth: 3,
+        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
       ),
     );
   }
